@@ -5,47 +5,47 @@
     <title></title>
 </head>
 <body>
+    <h2>Is Feinberg on a run?</h2>
 </body>
 <script>
-$(function() {
-    var loaded = parseInt(localStorage.getItem('loaded'), 10),
-    loaded_num = loaded?loaded+1:1;
-    localStorage.setItem('loaded', loaded_num);
+var loaded = parseInt(localStorage.getItem('loaded'), 10), loaded_num = loaded?loaded+1:1;
+localStorage.setItem('loaded', loaded_num);
 
-    var responses = [
-        'Yes.',
-        'Yep.',
-        'Oh, for sure.',
-        'Yes... he\'s on a run.',
-        'Do you remember what I said last time?',
-        'HE IS ON A RUN.',
-        'HE IS ON A RUN.',
-        'HE IS ON A RUN.',
-        '...Fine. You win.',
-        'Yes, Feinberg is on a run! Wow, go Feinberg!',
-        'Yes, Feinberg is on a run! Wow, go Feinberg!',
-        'Wow, Feinberg is so good!',
-        'Feinberg... hahaha... on a run! Wow! Ha...',
-        '...',
-        'Error. Maximum number of runs reached.',
-        'Error. Feinberg still on a run.',
-        'Error. Is Flen...Fine...Feinberg even streaming?',
-        'Error... he\'s... on a run. Yes. For sure.',
-        'Yes. :)',
-        'please someone help',
-        'Yep! :)',
-        'please it won\'t stop ...',
-        'it burns!!! it burns!!!!',
-        'Yes, Feinberg is on a run!'
-    ]
-    if (responses.length < loaded_num) {
-        the_resp = 'Yes, Feinberg is on a run!'
-    }
-    else {
-        the_resp = responses[loaded_num]
-    }
+var responses = [
+    'Yes.',
+    'Yep.',
+    'Oh, for sure.',
+    'Yes... he\'s on a run.',
+    'Do you remember what I said last time?',
+    'HE IS ON A RUN.',
+    'HE IS ON A RUN.',
+    'HE IS ON A RUN.',
+    '...Fine. You win.',
+    'Yes, Feinberg is on a run! Wow, go Feinberg!',
+    'Yes, Feinberg is on a run! Wow, go Feinberg!',
+    'Wow, Feinberg is so good!',
+    'Feinberg... hahaha... on a run! Wow! Ha...',
+    '...',
+    'Error. Maximum number of runs reached.',
+    'Error. Feinberg still on a run.',
+    'Error. Is Flen...Fine...Feinberg even streaming?',
+    'Error... he\'s... on a run. Yes. For sure.',
+    'Yes. :)',
+    'please someone help',
+    'Yep! :)',
+    'please it won\'t stop ...',
+    'it burns!!! it burns!!!!',
+    'Yes, Feinberg is on a run!'
+];
+if (responses.length < loaded_num) {
+    the_resp = 'Yes, Feinberg is on a run!';
+}
+else {
+    the_resp = responses[loaded_num];
+}
 
-    $('body').append('<p>' + the_resp + '</p>');
-});
+var p = document.createElement("p");
+p.innerHTML = the_resp;
+document.getElementsByTagName('body')[0].appendChild(p);
 </script>
 </html>
