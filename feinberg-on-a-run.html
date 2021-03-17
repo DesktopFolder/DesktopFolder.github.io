@@ -13,6 +13,8 @@
 <script>
 function reset() {
     localStorage.setItem('loaded', -1);
+    location.reload();
+    return false;
 }
 
 var loaded = parseInt(localStorage.getItem('loaded'), 10), loaded_num = loaded?loaded+1:1;
