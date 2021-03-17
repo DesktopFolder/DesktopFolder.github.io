@@ -18,3 +18,8 @@ body
     margin: 3em auto;
     font-size: 20px;
 }
+
+body, html
+{
+    height: 80%; 
+}

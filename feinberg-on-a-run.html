@@ -6,9 +6,15 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h2>Is Feinberg on a run?</h2>
+    <h2 id="title">Is Feinberg on a run?</h2>
+
+    <p style="position:absolute;right:1.5em;bottom:1em;margin:0;font-size:70%" onclick="reset()">reset</p>
 </body>
 <script>
+function reset() {
+    localStorage.setItem('loaded', -1);
+}
+
 var loaded = parseInt(localStorage.getItem('loaded'), 10), loaded_num = loaded?loaded+1:1;
 localStorage.setItem('loaded', loaded_num);
 
@@ -47,6 +53,7 @@ else {
 
 var p = document.createElement("p");
 p.innerHTML = the_resp;
-document.getElementsByTagName('body')[0].appendChild(p);
+tid = document.getElementById('title');
+tid.parentNode.insertBefore(p, tid.nextSibling);
 </script>
 </html>
