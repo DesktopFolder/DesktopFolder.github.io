@@ -36,7 +36,7 @@ def gen_file(filename):
             "page.title": filename.rsplit('.', 1)[0].replace('-', ' ').title(),
             "website.title": 'DesktopFolder',
             "page.description": 'Another incredible webpage!',
-            "path.css.common": 'styles.css'
+            "path.css.common": 'styles.css',
             "content": data
         }
         omerge(defaults, lookup)
@@ -47,7 +47,7 @@ def gen_file(filename):
 
 
 def main():
-    get_file('feinberg-run.dhtml')
+    gen_file('feinberg-run.dhtml')
 
 if __name__ == "__main__":
     main()
