@@ -19,7 +19,17 @@ body
     font-size: 20px;
 }
 
+.wider
+{
+    max-width: 50em;
+}
+
 body, html
 {
     height: 80%; 
+}
+
+.info
+{
+    background-color: #DFDFDF
 }

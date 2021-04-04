@@ -3,11 +3,11 @@ page.title=BOB% Leaderboard
 website.title=DesktopFolder.github.io
 page.description=Leaderboard for Break One Bedrock%.
 ---
-<body>
+<body class="wider">
     <h2 id="title">Break One Bedrock% Leaderboard</h2>
 
     <button type="button" class="collapsible">Rules</button>
-    <div style="display:block;" class="active"><p>Hello!</p></div>
+    <div style="display:none;overflow:auto;" class="info"><p>Hello!</p></div>
     
 <script>
 var colls = document.getElementsByClassName("collapsible");
