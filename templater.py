@@ -46,13 +46,14 @@ def gen_file(filename):
         with open(template, 'r') as file:
             template = file.read()
         with open(dest_filename, 'w') as file:
-            print(template)
-            print(defaults)
+            # print(template)
+            # print(defaults)
             file.write(template.format(**defaults))
 
 
 def main():
     gen_file('feinberg-run.dhtml')
+    gen_file('bob-leaderboard.dhtml')
 
 if __name__ == "__main__":
     main()

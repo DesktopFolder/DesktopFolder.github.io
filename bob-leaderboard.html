@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta property="og:title" content="BOB% Leaderboard" />
+    <meta property="og:site_name" content="DesktopFolder.github.io" />
+    <meta property="og:description" content="Leaderboard for Break One Bedrock%." />
+    <meta charset="UTF-8">
+    <title>BOB% Leaderboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <h2 id="title">Break One Bedrock% Leaderboard</h2>
+
+    <button type="button" class="collapsible">Rules</button>
+    <div style="display:block;" class="active"><p>Hello!</p></div>
+    
+<script>
+var colls = document.getElementsByClassName("collapsible");
+
+for (var i = 0; i < colls.length; i++) {
+    colls[i].addEventListener("click", function() {
+    this.classList.toggle("active");
+    var content = this.nextElementSibling;
+    if (content.style.display === "block") {
+      content.style.display = "none";
+    } else {
+      content.style.display = "block";
+    }
+  });
+}
+</script>
+</body>
+</html>

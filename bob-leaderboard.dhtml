@@ -1,0 +1,27 @@
+---
+page.title=BOB% Leaderboard
+website.title=DesktopFolder.github.io
+page.description=Leaderboard for Break One Bedrock%.
+---
+<body>
+    <h2 id="title">Break One Bedrock% Leaderboard</h2>
+
+    <button type="button" class="collapsible">Rules</button>
+    <div style="display:block;" class="active"><p>Hello!</p></div>
+    
+<script>
+var colls = document.getElementsByClassName("collapsible");
+
+for (var i = 0; i < colls.length; i++) {
+    colls[i].addEventListener("click", function() {
+    this.classList.toggle("active");
+    var content = this.nextElementSibling;
+    if (content.style.display === "block") {
+      content.style.display = "none";
+    } else {
+      content.style.display = "block";
+    }
+  });
+}
+</script>
+</body>
