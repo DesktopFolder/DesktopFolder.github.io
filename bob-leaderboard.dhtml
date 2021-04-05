@@ -9,7 +9,7 @@ page.description=Leaderboard for Break One Bedrock%.
     <button type="button" class="collapsible">Rules (Show / Hide)</button>
     <div style="display:none;overflow:auto;" class="info"><p>Hello!</p></div>
 
-{generators[bob-leaderboard][existing-runs]}
+{{generators[bob-leaderboard][existing_runs]}}
     
 <script>
 var colls = document.getElementsByClassName("collapsible");

@@ -4,9 +4,16 @@
 Extremely basic Python script for templating HTML.
 """
 
-import os
-import generators
-gens = generators.Generators()
+import os, re
+from generators.generators import Generators
+
+gens = Generators()
+
+def oh_no(s):
+    return s.replace(r'{{', r'%%AXL').replace(r'}}', r'%%AXR').replace(r'{', r'%%NORML').replace(r'}', r'%%NORMR').replace(r'%%AXL', r'{').replace(r'%%AXR', r'}')
+
+def oh_yes(s):
+    return s.replace(r'%%NORML', r'{').replace(r'%%NORMR', r'}')
 
 def omerge(into, outof):
     for k, v in outof.items():
@@ -20,6 +27,7 @@ def gen_file(filename):
         dest_filename = filename.rsplit('.', 1)[0] + '.html'
         template = 'templates/generic.html'
         lookup = {}
+        page_content = None
         if data.lstrip().startswith('---'):
             _, header, data = data.split('---', 2)
             kvs = [x.strip() for x in header.split('\n')]
@@ -34,6 +42,8 @@ def gen_file(filename):
                     dest_filename = value
                 elif key == 'src':
                     template = value
+                elif key == 'content':
+                    page_content = value
                 else:
                     lookup[key.replace('.', '-')] = value
         print(f'Info: Generating {dest_filename} from {filename} with template {template}')
@@ -42,10 +52,13 @@ def gen_file(filename):
             "website-title": 'DesktopFolder',
             "page-description": 'Another incredible webpage!',
             "path-css-common": 'styles.css',
-            "content": data,
             "generators": gens,
         }
         omerge(defaults, lookup)
+        if page_content is None:
+            page_content = data
+        page_content = oh_yes(oh_no(page_content).format(**defaults))
+        defaults['content'] = page_content
         with open(template, 'r') as file:
             template = file.read()
         with open(dest_filename, 'w') as file:
