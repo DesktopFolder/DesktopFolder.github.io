@@ -14,8 +14,6 @@ class GeneratorErrorWrapper:
 class Generators:
     def __getitem__(self, key):
         print('HI???')
-        if not key.endswith('.py'):
-            key = key + '.py'
         # Yes, we're doing this :)
         try:
             mod = il.import_module('generators.' + key)
