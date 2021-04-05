@@ -1,14 +1,19 @@
+body, html
+{
+    height: 80%;
+    color: #454545;
+    font-size: 15px;
+    font-family: Helvetica, Arial, sans-serif;
+}
+
 p, h2, h3
 {
-    font-family: Helvetica, Arial, sans-serif;
-    color: #333333;
-    font-size: 1em;
 }
 
 h2,h3
 {
     font-size: 200%;
-    font-face: bold;
+    font-weight: bold;
 }
 
 body
@@ -24,15 +29,11 @@ body
     max-width: 50em;
 }
 
-body, html
-{
-    height: 80%; 
-}
 
 .info
 {
-    background-color: #DFDFDF;
-    border: 2px solid #CCCCCC;
+    background-color: #f7f7f7;
+    border: 2px solid #e5e5e5;
 }
 
 #main-content
@@ -51,10 +52,18 @@ td {
 table#runs tr td:nth-child(n+2) {
     padding-left: 0.5em;
 }
-
+/*Wow, whitesmoke is a nice background colour...*/
 table#runs
 {
     width: 80%;
     margin: auto;
     border-collapse: collapse;
+}
+
+a:link, a:hover {
+    color: #07A;
+}
+
+a:visited {
+    color: #941352;
 }
