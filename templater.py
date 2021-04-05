@@ -32,6 +32,8 @@ def gen_file(filename):
             _, header, data = data.split('---', 2)
             kvs = [x.strip() for x in header.split('\n')]
             for kv in kvs:
+                if kv.strip() == '':
+                    continue
                 key_value = [x.strip() for x in kv.split('=', 1)]
                 if len(key_value) < 2:
                     print(f'Warning: Invalid key/value pair found in {filename}: {kv}')
