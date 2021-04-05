@@ -25,12 +25,16 @@ page.description=Leaderboard for Break One Bedrock%.
         <p style="margin:0.3em">
             The goal of Break One Bedrock is to break a single bedrock as fast as possible. 
             <a href="https://www.youtube.com/watch?v=Mt7pFiThe8o">The first run</a> has some explanation and should provide a basis.
+            <br>
+            This website is a work in progress. <a href="https://github.com/DesktopFolder/DesktopFolder.github.io">Source.</a>
         </p>
     </div>
 
-{{generators[bob-leaderboard][existing_runs]}}
+{{generators[bob-leaderboard][existing-runs]}}
     
 <script>
+// Only use JavaScript for unnecessary/aesthetic functionality.
+// I guess this technically doesn't qualify, so we should probably add a fallback for collapsibles.
 var colls = document.getElementsByClassName("collapsible");
 
 for (var i = 0; i < colls.length; i++) {
