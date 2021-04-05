@@ -13,6 +13,7 @@ class GeneratorErrorWrapper:
 
 class Generators:
     def __getitem__(self, key):
+        print('HI???')
         if not key.endswith('.py'):
             key = key + '.py'
         # Yes, we're doing this :)
@@ -23,3 +24,7 @@ class Generators:
             return GeneratorErrorWrapper(e)
         try:
             c = mod.Generator()
+        except Exception as e:
+            print(f'Error, could not create generators.{key}:', e)
+            return GeneratorErrorWrapper(e)
+        return c
