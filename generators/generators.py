@@ -13,7 +13,6 @@ class GeneratorErrorWrapper:
 
 class Generators:
     def __getitem__(self, key):
-        print('HI???')
         # Yes, we're doing this :)
         try:
             mod = il.import_module('generators.' + key)
