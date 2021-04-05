@@ -5,6 +5,8 @@ Extremely basic Python script for templating HTML.
 """
 
 import os
+import generators
+gens = generators.Generators()
 
 def omerge(into, outof):
     for k, v in outof.items():
@@ -40,7 +42,8 @@ def gen_file(filename):
             "website-title": 'DesktopFolder',
             "page-description": 'Another incredible webpage!',
             "path-css-common": 'styles.css',
-            "content": data
+            "content": data,
+            "generators": gens,
         }
         omerge(defaults, lookup)
         with open(template, 'r') as file:
