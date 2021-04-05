@@ -31,5 +31,30 @@ body, html
 
 .info
 {
-    background-color: #DFDFDF
+    background-color: #DFDFDF;
+    border: 2px solid #CCCCCC;
+}
+
+#main-content
+{
+    margin-top: 1em;
+}
+
+table, th, td {
+    border: 1px solid #141414;
+}
+
+td {
+    padding-left: 0.2em;
+}
+
+table#runs tr td:nth-child(n+2) {
+    padding-left: 0.5em;
+}
+
+table#runs
+{
+    width: 80%;
+    margin: auto;
+    border-collapse: collapse;
 }

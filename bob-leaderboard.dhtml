@@ -4,9 +4,10 @@ website.title=DesktopFolder.github.io
 page.description=Leaderboard for Break One Bedrock%.
 ---
 <body class="wider">
-    <h2 id="title">Break One Bedrock% Leaderboard</h2>
-
-    <button type="button" class="collapsible">Rules (Show / Hide)</button>
+    <div style="margin:auto;">
+    <h2 id="title" style="text-align: center;">Break One Bedrock% Leaderboard</h2>
+    </div>
+    <button type="button" class="collapsible" style="margin-left: 10%;">Rules (Show / Hide)</button>
     <div style="display:none;overflow:auto;" class="info">
         <p style="margin:0.3em">
             BOB% follows the same rules as <a href="https://speedrun.com/mc">normal RSG</a>. 
@@ -27,11 +28,23 @@ page.description=Leaderboard for Break One Bedrock%.
             <a href="https://www.youtube.com/watch?v=Mt7pFiThe8o">The first run</a> has some explanation and should provide a basis.
             <br>
             This website is a work in progress. <a href="https://github.com/DesktopFolder/DesktopFolder.github.io">Source.</a>
+            <br>
+            If you encounter any problems in using it, please <a href="https://github.com/DesktopFolder/DesktopFolder.github.io/issues/new/choose">create an issue.</a>
         </p>
     </div>
 
+<div id="main-content">
+<table id="runs">
+<tr>
+    <th></th>
+    <th>Time</th>
+    <th>User</th>
+    <th>Notes</th>
+</tr>
 {{generators[bob-leaderboard][existing-runs]}}
-    
+</table>
+</div>    
+
 <script>
 // Only use JavaScript for unnecessary/aesthetic functionality.
 // I guess this technically doesn't qualify, so we should probably add a fallback for collapsibles.
