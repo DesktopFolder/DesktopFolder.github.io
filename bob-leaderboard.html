@@ -1,12 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
+
+    <title>BOB% Leaderboard</title>
+
+    <script type="module">
+        // As suggested by:
+        // https://www.matuzo.at/blog/html-boilerplate/
+        document.documentElement.classList.remove('no-js');
+        document.documentElement.classList.add('js');
+    </script>
+
+    <link rel="stylesheet" href="styles.css">
+    <!--<link rel="stylesheet" href="path/to/print.css" media="print">-->
+
+    <meta name="description" content="Leaderboard for Break One Bedrock%." />
     <meta property="og:title" content="BOB% Leaderboard" />
     <meta property="og:site_name" content="DesktopFolder.github.io" />
     <meta property="og:description" content="Leaderboard for Break One Bedrock%." />
-    <meta charset="UTF-8">
-    <title>BOB% Leaderboard</title>
-    <link rel="stylesheet" href="styles.css">
+    <meta property="og:image" content="https://cdn.discordapp.com/attachments/721171727673196605/823412989070671882/brbr.png" />
 </head>
 
 <body class="wider">
@@ -54,6 +67,7 @@
 </table>
 </div>    
 
+
 <script>
 // Only use JavaScript for unnecessary/aesthetic functionality.
 // I guess this technically doesn't qualify, so we should probably add a fallback for collapsibles.
@@ -71,6 +85,18 @@ for (var i = 0; i < colls.length; i++) {
   });
 }
 </script>
-<noscript><style>.info { display: block; margin-top: 0.5em; line-height: 1.2em; font-size: 13px;} button {display: none;} #about::after { content: "This page has been modified to work better without JavaScript (as you appear to have it disabled)."; }</style></noscript>
+
+<noscript>
+<style>
+.info { 
+    display: block; margin-top: 0.5em; line-height: 1.2em; font-size: 13px;
+} 
+button {
+    display: none;
+} 
+#about::after { 
+    content: "This page has been modified to work better without JavaScript (as you appear to have it disabled)."; 
+}</style></noscript>
 </body>
+
 </html>

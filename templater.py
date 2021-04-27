@@ -55,6 +55,7 @@ def gen_file(filename):
             "page-description": 'Another incredible webpage!',
             "path-css-common": 'styles.css',
             "generators": gens,
+            "page-image": "https://publicdomainvectors.org/photos/rodentia-icons_folder-black.png",
         }
         omerge(defaults, lookup)
         if page_content is None:

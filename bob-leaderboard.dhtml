@@ -2,6 +2,7 @@
 page.title=BOB% Leaderboard
 website.title=DesktopFolder.github.io
 page.description=Leaderboard for Break One Bedrock%.
+page.image=https://cdn.discordapp.com/attachments/721171727673196605/823412989070671882/brbr.png
 ---
 <body class="wider">
     <div style="margin:auto;">
@@ -46,6 +47,7 @@ page.description=Leaderboard for Break One Bedrock%.
 </table>
 </div>    
 
+
 <script>
 // Only use JavaScript for unnecessary/aesthetic functionality.
 // I guess this technically doesn't qualify, so we should probably add a fallback for collapsibles.
@@ -63,5 +65,16 @@ for (var i = 0; i < colls.length; i++) {
   });
 }
 </script>
-<noscript><style>.info { display: block; margin-top: 0.5em; line-height: 1.2em; font-size: 13px;} button {display: none;} #about::after { content: "This page has been modified to work better without JavaScript (as you appear to have it disabled)."; }</style></noscript>
+
+<noscript>
+<style>
+.info { 
+    display: block; margin-top: 0.5em; line-height: 1.2em; font-size: 13px;
+} 
+button {
+    display: none;
+} 
+#about::after { 
+    content: "This page has been modified to work better without JavaScript (as you appear to have it disabled)."; 
+}</style></noscript>
 </body>
