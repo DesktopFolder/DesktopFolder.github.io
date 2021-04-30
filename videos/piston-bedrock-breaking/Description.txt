@@ -1,0 +1,17 @@
+This video aims to provide a high-level, practical & somewhat comprehensible explanation of the mechanics behind piston-based bedrock breaking, and how they combine to allow for it to take place. Deciding whether or not it succeeded is an exercise left to the viewer. There are previous and more in-depth explanations of several of the mechanics in this video; if you're interested, please see the References section below.
+
+A written explanation is available at https://desktopfolder.github.io/videos/piston-bedrock-breaking/explanation.html and may be updated/upgraded later as time and energy permits.
+
+Timestamps:
+0:00 Introduction
+
+References:
+
+EDDxample's Youtube Channel:
+https://www.youtube.com/channel/UC__vX0QGDIOQgelZ0rdIOsA
+
+Coolmann on headless pistons:
+https://www.youtube.com/watch?v=ZyW5rAiaPeA
+
+Myren Eario's Youtube Channel:
+https://www.youtube.com/channel/UC-wR4ekYCWwbIuqwGe1H9vg
