@@ -4,6 +4,17 @@ A written explanation is available at https://desktopfolder.github.io/videos/pis
 
 Timestamps:
 0:00 Introduction
+0:29 Necessary components of piston-based bedrock breaking setups
+1:10 Common explanation of using piston retraction to break bedrock
+2:15 Demo: creating a headless piston
+3:10 Demo: Piston retraction can destroy any block
+4:20 Demo: Headless sticky pistons can accelerate block movement instantly
+5:40 Demo: (Ab)using block events to break bedrock
+7:33 Talking through the steps of bedrock breaking
+10:10 Quick look the mechanisms we'll use to break bedrock in the practical demo
+10:46 A brief diversion to 'explain' update order
+13:00 Actually breaking that bedrock
+14:40 Outro / update order for bedrock breaking graphic
 
 References:
 
@@ -15,3 +26,6 @@ https://www.youtube.com/watch?v=ZyW5rAiaPeA
 
 Myren Eario's Youtube Channel:
 https://www.youtube.com/channel/UC-wR4ekYCWwbIuqwGe1H9vg
+
+Little postmortem:
+I was somewhat excited to try my hand at doing an explanation video for this, as tutorials, guides, and different teaching methods in general are something that interest me a fair amount. There were a few things that I think I didn't properly account for. Although doing this video unscripted allowed me to finish it in a not horrific amount of time, it did make it very clear how difficult it can be to explain something 'on the fly'. Another problem is that several of the mechanics here only really exist as 'general knowledge' theoretically backed by a couple people's in-depth knowledge of the codebase, but don't really have defined ways of explaining/talking about them (or good resources). Overall, the biggest success of this video (in my opinion) was probably the block events demo, as using carpet for this made the actual mechanics much simpler to visualize (and would have been pretty handy a year ago...)
