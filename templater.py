@@ -53,7 +53,7 @@ def gen_file(filename):
             "page-title": filename.rsplit('.', 1)[0].replace('-', ' ').title(),
             "website-title": 'DesktopFolder',
             "page-description": 'Another incredible webpage!',
-            "path-css-common": 'styles.css',
+            "path-css-common": ('../' * (len(filename.split('/')) - 1)) + 'styles.css',
             "generators": gens,
             "page-image": "https://publicdomainvectors.org/photos/rodentia-icons_folder-black.png",
         }
