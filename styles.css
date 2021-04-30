@@ -80,3 +80,8 @@ a:link, a:hover {
 a:visited {
     color: #941352;
 }
+
+img {
+    max-height: auto;
+    max-width: 100%;
+}
