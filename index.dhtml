@@ -1,0 +1,7 @@
+---
+page.title=DesktopWebsite
+website.title=Desktop's Website
+page.description=Stuff You Might Need
+src=templates/index.html
+---
+{{generators[tools][html-pages][<li><a href="$url">$name</a></li>]}}
