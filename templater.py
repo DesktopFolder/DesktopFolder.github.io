@@ -71,7 +71,7 @@ def gen_file(filename):
 
 
 def main():
-    gen_file('feinberg-run.dhtml')
+    gen_file('feinberg-on-a-run.dhtml')
     gen_file('bob-leaderboard.dhtml')
     gen_file('index.dhtml')
     gen_file('videos/piston-bedrock-breaking/explanation.dhtml')

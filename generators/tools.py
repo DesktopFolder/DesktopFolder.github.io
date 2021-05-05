@@ -16,7 +16,7 @@ class HtmlStringGenerator():
         return '\n'.join(l)
 
 def url_from_html_path(p):
-    return "https://desktopfolder.github.io/" + p
+    return "https://desktopfolder.github.io" + p[1:]
 
 def get_html_urls():
     import os
@@ -24,7 +24,6 @@ def get_html_urls():
     for root, dirnames, filenames in os.walk('.', topdown=True):
         ex = ['.git', '.env', '__pycache__', 'templates']
         dirnames[:] = [d for d in dirnames if d not in ex]
-        print(root)
         for fn in filenames:
             if fn.endswith('.html'):
                 p = os.path.join(root, fn)
@@ -42,7 +41,7 @@ def get_html_urls():
                 except Exception as e:
                     print('get_html_urls error:', e)
 
-                l.append({"url": p, "name": t})
+                l.append({"url": url_from_html_path(p), "name": t})
 
     return l
 
