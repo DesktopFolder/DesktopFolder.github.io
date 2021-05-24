@@ -75,9 +75,11 @@ def gen_file(filename):
 def main():
     gen_file('feinberg-on-a-run.dhtml')
     gen_file('bob-leaderboard.dhtml')
-    gen_file('index.dhtml')
     gen_file('videos/piston-bedrock-breaking/explanation.dhtml')
     gen_file('videos/3way-users-guide/index.dhtml')
+
+    # Always generate the index last.
+    gen_file('index.dhtml')
 
 if __name__ == "__main__":
     main()
