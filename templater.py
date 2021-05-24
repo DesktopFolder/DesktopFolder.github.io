@@ -61,6 +61,8 @@ def gen_file(filename):
         if page_content is None:
             page_content = data
         page_content = oh_yes(oh_no(page_content).format(**defaults))
+        if 'timestamp_url' in defaults:
+            page_content = re.sub(r'\|((\d\d?):(\d\d?))\|', lambda x: f'<a href="{defaults["timestamp-url"]}&t={x.group(2)}m{x.group(3)}s">{x.group(3)}</a>', page_content)
         defaults['content'] = page_content
         with open(template, 'r') as file:
             template = file.read()
@@ -75,6 +77,7 @@ def main():
     gen_file('bob-leaderboard.dhtml')
     gen_file('index.dhtml')
     gen_file('videos/piston-bedrock-breaking/explanation.dhtml')
+    gen_file('videos/3way-users-guide/index.dhtml')
 
 if __name__ == "__main__":
     main()
