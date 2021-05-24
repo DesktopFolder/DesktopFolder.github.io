@@ -62,7 +62,7 @@ def gen_file(filename):
             page_content = data
         page_content = oh_yes(oh_no(page_content).format(**defaults))
         if 'timestamp_url' in defaults:
-            page_content = re.sub(r'\|((\d\d?):(\d\d?))\|', lambda x: f'<a href="{defaults["timestamp_url"]}&t={x.group(2)}m{x.group(3)}s">{x.group(3)}</a>', page_content)
+            page_content = re.sub(r'\|((\d\d?):(\d\d?))\|', lambda x: f'<a href="{defaults["timestamp_url"]}&t={x.group(2)}m{x.group(3)}s">{x.group(1)}</a>', page_content)
         defaults['content'] = page_content
         with open(template, 'r') as file:
             template = file.read()
