@@ -77,6 +77,7 @@ def main():
     gen_file('bob-leaderboard.dhtml')
     gen_file('videos/piston-bedrock-breaking/explanation.dhtml')
     gen_file('videos/3way-users-guide/index.dhtml')
+    gen_file('videos/3way-users-guide/guide.dhtml')
 
     # Always generate the index last.
     gen_file('index.dhtml')
