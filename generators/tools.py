@@ -28,20 +28,24 @@ def get_html_urls():
             if fn.endswith('.html'):
                 p = os.path.join(root, fn)
                 t = fn.replace('-', ' ').title()
-                try:
-                    import importlib as il
-                    import sys
-                    sys.path.append(os.path.join(sys.path[0], '..'))
-                    import dhtml
-                    #sys.path.append('..')
-                    #headers = il.import_module('.dhtml.py').parse_dhtml_headers(p)
-                    headers = dhtml.parse_dhtml_header(p[:-4] + 'dhtml')
-                    if 'page-title' in headers:
-                        t = headers['page-title']
-                except Exception as e:
-                    print('get_html_urls error:', e)
+                dhtml_p = p[:-4] + 'dhtml'
+                if not os.path.isfile(dhtml_p):
+                    print('get_html_urls warning: Could not find', dhtml_p, 'so default title being used.')
+                else:
+                    try:
+                        import importlib as il
+                        import sys
+                        sys.path.append(os.path.join(sys.path[0], '..'))
+                        import dhtml
+                        #sys.path.append('..')
+                        #headers = il.import_module('.dhtml.py').parse_dhtml_headers(p)
+                        headers = dhtml.parse_dhtml_header(dhtml_p)
+                        if 'page-title' in headers:
+                            t = headers['page-title']
+                    except Exception as e:
+                        print('get_html_urls error:', e)
 
-                l.append({"url": url_from_html_path(p), "name": t})
+                l.append({"url": url_from_html_path(p if fn != "index.html" else root), "name": t})
 
     return l
 

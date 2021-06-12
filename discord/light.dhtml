@@ -1,0 +1,14 @@
+---
+src=templates/light.html
+page.title=Join the Mechanists Discord Server!
+page.image=https://media.discordapp.net/attachments/743889472176783391/790630557246816256/PUBG.png?width=256&height=128
+show-cards=true
+---
+<script>
+window.location.replace("https://discord.gg/c2DUWG8");
+</script>
+
+<noscript>
+As you have JavaScript disabled, you must click <a href="https://discord.gg/c2DUWG8">on this link</a> to be redirected to the Discord invite.
+</noscript>
+</body>
