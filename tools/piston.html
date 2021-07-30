@@ -13,8 +13,8 @@
     </script>
 
     <link rel="stylesheet" href="../styles.css">
-    <link rel="stylesheet" href="styles.css">
     <!--<link rel="stylesheet" href="path/to/print.css" media="print">-->
+    <link rel="stylesheet" href="styles.css">
 
     <meta name="description" content="A 3-way bedrock breaker piston and overhead calculator." />
     <meta property="og:title" content="Piston Calculator" />
@@ -28,10 +28,19 @@
     <input class="query" type="number" placeholder="0" id="chunks"> chunks and <input class="query" type="number" placeholder="0" id="blocks"> blocks.
 </div>
 <div class="query-container">
-    <p id="output">(1 layer) 0 pistons required. ((0 + 0*16 + 46)^2)</p>
+    <p id="output">(Top layer) 0 pistons required. ((0 + 0*16 + 46)^2) - 0 shulker boxes of redstone.</p>
+    <p id="output-total">(5 layers) 0 pistons required. - 0 shulker boxes of redstone.</p>
 </div>
 
 <script>
+function fivelayers(diameter) {
+    
+}
+
+function shulkers(blocks) {
+    return blocks / (64*27);
+}
+
 function recalculate() {
     console.log("Recalculating.");
     var o = document.getElementById("output");
@@ -39,8 +48,11 @@ function recalculate() {
     var blocks = parseInt(document.getElementById("blocks").value) || 0;
     var thecalc = "((" + blocks + " + " + chunks + "*16 + 46)^2)";
     var total = (blocks + chunks*16 + 46)**2;
-    o.innerHTML = "(1 layer) " + total + " pistons required. " + thecalc;
-    console.log(o.innerHTML);
+    o.innerHTML = "(1 layer) " + total + " pistons required. " + thecalc + " - " + shulkers(total) + " shulker boxes of redstone.";
+
+    var o2 = document.getElementById("output-total");
+    var l5 = fivelayers(blocks + chunks * 16);
+    o2.innerHTML = "(5 layers) " + l5 + " pistons required. - " + shulkers(l5) + " shulker boxes of redstone.";
 }
 
 function onDomLoaded() {
@@ -55,5 +67,7 @@ function onDomLoaded() {
 document.addEventListener('DOMContentLoaded', onDomLoaded, false);
 </script>
 </body>
+
+</html>
 
 </html>

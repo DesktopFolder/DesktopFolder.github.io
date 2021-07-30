@@ -15,6 +15,11 @@ show_cards = """
 </head>
 """
 
+def css(l):
+    if len(l) == 0:
+        return ''
+    return f'<link rel="stylesheet" href="{l}">'
+
 def run_booleans(txt, bools):
     t = lambda b: b in bools and bools[b]
     if t("show-cards"):
@@ -70,11 +75,18 @@ def gen_file(filename):
             "generators": gens,
             "page-image": "https://publicdomainvectors.org/photos/rodentia-icons_folder-black.png",
             "show-card": "false",
+            "css-extras": "",
+        }
+        after = {
+            "css-extras": css,
         }
         omerge(defaults, lookup)
         for b in bools:
             if b in defaults:
                 defaults[b] = defaults[b].lower() == "true"
+        for d in defaults:
+            if d in after:
+                defaults[d] = after[d](defaults[d])
 
         if page_content is None:
             page_content = data
