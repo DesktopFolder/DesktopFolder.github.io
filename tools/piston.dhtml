@@ -9,7 +9,7 @@ css.extras=styles.css
 <div class="query-container">
     <input class="query" type="number" placeholder="0" id="chunks"> chunks and <input class="query" type="number" placeholder="0" id="blocks"> blocks.
 </div>
-<div class="query-container">
+<div class="query-container flex-vertical">
     <p id="output">(Top layer) 0 pistons required. ((0 + 0*16 + 46)^2) - 0 shulker boxes of redstone.</p>
     <p id="output-total">(5 layers) 0 pistons required. - 0 shulker boxes of redstone.</p>
 </div>

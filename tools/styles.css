@@ -10,6 +10,10 @@
     padding: 10px;
 }
 
+.flex-vertical {
+    flex-direction: column;
+}
+
 .query-submit {
     width: auto;
     margin: 5px;
