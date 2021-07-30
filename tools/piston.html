@@ -43,7 +43,8 @@ function fivelayers(diameter) {
 }
 
 function shulkers(blocks) {
-    return blocks / (64*27);
+    if (blocks == 0) return 0;
+    return (blocks / (64*27)).toFixed(2);
 }
 
 function recalculate() {
