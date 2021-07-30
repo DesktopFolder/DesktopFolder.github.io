@@ -16,11 +16,11 @@ css.extras=styles.css
 
 <script>
 function fivelayers(diameter) {
-    l1 = (diameter + 46)**2;
-    l5 = (diameter)**2;
-    l4 = (diameter + 18) * (diameter + 5);
-    l3 = (diameter + 23) * (diameter + 23);
-    l2 = (diameter + 41) * (diameter + 28);
+    var l1 = (diameter + 46)**2;
+    var l5 = (diameter)**2;
+    var l4 = (diameter + 18) * (diameter + 5);
+    var l3 = (diameter + 23) * (diameter + 23);
+    var l2 = (diameter + 41) * (diameter + 28);
     return l1 + l2 + l3 + l4 + l5;
 }
 
