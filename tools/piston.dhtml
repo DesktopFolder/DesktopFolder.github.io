@@ -20,7 +20,7 @@ function fivelayers(diameter) {
     l5 = (diameter)**2;
     l4 = (diameter + 18) * (diameter + 5);
     l3 = (diameter + 23) * (diameter + 23);
-    l4 = (diameter + 41) * (diameter + 28);
+    l2 = (diameter + 41) * (diameter + 28);
     return l1 + l2 + l3 + l4 + l5;
 }
 
