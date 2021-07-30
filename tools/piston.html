@@ -13,6 +13,7 @@
     </script>
 
     <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="styles.css">
     <!--<link rel="stylesheet" href="path/to/print.css" media="print">-->
 
     <meta name="description" content="A 3-way bedrock breaker piston and overhead calculator." />
@@ -23,7 +24,36 @@
 </head>
 
 <body class="wider">
-    
+<div class="query-container">
+    <input class="query" type="number" placeholder="0" id="chunks"> chunks and <input class="query" type="number" placeholder="0" id="blocks"> blocks.
+</div>
+<div class="query-container">
+    <p id="output">(1 layer) 0 pistons required. ((0 + 0*16 + 46)^2)</p>
+</div>
+
+<script>
+function recalculate() {
+    console.log("Recalculating.");
+    var o = document.getElementById("output");
+    var chunks = parseInt(document.getElementById("chunks").value) || 0;
+    var blocks = parseInt(document.getElementById("blocks").value) || 0;
+    var thecalc = "((" + blocks + " + " + chunks + "*16 + 46)^2)";
+    var total = (blocks + chunks*16 + 46)**2;
+    o.innerHTML = "(1 layer) " + total + " pistons required. " + thecalc;
+    console.log(o.innerHTML);
+}
+
+function onDomLoaded() {
+    document.getElementById("chunks").addEventListener("change", function() {
+        recalculate();
+    });
+    document.getElementById("blocks").addEventListener("change", function() {
+        recalculate();
+    });
+}
+
+document.addEventListener('DOMContentLoaded', onDomLoaded, false);
+</script>
 </body>
 
 </html>
