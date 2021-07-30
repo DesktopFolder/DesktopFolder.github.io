@@ -68,6 +68,17 @@ function onDomLoaded() {
     document.getElementById("blocks").addEventListener("change", function() {
         recalculate();
     });
+
+    var query = window.location.search.substring(1);
+    var url = new URL(query);
+    var chunks = parseInt(url.searchParams.get("c"));
+    if (!isNaN(chunks)) {
+        document.getElementById("chunks").value = chunks;
+    }
+    var blocks = parseInt(url.searchParams.get("b"));
+    if (!isNaN(blocks)) {
+        document.getElementById("blocks").value = blocks;
+    }
 }
 
 document.addEventListener('DOMContentLoaded', onDomLoaded, false);
