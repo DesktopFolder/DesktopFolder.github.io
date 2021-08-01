@@ -50,7 +50,7 @@ function shulkers(blocks) {
 function construct_req(layer, piston_num, calc_str) {
     s = "";
     if (piston_num > 200000) {
-        s = " " + (shulkers(piston_num) / (27 * 2)) + " double chests of shulkers.";
+        s = " " + (shulkers(piston_num) / (27 * 2)).toFixed(2) + " double chests of shulkers.";
     }
     return "(" + layer + ") " + piston_num + " pistons rqeuired. " + (calc_str || "") + shulkers(piston_num) + " shulkers." + s;
 }
