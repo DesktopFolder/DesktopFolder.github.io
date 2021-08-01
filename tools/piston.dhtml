@@ -29,18 +29,26 @@ function shulkers(blocks) {
     return (blocks / (64*27)).toFixed(2);
 }
 
+function construct_req(layer, piston_num, calc_str) {
+    s = "";
+    if (piston_num > 200000) {
+        s = " " + (shulkers(piston_num) / (27 * 2)) + " double chests of shulkers.";
+    }
+    return "(" + layer + ") " + piston_num + " pistons rqeuired. " + (calc_str || "") + shulkers(piston_num) + " shulkers." + s;
+}
+
 function recalculate() {
     console.log("Recalculating.");
     var o = document.getElementById("output");
     var chunks = parseInt(document.getElementById("chunks").value) || 0;
     var blocks = parseInt(document.getElementById("blocks").value) || 0;
-    var thecalc = "((" + blocks + " + " + chunks + "*16 + 46)^2)";
+    var thecalc = "((" + blocks + " + " + chunks + "*16 + 46)^2) ";
     var total = (blocks + chunks*16 + 46)**2;
-    o.innerHTML = "(1 layer) " + total + " pistons required. " + thecalc + " - " + shulkers(total) + " shulker boxes of redstone.";
+    o.innerHTML = construct_req("1 layer", total, thecalc);
 
     var o2 = document.getElementById("output-total");
     var l5 = fivelayers(blocks + chunks * 16);
-    o2.innerHTML = "(5 layers) " + l5 + " pistons required. - " + shulkers(l5) + " shulker boxes of redstone.";
+    o2.innerHTML = construct_req("5 layers", l5, null);
 }
 
 function onDomLoaded() {
