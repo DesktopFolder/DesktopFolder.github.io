@@ -28,8 +28,8 @@
     <input class="query" type="number" placeholder="0" id="chunks"> chunks and <input class="query" type="number" placeholder="0" id="blocks"> blocks.
 </div>
 <div class="query-container flex-vertical">
-    <p id="current-url-p" style="text-align: center">Link to this calculation: <a id="current-url" href=""></a></p>
-    <p id="output">(Top layer) 0 pistons required. ((0 + 0*16 + 46)^2) - 0 shulker boxes of redstone.</p><p><b>Note: This accounts for 46 blocks of overhead on the diameter, which is the amount required on the top layer to have your desired diameter on the bottom layer.</b></p>
+    <p id="current-url-p" style="text-align: center;">Link to this calculation: <a id="current-url" href=""></a></p>
+    <p id="output" style="margin-bottom: 5px;">(Top layer) 0 pistons required. ((0 + 0*16 + 46)^2) - 0 shulker boxes of redstone.</p><p style="margin-top:0;"><b>Note: This accounts for 46 blocks of overhead on the diameter, which is the amount required on the top layer to have your desired diameter on the bottom layer.</b></p>
     <p id="output-total">(5 layers) 0 pistons required. - 0 shulker boxes of redstone.</p>
     <p id="output-total-overhead">(Note: This is 0 overhead; 100% of the total cost.)</p>
     <p id="output-time">(5 layers) Rough time estimate: 0 (real-time) days. (Running 2: 0 days.)</p>
@@ -57,7 +57,7 @@ function construct_req(layer, piston_num, calc_str) {
     if (piston_num > 200000) {
         s = " " + (shulkers(piston_num) / (27 * 2)).toFixed(2) + " double chests of shulkers.";
     }
-    return "(" + layer + ") " + piston_num + " pistons rqeuired. " + (calc_str || "") + shulkers(piston_num) + " shulkers." + s;
+    return "(" + layer + ") " + piston_num + " pistons required. " + (calc_str || "") + shulkers(piston_num) + " shulkers." + s;
 }
 
 function updateUrl(chunks, blocks) {
