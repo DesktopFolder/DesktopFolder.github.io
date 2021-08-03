@@ -10,6 +10,7 @@ css.extras=styles.css
     <input class="query" type="number" placeholder="0" id="chunks"> chunks and <input class="query" type="number" placeholder="0" id="blocks"> blocks.
 </div>
 <div class="query-container flex-vertical">
+    <p id="current-url-p"><a id="current-url" href=""></a></p>
     <p id="output">(Top layer) 0 pistons required. ((0 + 0*16 + 46)^2) - 0 shulker boxes of redstone.</p>
     <p id="output-total">(5 layers) 0 pistons required. - 0 shulker boxes of redstone.</p>
     <p id="output-total-overhead">(Note: This is 0 overhead; 100% of the total cost.)</p>
@@ -40,6 +41,26 @@ function construct_req(layer, piston_num, calc_str) {
     return "(" + layer + ") " + piston_num + " pistons rqeuired. " + (calc_str || "") + shulkers(piston_num) + " shulkers." + s;
 }
 
+function updateUrl(chunks, blocks) {
+    var o = document.getElementById("current-url");
+    var newUrl = '//' + location.host + location.pathname;
+    // this should use join, but shh
+    if (chunks != 0 || blocks != 0) {
+        newUrl = newUrl + '?';
+        if (chunks != 0) {
+            newUrl = newUrl + 'c=' + chunks;
+            if (blocks != 0) {
+                newUrl = newUrl + '&b=' + blocks;
+            }
+        }
+        else {
+            newUrl = newUrl + 'b=' + blocks;
+        }
+    }
+    o.href = newUrl;
+    o.innerHTML = newUrl;
+}
+
 function recalculate() {
     console.log("Recalculating.");
     var o = document.getElementById("output");
@@ -63,6 +84,8 @@ function recalculate() {
     var overhead = l5 - (5 * total);
     var overheadp = (100 * overhead / l5).toFixed(2);
     o4.innerHTML = "(Note: This is "0 overhead; 100% of the total cost.)";
+
+    updateUrl(chunks, blocks);
 }
 
 function onDomLoaded() {
@@ -84,6 +107,8 @@ function onDomLoaded() {
         document.getElementById("blocks").value = blocks;
     }
     if (!isNaN(chunks) || !isNaN(blocks)) recalculate();
+
+    updateUrl(chunks || 0, blocks || 0);
 }
 
 document.addEventListener('DOMContentLoaded', onDomLoaded, false);
