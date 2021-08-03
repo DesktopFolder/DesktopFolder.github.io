@@ -12,11 +12,13 @@ css.extras=styles.css
 <div class="query-container flex-vertical">
     <p id="output">(Top layer) 0 pistons required. ((0 + 0*16 + 46)^2) - 0 shulker boxes of redstone.</p>
     <p id="output-total">(5 layers) 0 pistons required. - 0 shulker boxes of redstone.</p>
+    <p id="output-total-overhead">(Note: This is 0 overhead; 100% of the total cost.)</p>
     <p id="output-time">(5 layers) Rough time estimate: 0 (real-time) days. (Running 2: 0 days.)</p>
 </div>
 
 <script>
 function fivelayers(diameter) {
+    if (diameter == 0) return 0;
     var l1 = (diameter + 46)**2;
     var l5 = (diameter)**2;
     var l4 = (diameter + 18) * (diameter + 5);
@@ -55,6 +57,12 @@ function recalculate() {
     var days = (l5 / (60 * 60 * 24)).toFixed(2);
     var days2 = (days / 2).toFixed(2);
     o3.innerHTML = "(5 layers) Rough time estimate: " + days + " (real-time) days. (Running 2: " + days2 + " days.)";
+
+    // YES I KNOW THIS IS BAD
+    var o4 = document.getElementById("output-total-overhead");
+    var overhead = l5 - (5 * total);
+    var overheadp = (100 * overhead / l5).toFixed(2);
+    o4.innerHTML = "(Note: This is "0 overhead; 100% of the total cost.)";
 }
 
 function onDomLoaded() {
