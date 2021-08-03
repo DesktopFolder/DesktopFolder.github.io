@@ -83,7 +83,7 @@ function recalculate() {
     var o4 = document.getElementById("output-total-overhead");
     var overhead = l5 - (5 * total);
     var overheadp = (100 * overhead / l5).toFixed(2);
-    o4.innerHTML = "(Note: This is "0 overhead; 100% of the total cost.)";
+    o4.innerHTML = "(Note: This is " + overhead + " overhead; " + overheadp + "% of the total cost.)";
 
     updateUrl(chunks, blocks);
 }
