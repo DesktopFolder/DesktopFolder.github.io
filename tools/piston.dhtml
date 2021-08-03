@@ -54,7 +54,7 @@ function recalculate() {
     var o3 = document.getElementById("output-time");
     var days = (l5 / (60 * 60 * 24)).toFixed(2);
     var days2 = (days / 2).toFixed(2);
-    o3.innerHTML = "(5 layers) Rough time estimate: " + days + " (real-time) days. (Running 2: " + days2 + " days.);
+    o3.innerHTML = "(5 layers) Rough time estimate: " + days + " (real-time) days. (Running 2: " + days2 + " days.)";
 }
 
 function onDomLoaded() {
