@@ -7,6 +7,7 @@ css.extras=styles.css
 ---
 <body class="wider">
 <div class="query-container">
+    <p style="text-align: center;">Enter the number of containers you have filled with shulkers filled with items.</p>
     <input class="query" type="number" placeholder="0" id="double-chests"> double chests and <input class="query" type="number" placeholder="0" id="chests"> chests and <input class="query" type="number" placeholder="0" id="hoppers"> hoppers.
 </div>
 <div class="query-container flex-vertical">
