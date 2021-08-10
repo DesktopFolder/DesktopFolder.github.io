@@ -25,7 +25,7 @@
 
 <body class="wider">
 <div class="query-container">
-    <input class="query" type="number" placeholder="0" id="double-chests"> double chests and <input class="query" type="number" placeholder="0" id="chests"> chests and <input class="query" type="number" placeholder="0" id="hoppers">.
+    <input class="query" type="number" placeholder="0" id="double-chests"> double chests and <input class="query" type="number" placeholder="0" id="chests"> chests and <input class="query" type="number" placeholder="0" id="hoppers"> hoppers.
 </div>
 <div class="query-container flex-vertical">
     <p id="current-url-p" style="text-align: center;">Link to this calculation: <a id="current-url" href=""></a></p>
@@ -46,7 +46,7 @@ function updateUrl(double_chests, chests, hoppers) {
     var dc = (double_chests == 0) ? '' : ('d=' + double_chests);
     var c = (chests == 0) ? '' : ('c=' + chests);
     var h = (hoppers == 0) ? '' : ('h=' + hoppers);
-    const res = [dc, c, h].join('&');
+    const res = [dc, c, h].filter(v => v).join('&');
     if (res.length != 0) {
         newUrl = newUrl + '?' + res;
     }
@@ -60,7 +60,7 @@ function recalculate() {
     var double_chests = parseInt(document.getElementById("double-chests").value) || 0;
     var chests = parseInt(document.getElementById("chests").value) || 0;
     var hoppers = parseInt(document.getElementById("hoppers").value) || 0;
-    o.innerHTML = "You have " + do_calc(double_chests, chests, hoppers) + " stored. :)";
+    o.innerHTML = "You have " + do_calc(double_chests, chests, hoppers) + " items stored. :)";
 
     updateUrl(double_chests, chests, hoppers);
 }
