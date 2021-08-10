@@ -6,8 +6,8 @@ page.image=https://cdn.discordapp.com/attachments/721171727673196605/82341298907
 css.extras=styles.css
 ---
 <body class="wider">
-<div class="query-container">
     <p style="text-align: center;">Enter the number of containers you have filled with shulkers filled with items.</p>
+<div class="query-container">
     <input class="query" type="number" placeholder="0" id="double-chests"> double chests and <input class="query" type="number" placeholder="0" id="chests"> chests and <input class="query" type="number" placeholder="0" id="hoppers"> hoppers.
 </div>
 <div class="query-container flex-vertical">
@@ -16,7 +16,7 @@ css.extras=styles.css
 </div>
 
 <script>
-function do_calc(dcs, cs, hs) {
+function doCalc(dcs, cs, hs) {
     const SHULKER_STORAGE = 27 * 64;
     const MULTIPLIER = (dcs * 27 * 2) + (cs * 27) + (hs * 5);
     return SHULKER_STORAGE * MULTIPLIER;
@@ -43,7 +43,7 @@ function recalculate() {
     var double_chests = parseInt(document.getElementById("double-chests").value) || 0;
     var chests = parseInt(document.getElementById("chests").value) || 0;
     var hoppers = parseInt(document.getElementById("hoppers").value) || 0;
-    o.innerHTML = "You have " + do_calc(double_chests, chests, hoppers) + " items stored. :)";
+    o.innerHTML = "You have " + doCalc(double_chests, chests, hoppers) + " items stored. :)";
 
     updateUrl(double_chests, chests, hoppers);
 }
