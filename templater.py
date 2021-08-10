@@ -109,6 +109,7 @@ def files():
             'videos/3way-users-guide/index.dhtml',
             'videos/3way-users-guide/guide.dhtml',
             'tools/piston.dhtml',
+            'tools/dc.dhtml',
             'discord/index.dhtml',
             'discord/light.dhtml']
 
