@@ -26,7 +26,8 @@
 <body class="wider">
     <p style="text-align: center;">Enter the number of containers you have filled with shulkers filled with items.</p>
 <div class="query-container">
-    <input class="query" type="number" placeholder="0" id="double-chests"> double chests and <input class="query" type="number" placeholder="0" id="chests"> chests and <input class="query" type="number" placeholder="0" id="hoppers"> hoppers.
+    <input class="query" type="number" placeholder="0" id="double-chests"> double chests and <input class="query" type="number" placeholder="0" id="chests"> chests and <input class="query" type="number" placeholder="0" id="hoppers"> hoppers. 
+    (And <input class="query" type="number" placeholder="0" id="slots"> slots)
 </div>
 <div class="query-container flex-vertical">
     <p id="current-url-p" style="text-align: center;">Link to this calculation: <a id="current-url" href=""></a></p>
@@ -34,20 +35,21 @@
 </div>
 
 <script>
-function doCalc(dcs, cs, hs) {
+function doCalc(dcs, cs, hs, s) {
     const SHULKER_STORAGE = 27 * 64;
-    const MULTIPLIER = (dcs * 27 * 2) + (cs * 27) + (hs * 5);
+    const MULTIPLIER = (dcs * 27 * 2) + (cs * 27) + (hs * 5) + s;
     return SHULKER_STORAGE * MULTIPLIER;
 }
 
-function updateUrl(double_chests, chests, hoppers) {
+function updateUrl(double_chests, chests, hoppers, slots) {
     var o = document.getElementById("current-url");
     var newUrl = 'https://' + location.host + location.pathname;
     // this should use join, but shh
     var dc = (double_chests == 0) ? '' : ('d=' + double_chests);
     var c = (chests == 0) ? '' : ('c=' + chests);
     var h = (hoppers == 0) ? '' : ('h=' + hoppers);
-    const res = [dc, c, h].filter(v => v).join('&');
+    var s = (slots == 0) ? '' : ('s=' + slots);
+    const res = [dc, c, h, s].filter(v => v).join('&');
     if (res.length != 0) {
         newUrl = newUrl + '?' + res;
     }
@@ -61,9 +63,10 @@ function recalculate() {
     var double_chests = parseInt(document.getElementById("double-chests").value) || 0;
     var chests = parseInt(document.getElementById("chests").value) || 0;
     var hoppers = parseInt(document.getElementById("hoppers").value) || 0;
-    o.innerHTML = "You have " + doCalc(double_chests, chests, hoppers) + " items stored. :)";
+    var slots = parseInt(document.getElementById("slots").value) || 0;
+    o.innerHTML = "You have " + doCalc(double_chests, chests, hoppers, slots) + " items stored. :)";
 
-    updateUrl(double_chests, chests, hoppers);
+    updateUrl(double_chests, chests, hoppers, slots);
 }
 
 function onDomLoaded() {
@@ -76,6 +79,9 @@ function onDomLoaded() {
     document.getElementById("hoppers").addEventListener("change", function() {
         recalculate();
     });
+    document.getElementById("slots").addEventListener("change", function() {
+        recalculate();
+    });
 
     var query = window.location.href;
     var url = new URL(query);
@@ -85,6 +91,8 @@ function onDomLoaded() {
     document.getElementById("chests").value = chests;
     var hoppers = parseInt(url.searchParams.get("h")) || 0;
     document.getElementById("hoppers").value = hoppers;
+    var slots = parseInt(url.searchParams.get("s")) || 0;
+    document.getElementById("slots").value = slots;
 
     recalculate();
 }
