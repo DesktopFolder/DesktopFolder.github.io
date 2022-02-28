@@ -108,6 +108,7 @@ def files():
             'videos/piston-bedrock-breaking/explanation.dhtml',
             'videos/3way-users-guide/index.dhtml',
             'videos/3way-users-guide/guide.dhtml',
+            'resources/bedrock-breaking.dhtml',
             'tools/piston.dhtml',
             'tools/dc.dhtml',
             'discord/index.dhtml',

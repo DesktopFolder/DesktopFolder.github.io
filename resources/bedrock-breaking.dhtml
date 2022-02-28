@@ -1,0 +1,10 @@
+---
+page.title=Bedrock Breaking Guide
+website.title=Desktop's Website
+page.description=Guide to bedrock breaking.
+src=templates/generic.html
+---
+<body class="wider">
+<!-- Yes, this is extremely dumb lol -->
+{{generators[md][resources/bedrock-breaking.md]}}
+</body>
