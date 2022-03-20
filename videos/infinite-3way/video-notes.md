@@ -1,0 +1,3 @@
+- Composite mode (:Settings) is pretty nice for making decent look text effects
+- Optifine + OptiFabric (1.17.1/2) + G4me seems to be the best setup for not having flickering blocks (Iris has heavy flickering) - seems some people don't think this should be the case, but it definitely was.
+- Prefer to match to beat, and find songs that don't drown out the beat for large segments - makes it harder to not have confusing cuts.
