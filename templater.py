@@ -109,6 +109,7 @@ def files():
             'videos/3way-users-guide/index.dhtml',
             'videos/3way-users-guide/guide.dhtml',
             'videos/infinite-3way/download.dhtml',
+            'videos/infinite-3way/faq.dhtml',
             'resources/bedrock-breaking.dhtml',
             'tools/piston.dhtml',
             'tools/dc.dhtml',

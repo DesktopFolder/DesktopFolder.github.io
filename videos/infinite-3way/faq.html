@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <title>Infinite 3-Way Bedrock Breaker FAQ</title>
+
+    <script type="module">
+        // As suggested by:
+        // https://www.matuzo.at/blog/html-boilerplate/
+        document.documentElement.classList.remove('no-js');
+        document.documentElement.classList.add('js');
+    </script>
+
+    <link rel="stylesheet" href="../../styles.css">
+    <!--<link rel="stylesheet" href="path/to/print.css" media="print">-->
+    
+
+    <meta name="description" content="A variety of notes and bits of information on the infinite 3-way bedrock breaker." />
+    <meta property="og:title" content="Infinite 3-Way Bedrock Breaker FAQ" />
+    <meta property="og:site_name" content="DesktopFolder.github.io" />
+    <meta property="og:description" content="A variety of notes and bits of information on the infinite 3-way bedrock breaker." />
+    <meta property="og:image" content="https://cdn.discordapp.com/attachments/721171727673196605/823412989070671882/brbr.png" />
+</head>
+
+<body class="wider">
+<h3>Infinite 3-Way Bedrock Breaker: FAQ</h3>
+<p>This page is a work in progress, along with several other planned resources.</p>
+<h4>How do I adjust this machine for a greater width?</h4>
+<p>As I have time / energy, I will make litematics for greater widths. If you want to adjust it yourself, I'll try and put a simple guide here soon, then make a video for it. The basic gist is that you need both minecart players to move an extra block each per block you add to the width.</p>
+<h4>How do I adjust this machine for a greater render distance?</h4>
+<p>You need to move all 3 players 1 chunk away from the machine per chunk added to the entity processing distance. The current download is calibrated for 7 simulation distance. It appears that on servers, this is equivalent to 8 render distance, but 9 render distance in single player. So on a server, for 16 render distance, you would need to move each player away (15 - 7 =) 8 chunks from their current position, relative to the machine. In single player, for 16 render distance, you would need to move each player (14 - 7 =) 7 chunks away.</p>
+<p>For the two minecart players, you must also move their return stations the same distance. You must also move the player offset holder (floating machine to the left of the left player) the same distance, along with its timer observer (floating near to the holder).</p>
+<p>For the piston placing player, you must be careful. Desu designed the instant wire such that it is very easy to extend (n) chunks. However, the item and block conveyors for the piston placing player are not set up this way. You may need to do some calculations to ensure the player is always the minimum distance away.</p>
+<p>On 1.18.1, ensure you test any configurations carefully (16+ rows), with the correct chunk alignment (that is, the one you plan to use in survival). Due to circular chunk loading, it is theoretically possible (especially at wider configurations) that the end part of the floor placer may be unloaded at some points. This should not happen with the 64 wide version, but I can't guarantee it at all simulation distance / chunk positions, due to it being extremely impractical to test it that thoroughly.</p>
+<h4>Can I use this machine in single player?</h4>
+<p>You can run this machine with carpet bots in single player. Otherwise, you can run <a href="https://www.youtube.com/watch?v=Z6AU79TE_CE">the version that consumes pistons by Desu Desu</a>. The infinite bedrock breaking version requires that all pistons are reclaimed, which requires 3 players.</p>
+<h4>Can I use this machine in the Nether / Overworld?</h4>
+<p>Yes. This machine has not been checked for snow / thunder proofing. It is recommended that you use a bed bot or similar when running in the overworld.</p>
+<h4>Can I use this machine without a mob switch?</h4>
+<p>No.</p>
+</body>
+
+</html>
