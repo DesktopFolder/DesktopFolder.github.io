@@ -159,7 +159,7 @@ function displayPlayerOrigins() {
     for (const veeeeee in playerOrigins) {
         const v = playerOrigins[veeeeee];
         // Use concat method to be safer - in case ihtml is not a string
-        ihtml = ihtml.concat(`<p style="margin:0;">${v.name} &#8594; <b>x: ${v.origin[0]} , y: ${v.origin[1]}</b></p>`);
+        ihtml = ihtml.concat(`<p style="margin:0;">${v.name} &#8594; <b>x: ${v.origin[0]} , z: ${v.origin[1]}</b></p>`);
     }
     document.getElementById("display-origins").innerHTML = String(ihtml);
 }
