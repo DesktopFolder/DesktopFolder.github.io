@@ -182,22 +182,18 @@ function displayPlayerOrigins() {
     document.getElementById("display-origins").innerHTML = String(ihtml);
 }
 
+function doPageUpdates() {
+    recalculateSimulationDistance();
+    updateOrigin();
+    adjustedOrigins();
+    displayPlayerOrigins();
+    updateUrl();
+}
+
 function onDomLoaded() {
-    for (const simDistanceChanger of ["render-distance", "is-single-player"]) {
-        document.getElementById(simDistanceChanger).addEventListener("change", function() {
-            recalculateSimulationDistance();
-        });
-    }
     for (const playerOriginsChanger of ["render-distance", "is-single-player", "origin-x", "origin-z"]) {
         document.getElementById(playerOriginsChanger).addEventListener("change", function() {
-            updateOrigin();
-            adjustedOrigins();
-            displayPlayerOrigins();
-        });
-    }
-    for (const urlChanger of ["render-distance", "is-single-player", "origin-x", "origin-z"]) {
-        document.getElementById(urlChanger).addEventListener("change", function() {
-            updateUrl();
+            doPageUpdates();
         });
     }
 
@@ -213,10 +209,7 @@ function onDomLoaded() {
     document.getElementById("origin-z").value = origin[1];
 
     // Set up our basic displays.
-    recalculateSimulationDistance();
-    updateOrigin();
-    displayPlayerOrigins();
-    updateUrl();
+    doPageUpdates();
 }
 
 document.addEventListener('DOMContentLoaded', onDomLoaded, false);
