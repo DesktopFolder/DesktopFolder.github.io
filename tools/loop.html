@@ -213,6 +213,8 @@ function onDomLoaded() {
     document.getElementById("origin-z").value = origin[1];
 
     // Set up our basic displays.
+    recalculateSimulationDistance();
+    updateOrigin();
     displayPlayerOrigins();
     updateUrl();
 }
