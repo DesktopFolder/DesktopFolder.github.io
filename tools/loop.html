@@ -126,9 +126,9 @@ function updateOrigin() {
 function adjustedOrigin(o) {
     // ONLY ADJUSTS BASED ON RENDER DISTANCE RIGHT NOW
     var diff = simulationDistance - baseSimulationDistance;
+    o.origin = [o.origin[0] + origin[0], o.origin[1] + origin[1]];
     if (!(o.rd_conditional !== false)) return o;
     o.origin = o.move(o.origin, diff * 16);
-    o.origin = [o.origin[0] + origin[0], o.origin[1] + origin[1]]
     return o;
 }
 
