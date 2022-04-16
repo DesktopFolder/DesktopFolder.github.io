@@ -1,0 +1,204 @@
+---
+page.title=Loop Subregion Calculator
+website.title=DesktopFolder.github.io
+page.description=A calculator determining subregion positions for the Loop infinite bedrock breaker.
+page.image=https://cdn.discordapp.com/attachments/721171727673196605/823412989070671882/brbr.png
+css.extras=styles.css
+---
+<body class="wider">
+    <p style="text-align: center;"><b>Experimental / Work In Progress. Future: Support for alternative widths.</b></p>
+    <p style="text-align: center;">Enter your render distance: 
+        <input class="query" type="number" placeholder="9" id="render-distance"> 
+        Is single player: <input class="query" type="checkbox" placeholder="" id="is-single-player" style="width:auto;" checked> 
+        <i id="simulation-distance-reporter">Calculated Simulation Distance: 7 (112 blocks)</i>
+    </p>
+    <p style="text-align: center;">
+        Placement Origin x: 
+        <input class="query" type="number" placeholder="0" id="origin-x">
+        Placement Origin z: 
+        <input class="query" type="number" placeholder="0" id="origin-z">
+    </p>
+</div>
+<div class="query-container flex-vertical">
+    <p id="current-url-p" style="text-align: center;margin-bottom:0;">Link to this calculation: <a id="current-url" href=""></a></p>
+    <p style="text-align: center;margin-bottom:0;"><a href="https://disrespec.tech/videos/infinite-3way/download.html" target="_blank" rel="noopener noreferrer">Download the Litematic &#x2197;</a></p>
+    <p id="output"></p>
+</div>
+<div class="query-container flex-vertical" id="display-origins">
+</div>
+
+<script>
+var isSinglePlayer = true;
+var renderDistance = 9;
+var baseSimulationDistance = 7;
+var simulationDistance = 7;
+var origin = [0, 0];
+
+origins = {
+    "main_player": {
+        "name": "1. Main Player",
+        "origin": [2, -35],
+        "move": ((origin, change) => [origin[0], origin[1] - change]) // -z
+    },
+    "main_player_return": {
+        "name": "1. Main Player Return",
+        "origin": [4, -136],
+        "move": ((origin, change) => [origin[0], origin[1] - change]) // -z
+    },
+    "main_player_spawner": {
+        "name": "1. Main Player Spawner (Creative Only)",
+        "origin": [7, -41],
+        "move": ((origin, change) => [origin[0], origin[1] - change]) // -z
+    },
+    "main_player_holder": {
+        "name": "2. Lazy Offset Holder",
+        "origin": [10, -66],
+        "move": ((origin, change) => [origin[0], origin[1] - change]) // -z
+    },
+    "main_player_timer": {
+        "name": "2. Lazy Offset Timer",
+        "origin": [24, -58],
+        "move": ((origin, change) => [origin[0], origin[1] - change]) // -z
+    },
+    "secondary_player": {
+        "name": "3. Secondary Player",
+        "origin": [2, 193],
+        "move": ((origin, change) => [origin[0], origin[1] + change]) // +z
+    },
+    "secondary_player_return": {
+        "name": "3. Secondary Player Return",
+        "origin": [5, 116],
+        "move": ((origin, change) => [origin[0], origin[1] + change]) // +z
+    },
+    "secondary_player_spawner": {
+        "name": "3. Secondary Player Spawner (Creative Only)",
+        "origin": [8, 195],
+        "move": ((origin, change) => [origin[0], origin[1] + change]) // +z
+    },
+    "breaker_return": {
+        "name": "4. Breaker Return (Left)",
+        "origin": [15, -7],
+        "rd_conditional": false,
+        "move": ((origin, change) => [origin[0], origin[1] - change]) // -z 
+    },
+    "breaker_start": {
+        "name": "4. Breaker Return (Right)",
+        "origin": [-14, 79],
+        "rd_conditional": false,
+        "move": ((origin, change) => [origin[0], origin[1] + change]) // +z
+    },
+    "conveyer_end": {
+        "name": "5. Item Conveyer End",
+        "origin": [133, 61],
+        "move": ((origin, change) => [origin[0] + change, origin[1]]) // +x
+    },
+    "placer_engine": {
+        "name": "5. Placer Engine",
+        "origin": [134, 60],
+        "move": ((origin, change) => [origin[0] + change, origin[1]]) // +x
+    },
+};
+var playerOrigins = {...origins};
+
+function updateOrigin() {
+    origin[0] = parseInt(document.getElementById("origin-x").value) || 0;
+    origin[1] = parseInt(document.getElementById("origin-z").value) || 0;
+}
+
+function adjustedOrigin(o) {
+    // ONLY ADJUSTS BASED ON RENDER DISTANCE RIGHT NOW
+    var diff = simulationDistance - baseSimulationDistance;
+    if (!(o.rd_conditional !== false)) return o;
+    o.origin = o.move(o.origin, diff * 16);
+    o.origin = [o.origin[0] + origin[0], o.origin[1] + origin[1]]
+    return o;
+}
+
+function adjustedOrigins()
+{
+    for (const k in origins) {
+        /**
+         * "name": "4. Breaker Return (Right)",
+         * "origin": [-14, 79],
+         * "rd_conditional": false,
+         * "move": ((origin, change) => [origin[0], origin[1] + change]) // +z
+         */
+        playerOrigins[k] = adjustedOrigin({...origins[k]});
+    }
+    return playerOrigins;
+}
+
+function updateUrl() {
+    var o = document.getElementById("current-url");
+    var newUrl = 'https://' + location.host + location.pathname;
+    // this should use join, but shh
+    var isSP = isSinglePlayer ? '' : ('mp');
+    var rd = (renderDistance == 9) ? '' : ('rd=' + renderDistance);
+    var ox = (origin[0] == 0) ? '' : ('ox=' + origin[0]);
+    var oz = (origin[1] == 0) ? '' : ('oz=' + origin[1]);
+    const res = [isSP, rd, ox, oz].filter(v => v).join('&');
+    if (res.length != 0) {
+        newUrl = newUrl + '?' + res;
+    }
+    o.href = newUrl;
+    o.innerHTML = newUrl;
+}
+
+function recalculateSimulationDistance() {
+    console.log("Recalculating simulation distance.");
+    var o = document.getElementById("simulation-distance-reporter");
+    isSinglePlayer = document.getElementById("is-single-player").checked;
+    renderDistance = parseInt(document.getElementById("render-distance").value) || 9;
+    simulationDistance = renderDistance - 2 + !isSinglePlayer;
+    console.log(simulationDistance, renderDistance, 0 + !isSinglePlayer);
+    o.innerHTML = `Calculated Simulation Distance: ${simulationDistance} (${simulationDistance*16} blocks)`;
+}
+
+function displayPlayerOrigins() {
+    var ihtml = String("".toString());
+    for (const veeeeee in playerOrigins) {
+        const v = playerOrigins[veeeeee];
+        // Use concat method to be safer - in case ihtml is not a string
+        ihtml = ihtml.concat(`<p style="margin:0;">${v.name} &#8594; <b>x: ${v.origin[0]} , y: ${v.origin[1]}</b></p>`);
+    }
+    document.getElementById("display-origins").innerHTML = String(ihtml);
+}
+
+function onDomLoaded() {
+    for (const simDistanceChanger of ["render-distance", "is-single-player"]) {
+        document.getElementById(simDistanceChanger).addEventListener("change", function() {
+            recalculateSimulationDistance();
+        });
+    }
+    for (const playerOriginsChanger of ["render-distance", "is-single-player", "origin-x", "origin-z"]) {
+        document.getElementById(playerOriginsChanger).addEventListener("change", function() {
+            updateOrigin();
+            adjustedOrigins();
+            displayPlayerOrigins();
+        });
+    }
+    for (const urlChanger of ["render-distance", "is-single-player", "origin-x", "origin-z"]) {
+        document.getElementById(urlChanger).addEventListener("change", function() {
+            updateUrl();
+        });
+    }
+
+    var query = window.location.href;
+    var url = new URL(query);
+    isSinglePlayer = !(url.searchParams.get("mp") == '');
+    document.getElementById("is-single-player").checked = isSinglePlayer;
+    renderDistance = parseInt(url.searchParams.get("rd")) || renderDistance;
+    document.getElementById("render-distance").value = renderDistance;
+    origin[0] = parseInt(url.searchParams.get("ox")) || 0;
+    document.getElementById("origin-x").value = origin[0];
+    origin[1] = parseInt(url.searchParams.get("oz")) || 0;
+    document.getElementById("origin-z").value = origin[1];
+
+    // Set up our basic displays.
+    displayPlayerOrigins();
+    updateUrl();
+}
+
+document.addEventListener('DOMContentLoaded', onDomLoaded, false);
+</script>
+</body>

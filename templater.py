@@ -113,6 +113,7 @@ def files():
             'resources/bedrock-breaking.dhtml',
             'tools/piston.dhtml',
             'tools/dc.dhtml',
+            'tools/loop.dhtml',
             'discord/index.dhtml',
             'discord/light.dhtml']
 
