@@ -1,7 +1,7 @@
 ---
 page.title=Loop Subregion Calculator
 website.title=DesktopFolder.github.io
-page.description=A calculator determining subregion positions for the Loop infinite bedrock breaker.
+page.description=A calculator for determining subregion positions for the Loop infinite bedrock breaker.
 page.image=https://cdn.discordapp.com/attachments/721171727673196605/823412989070671882/brbr.png
 css.extras=styles.css
 ---
