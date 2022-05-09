@@ -19,7 +19,7 @@ css.extras=styles.css
         <input class="query" type="number" placeholder="0" id="origin-z">
     </p>
     <p style="text-align: center;">
-        Machine Width: 
+        Machine Width [Warning: Widths greater than 128 are currently considered unstable due to potential timing issue, 256 should work, though]: 
         <input class="query" type="number" placeholder="0" id="machine-width">
     </p>
 </div>
