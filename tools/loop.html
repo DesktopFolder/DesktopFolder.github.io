@@ -36,6 +36,10 @@
         Placement Origin z: 
         <input class="query" type="number" placeholder="0" id="origin-z">
     </p>
+    <p style="text-align: center;">
+        Machine Width: 
+        <input class="query" type="number" placeholder="0" id="machine-width">
+    </p>
 </div>
 <div class="query-container flex-vertical">
     <p id="current-url-p" style="text-align: center;margin-bottom:0;">Link to this calculation: <a id="current-url" href=""></a></p>
@@ -50,6 +54,8 @@ var isSinglePlayer = true;
 var renderDistance = 9;
 var baseSimulationDistance = 7;
 var simulationDistance = 7;
+var baseWidth = 64;
+var width = 64;
 var origin = [0, 0];
 
 origins = {
@@ -61,7 +67,9 @@ origins = {
     "main_player_return": {
         "name": "1. Main Player Return",
         "origin": [4, -136],
-        "move": ((origin, change) => [origin[0], origin[1] - change]) // -z
+        "move": ((origin, change) => [origin[0], origin[1] - change]), // -z
+        // For increased width, we simply adjust the return stations further to the left.
+        "updateWidth": ((origin, change) => [origin[0], origin[1] - change]) // -z
     },
     "main_player_spawner": {
         "name": "1. Main Player Spawner (Creative Only)",
@@ -86,7 +94,8 @@ origins = {
     "secondary_player_return": {
         "name": "3. Secondary Player Return",
         "origin": [5, 116],
-        "move": ((origin, change) => [origin[0], origin[1] + change]) // +z
+        "move": ((origin, change) => [origin[0], origin[1] + change]), // +z
+        "updateWidth": ((origin, change) => [origin[0], origin[1] - change]) // -z
     },
     "secondary_player_spawner": {
         "name": "3. Secondary Player Spawner (Creative Only)",
@@ -97,7 +106,8 @@ origins = {
         "name": "4. Breaker Return (Left)",
         "origin": [15, -7],
         "rd_conditional": false,
-        "move": ((origin, change) => [origin[0], origin[1] - change]) // -z 
+        "move": ((origin, change) => [origin[0], origin[1] - change]), // -z 
+        "updateWidth": ((origin, change) => [origin[0], origin[1] - change]) // -z
     },
     "breaker_start": {
         "name": "4. Breaker Return (Right)",
@@ -123,12 +133,26 @@ function updateOrigin() {
     origin[1] = parseInt(document.getElementById("origin-z").value) || 0;
 }
 
+function updateWidth() {
+    width = parseInt(document.getElementById("machine-width").value) || 64;
+}
+
 function adjustedOrigin(o) {
-    // ONLY ADJUSTS BASED ON RENDER DISTANCE RIGHT NOW
-    var diff = simulationDistance - baseSimulationDistance;
+    // Update based on player's origin
     o.origin = [o.origin[0] + origin[0], o.origin[1] + origin[1]];
-    if (!(o.rd_conditional !== false)) return o;
-    o.origin = o.move(o.origin, diff * 16);
+
+    // Update based on render distance
+    if (o.rd_conditional !== false) {
+        var diff = simulationDistance - baseSimulationDistance;
+        o.origin = o.move(o.origin, diff * 16);
+    }
+
+    // Update based on width
+    if (!!o.updateWidth) {
+        console.log("Updating width for: " + o.name, "(", width, "-", baseWidth, ")");
+        var diff = width - baseWidth;
+        o.origin = o.updateWidth(o.origin, diff);
+    }
     return o;
 }
 
@@ -151,10 +175,11 @@ function updateUrl() {
     var newUrl = 'https://' + location.host + location.pathname;
     // this should use join, but shh
     var isSP = isSinglePlayer ? '' : ('mp');
+    var w = (width == 64) ? '' : ('w=' + width);
     var rd = (renderDistance == 9) ? '' : ('rd=' + renderDistance);
     var ox = (origin[0] == 0) ? '' : ('ox=' + origin[0]);
     var oz = (origin[1] == 0) ? '' : ('oz=' + origin[1]);
-    const res = [isSP, rd, ox, oz].filter(v => v).join('&');
+    const res = [isSP, rd, ox, oz, w].filter(v => v).join('&');
     if (res.length != 0) {
         newUrl = newUrl + '?' + res;
     }
@@ -185,13 +210,14 @@ function displayPlayerOrigins() {
 function doPageUpdates() {
     recalculateSimulationDistance();
     updateOrigin();
+    updateWidth();
     adjustedOrigins();
     displayPlayerOrigins();
     updateUrl();
 }
 
 function onDomLoaded() {
-    for (const playerOriginsChanger of ["render-distance", "is-single-player", "origin-x", "origin-z"]) {
+    for (const playerOriginsChanger of ["render-distance", "is-single-player", "origin-x", "origin-z", "machine-width"]) {
         document.getElementById(playerOriginsChanger).addEventListener("change", function() {
             doPageUpdates();
         });
@@ -207,6 +233,8 @@ function onDomLoaded() {
     document.getElementById("origin-x").value = origin[0];
     origin[1] = parseInt(url.searchParams.get("oz")) || 0;
     document.getElementById("origin-z").value = origin[1];
+    width = parseInt(url.searchParams.get("w")) || width;
+    document.getElementById("machine-width").value = width;
 
     // Set up our basic displays.
     doPageUpdates();

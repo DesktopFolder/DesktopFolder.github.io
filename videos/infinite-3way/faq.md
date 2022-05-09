@@ -14,7 +14,7 @@ For the two minecart players, you must also move their return stations the same 
 
 For the piston placing player, you must be careful. Desu designed the instant wire such that it is very easy to extend (n) chunks. However, the item and block conveyors for the piston placing player are not set up this way. You may need to do some calculations to ensure the player is always the minimum distance away.
 
-On 1.18.1, ensure you test any configurations carefully (16+ rows), with the correct chunk alignment (that is, the one you plan to use in survival). Due to circular chunk loading, it is theoretically possible (especially at wider configurations) that the end part of the floor placer may be unloaded at some points. This should not happen with the 64 wide version, but I can't guarantee it at all simulation distance / chunk positions, due to it being extremely impractical to test it that thoroughly.
+On 1.18.1, ensure you test any configurations carefully (16+ rows), with the correct chunk alignment (that is, the one you plan to use in survival). <s>Due to circular chunk loading, it is theoretically possible (especially at wider configurations) that the end part of the floor placer may be unloaded at some points. This should not happen with the 64 wide version, but I can't guarantee it at all simulation distance / chunk positions, due to it being extremely impractical to test it that thoroughly.</s> <b>I have been informed that chunk loading is not circular in 1.18; only chunk <em>rendering</em> is. Ensure you test, but this should be fine.</b>
 
 #### Can I use this machine in single player?
 
