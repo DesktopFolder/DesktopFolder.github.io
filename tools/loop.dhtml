@@ -6,11 +6,14 @@ page.image=https://cdn.discordapp.com/attachments/721171727673196605/82341298907
 css.extras=styles.css
 ---
 <body class="wider">
-    <p style="text-align: center;"><b>Experimental / Work In Progress. Future: Support for alternative widths.</b></p>
+    <p style="text-align: center;"><b>Video WIP; this page should now cover all cases.</b></p>
     <p style="text-align: center;">Enter your render distance: 
         <input class="query" type="number" placeholder="9" id="render-distance"> 
         Is single player: <input class="query" type="checkbox" placeholder="" id="is-single-player" style="width:auto;" checked> 
         <i id="simulation-distance-reporter">Calculated Simulation Distance: 7 (112 blocks)</i>
+    </p>
+    <p>
+        Raise secondary player: <input class="query" type="checkbox" placeholder="" id="raise-secondary-player" style="width:auto;"> 
     </p>
     <p style="text-align: center;">
         Placement Origin x: 
@@ -19,7 +22,7 @@ css.extras=styles.css
         <input class="query" type="number" placeholder="0" id="origin-z">
     </p>
     <p style="text-align: center;">
-        Machine Width [Warning: Widths greater than 128 are currently considered unstable due to potential timing issue, 256 should work, though]: 
+        Machine Width [Widths > 128 may require checking "Raise Secondary Player" for smaller render distances]: 
         <input class="query" type="number" placeholder="0" id="machine-width">
     </p>
 </div>
@@ -33,6 +36,7 @@ css.extras=styles.css
 
 <script>
 var isSinglePlayer = true;
+var raiseSecondaryPlayer = false;
 var renderDistance = 9;
 var baseSimulationDistance = 7;
 var simulationDistance = 7;
@@ -123,6 +127,12 @@ function adjustedOrigin(o) {
     // Update based on player's origin
     o.origin = [o.origin[0] + origin[0], o.origin[1] + origin[1]];
 
+    // Put this AFTER we adjust origin.
+    // This reflects the initial values the subregions will have based on the player's origin,
+    // by default, anyways.
+    var initial_x = o.origin[0];
+    var initial_z = o.origin[1];
+
     // Update based on render distance
     if (o.rd_conditional !== false) {
         var diff = simulationDistance - baseSimulationDistance;
@@ -135,11 +145,15 @@ function adjustedOrigin(o) {
         var diff = width - baseWidth;
         o.origin = o.updateWidth(o.origin, diff);
     }
+
+    if (o.origin[0] != initial_x) o.x_modified = true;
+    if (o.origin[1] != initial_z) o.z_modified = true;
     return o;
 }
 
 function adjustedOrigins()
 {
+    console.log('-> Calculating adjusted origins. Raise Secondary Player:', raiseSecondaryPlayer);
     for (const k in origins) {
         /**
          * "name": "4. Breaker Return (Right)",
@@ -149,6 +163,14 @@ function adjustedOrigins()
          */
         playerOrigins[k] = adjustedOrigin({...origins[k]});
     }
+    for (const raisable of ["secondary_player", "secondary_player_return", "secondary_player_spawner"]) {
+        if (raiseSecondaryPlayer) {
+            playerOrigins[raisable].note = "(Raise by 5 blocks)";
+        }
+        else {
+            playerOrigins[raisable].note = "";
+        }
+    }
     return playerOrigins;
 }
 
@@ -157,6 +179,7 @@ function updateUrl() {
     var newUrl = 'https://' + location.host + location.pathname;
     // this should use join, but shh
     var isSP = isSinglePlayer ? '' : ('mp');
+    var isRS = raiseSecondaryPlayer ? ('rs') : '';
     var w = (width == 64) ? '' : ('w=' + width);
     var rd = (renderDistance == 9) ? '' : ('rd=' + renderDistance);
     var ox = (origin[0] == 0) ? '' : ('ox=' + origin[0]);
@@ -173,6 +196,7 @@ function recalculateSimulationDistance() {
     console.log("Recalculating simulation distance.");
     var o = document.getElementById("simulation-distance-reporter");
     isSinglePlayer = document.getElementById("is-single-player").checked;
+    raiseSecondaryPlayer = document.getElementById("raise-secondary-player").checked;
     renderDistance = parseInt(document.getElementById("render-distance").value) || 9;
     simulationDistance = renderDistance - 2 + !isSinglePlayer;
     console.log(simulationDistance, renderDistance, 0 + !isSinglePlayer);
@@ -183,8 +207,20 @@ function displayPlayerOrigins() {
     var ihtml = String("".toString());
     for (const veeeeee in playerOrigins) {
         const v = playerOrigins[veeeeee];
+        console.log(v);
         // Use concat method to be safer - in case ihtml is not a string
-        ihtml = ihtml.concat(`<p style="margin:0;">${v.name} &#8594; <b>x: ${v.origin[0]} , z: ${v.origin[1]}</b></p>`);
+        ihtml = ihtml.concat(`<p style="margin:0;">${v.name} &#8594; `);
+        if (v.x_modified == true) ihtml = ihtml.concat('<b>');
+        ihtml = ihtml.concat(`x: ${v.origin[0]}`);
+        if (v.x_modified == true) ihtml = ihtml.concat('</b>');
+        ihtml = ihtml.concat(' , ');
+        if (v.z_modified == true) ihtml = ihtml.concat('<b>');
+        ihtml = ihtml.concat(`z: ${v.origin[1]}`);
+        if (v.z_modified == true) ihtml = ihtml.concat('</b>');
+        if ('note' in v) {
+            ihtml = ihtml.concat(`<i style="margin-left:1em;">${v.note}</i>`);
+        }
+        ihtml = ihtml.concat(`</b></p>`);
     }
     document.getElementById("display-origins").innerHTML = String(ihtml);
 }
@@ -199,7 +235,7 @@ function doPageUpdates() {
 }
 
 function onDomLoaded() {
-    for (const playerOriginsChanger of ["render-distance", "is-single-player", "origin-x", "origin-z", "machine-width"]) {
+    for (const playerOriginsChanger of ["render-distance", "is-single-player", "origin-x", "origin-z", "machine-width", "raise-secondary-player"]) {
         document.getElementById(playerOriginsChanger).addEventListener("change", function() {
             doPageUpdates();
         });
@@ -209,6 +245,8 @@ function onDomLoaded() {
     var url = new URL(query);
     isSinglePlayer = !(url.searchParams.get("mp") == '');
     document.getElementById("is-single-player").checked = isSinglePlayer;
+    raiseSecondaryPlayer = (url.searchParams.get("rs") == '');
+    document.getElementById("raise-secondary-player").checked = raiseSecondaryPlayer;
     renderDistance = parseInt(url.searchParams.get("rd")) || renderDistance;
     document.getElementById("render-distance").value = renderDistance;
     origin[0] = parseInt(url.searchParams.get("ox")) || 0;
