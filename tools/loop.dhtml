@@ -25,6 +25,9 @@ css.extras=styles.css
         Machine Width [Widths > 128 may require checking "Raise Secondary Player" for smaller render distances]: 
         <input class="query" type="number" placeholder="0" id="machine-width">
     </p>
+    <p style="text-align: center;">
+    <b>Warning: Widths above 300 may require a second player to cycle the piston items to prevent them from despawning.</b>
+    </p>
 </div>
 <div class="query-container flex-vertical">
     <p id="current-url-p" style="text-align: center;margin-bottom:0;">Link to this calculation: <a id="current-url" href=""></a></p>
