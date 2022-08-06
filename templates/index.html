@@ -14,6 +14,7 @@
 
     <link rel="stylesheet" href="{path-css-common}">
     {css-extras}
+    <link rel="stylesheet" href="/styles/index.css">
     <!--<link rel="stylesheet" href="path/to/print.css" media="print">-->
 
     <meta name="description" content="{page-description}" />
@@ -22,5 +23,23 @@
     <meta property="og:description" content="{page-description}" />
     <meta property="og:image" content="{page-image}" />
 </head>
+<style>
+</style>
+<!--
+So these pages are kind of dumb. In theory we just embed into the template.
+But the templates are probably going to be quite specialized.
+I guess at the end of the day it's not a huge deal and some copy/paste is expected.
+
+We are given /content/ from the pseudoHTML, which should be valid HTML. We
+just need to decorate the page around it.
+-->
+<div class="container">
+    <div class="item-logo">
+    <img src="drt_logo.svg" />
+    by DesktopFolder <a href="https://github.com/DesktopFolder/desktopfolder.github.io" target="_blank" rel="noopener noreferrer"><img src="GitHub-Mark/PNG/GitHub-Mark-120px-plus.png" style="max-width:1em;" /></a>
+    </div>
+    <div class="item-content">
 {content}
+    </div>
+</div>
 </html>

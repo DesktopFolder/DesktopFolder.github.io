@@ -1,9 +1,104 @@
+from os.path import join, isfile
+
+
+def to_html(filename: str):
+    return filename.rsplit('.', 1)[0] + '.html'
+
+
+def omerge(into, outof):
+    for k, v in outof.items():
+        into[k] = v
+
+
+def normalize_filename(fn):
+    while fn.startswith('./'):
+        fn = fn.removeprefix('./')
+    return fn
+
+
+class Page:
+    def __init__(self, filename):
+        if not isfile(filename):
+            raise FileNotFoundError(f'{filename} does not exist.')
+        # e.g. SomeVideo.html
+        self.dest_path = to_html(filename)
+        self.meta, self.data = get_meta_and_data(filename)
+        self.filename = filename
+        self.template = 'templates/generic.html'
+
+
+class Website:
+    default_website = """
+{
+    "source-directories": [ "./" ],
+    "source-files": [ ],
+    "destination-directory": "."
+}
+"""
+
+    def __init__(self, directory="./"):
+        import json
+        # Try to load website definition file
+        self.website_file = join(directory, '.website')
+        self.website = json.loads(Website.default_website)
+        if isfile(self.website_file):
+            self.from_file = True
+            omerge(self.website, json.loads(
+                open(self.website_file, 'r').read()))
+
+        # Load our relative directories.
+        self.source_dirs = [join(directory, d) for d in self.website['source-directories']]
+        self.source_files = [join(directory, f) for f in self.website['source-files']]
+        self.destination_dir = join(
+            directory, self.website['destination-directory'])
+        self.files = list()
+        self.src_filenames = list()
+
+        # Now we need to figure out our files.
+        self.populate_files()
+
+    def source_dir_for(self, filename: str):
+        filename = normalize_filename(filename)
+        for d in self.source_dirs:
+            if filename.startswith(d):
+                return d
+        return None
+
+    def source_dir_split(self, filename: str):
+        filename = normalize_filename(filename)
+        sd = self.source_dir_for(filename)
+        if sd is not None:
+            return (sd, filename.removeprefix(sd))
+        return (None, filename)
+
+    def map_file(self, filename: str):
+        filename = normalize_filename(filename)
+        _, fn = self.source_dir_split(filename)
+        return join(self.destination_dir, to_html(fn))
+
+    def populate_files(self):
+        # Files are mapped from src/dir/some/dir/file -> dest/dir/some/dir/file
+        import pathlib
+        for src in self.source_dirs:
+            print(src)
+            self.src_filenames.extend(list(pathlib.Path(src).glob('**/*.dhtml')))
+
+        for src in self.src_filenames:
+            self.files.append(Page(src))
+
+    def __repr__(self):
+        import json
+        lf = " (Loaded from file)" if self.from_file else ""
+        dmp = json.dumps(self.website)
+        return f'<Website{lf}: {dmp}>'
+
+
 def parse_dhtml_header(filename):
-    import os
-    if not os.path.isfile(filename):
-        raise FileNotFoundError(f'Could not find {filename} - ensure this is a valid source file.')
+    if not isfile(filename):
+        raise FileNotFoundError(
+            f'Could not find {filename} - ensure this is a valid source file.')
     with open(filename, 'r') as file:
-        data = file.read() # This is pretty inefficient. But, we do it anyways.
+        data = file.read()  # This is pretty inefficient. But, we do it anyways.
         dest_filename = filename.rsplit('.', 1)[0] + '.html'
         template = 'templates/generic.html'
         lookup = {}
@@ -16,7 +111,8 @@ def parse_dhtml_header(filename):
                     continue
                 key_value = [x.strip() for x in kv.split('=', 1)]
                 if len(key_value) < 2:
-                    print(f'Warning: Invalid key/value pair found in {filename}: {kv}')
+                    print(
+                        f'Warning: Invalid key/value pair found in {filename}: {kv}')
                     continue
                 key, value = key_value
                 key = key.lower()
