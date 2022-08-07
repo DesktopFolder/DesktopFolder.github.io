@@ -3,7 +3,7 @@ import dhtml
 
 
 class HtmlStringGenerator():
-    def __init__(self, to_insert, key_prefix = '$'):
+    def __init__(self, to_insert, key_prefix='$'):
         self.toi = to_insert
         self.prefix = key_prefix
 
@@ -16,8 +16,12 @@ class HtmlStringGenerator():
             l.append(s)
         return '\n'.join(l)
 
+
 def url_from_html_path(p):
+    if p.strip('/') == '.':
+        return "https://desktopfolder.github.io"
     return "https://desktopfolder.github.io" + '/' + p
+
 
 def get_html_urls():
     import os
@@ -32,9 +36,9 @@ def get_html_urls():
         pl = Path(fn)
 
         t = fn.replace('-', ' ').title()
-        #if not os.path.isfile(dhtml_p):
+        # if not os.path.isfile(dhtml_p):
         #    print('get_html_urls warning: Could not find', dhtml_p, 'so default title being used.')
-        #else:
+        # else:
 #                import importlib as il
 #                import sys
 #                sys.path.append(os.path.join(sys.path[0], '..'))
@@ -44,9 +48,11 @@ def get_html_urls():
         t = dhtml_page.meta.get('page-title', t)
 
         print(fn)
-        l.append({"url": url_from_html_path(fn if pl.name != "index.html" else str(pl.parent)), "name": t})
+        l.append({"url": url_from_html_path(fn if pl.name !=
+                 "index.html" else str(pl.parent)), "name": t})
 
     return l
+
 
 class Generator(MainGenerator):
     def html_pages(self):
