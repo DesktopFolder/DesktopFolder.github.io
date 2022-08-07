@@ -1,6 +1,36 @@
 from os.path import join, isfile
 
 
+def parse_dhtml(filename):
+    # Read in the file.
+    data = open(filename, 'r').read()
+    meta = {}
+    if data.lstrip().startswith('---'):
+        _, header, data = data.split('---', 2)
+        kvs = [x.strip() for x in header.split('\n')]
+        for kv in kvs:
+            if kv.strip() == '':
+                continue
+            key_value = [x.strip() for x in kv.split('=', 1)]
+            if len(key_value) < 2:
+                print(
+                    f'Warning: Invalid key/value pair found in {filename}: {kv}')
+                continue
+            key, value = key_value
+            key = key.lower()
+            if key == 'out':
+                meta['page.outfile'] = value
+            elif key == 'src':
+                # Should we rename these to `meta.`? eh
+                meta['page.template'] = value
+            elif key == 'content':
+                # Also legacy / deprecated
+                meta['page.content'] = value
+            else:
+                meta[key.replace('.', '-')] = value
+    return meta, data
+
+
 def to_html(filename: str):
     return filename.rsplit('.', 1)[0] + '.html'
 
@@ -22,9 +52,15 @@ class Page:
             raise FileNotFoundError(f'{filename} does not exist.')
         # e.g. SomeVideo.html
         self.dest_path = to_html(filename)
-        self.meta, self.data = get_meta_and_data(filename)
+        self.meta, self.data = parse_dhtml(filename)
         self.filename = filename
-        self.template = 'templates/generic.html'
+        self.template = self.meta.get('page.template', 'templates/generic.html')
+        self.data = self.meta.get('page.content', self.data)
+
+    def __repr__(self):
+        import json
+        # Does not print metadata as that gets really annoying
+        return f'<Page: Destination Path={self.dest_path}; Filename={self.filename}; Template={self.template}>'
 
 
 class Website:
@@ -47,8 +83,10 @@ class Website:
                 open(self.website_file, 'r').read()))
 
         # Load our relative directories.
-        self.source_dirs = [join(directory, d) for d in self.website['source-directories']]
-        self.source_files = [join(directory, f) for f in self.website['source-files']]
+        self.source_dirs = [join(directory, d)
+                            for d in self.website['source-directories']]
+        self.source_files = [join(directory, f)
+                             for f in self.website['source-files']]
         self.destination_dir = join(
             directory, self.website['destination-directory'])
         self.files = list()
@@ -80,8 +118,8 @@ class Website:
         # Files are mapped from src/dir/some/dir/file -> dest/dir/some/dir/file
         import pathlib
         for src in self.source_dirs:
-            print(src)
-            self.src_filenames.extend(list(pathlib.Path(src).glob('**/*.dhtml')))
+            self.src_filenames.extend(
+                [str(x) for x in pathlib.Path(src).glob('**/*.dhtml')])
 
         for src in self.src_filenames:
             self.files.append(Page(src))
@@ -93,6 +131,7 @@ class Website:
         return f'<Website{lf}: {dmp}>'
 
 
+# Deprecated.
 def parse_dhtml_header(filename):
     if not isfile(filename):
         raise FileNotFoundError(
