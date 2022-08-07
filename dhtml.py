@@ -53,8 +53,13 @@ class Page:
         if not isfile(filename):
             raise FileNotFoundError(f'{filename} does not exist.')
         # e.g. SomeVideo.html
-        self.dest_path = dest
         self.meta, self.data = parse_dhtml(filename)
+        dest_prenorm = join(self.meta.get('page.outfile', './'), dest)
+        self.dest_path = normalize_filename(dest_prenorm)
+        if self.dest_path.startswith('/'):
+            of = self.meta.get('page.outfile', 'undefined')
+            raise RuntimeError(
+                f'Got root path for Page destination. (outfile: {of}, dest: {self.dest_path}, pre normalization: {dest_prenorm}, pre join: {dest})')
         self.filename = filename
         self.template = self.meta.get('page.template', 'templates/generic.html')
         self.data = self.meta.get('page.content', self.data)
@@ -100,6 +105,8 @@ class Website:
     def source_dir_for(self, filename: str):
         filename = normalize_filename(filename)
         for d in self.source_dirs:
+            if not d.endswith('/'):
+                d = d + '/'
             if filename.startswith(d):
                 return d
         return None
@@ -108,7 +115,7 @@ class Website:
         filename = normalize_filename(filename)
         sd = self.source_dir_for(filename)
         if sd is not None:
-            return (sd, filename.removeprefix(sd))
+            return (sd, filename.removeprefix(sd).lstrip('/'))
         return (None, filename)
 
     def map_file(self, filename: str):
@@ -124,7 +131,7 @@ class Website:
                 [str(x) for x in pathlib.Path(src).glob('**/*.dhtml')])
 
         for src in self.src_filenames:
-            self.files.append(Page(src, map_file(src)))
+            self.files.append(Page(src, self.map_file(src)))
 
     def __repr__(self):
         import json

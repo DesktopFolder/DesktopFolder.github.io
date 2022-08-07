@@ -17,16 +17,20 @@ class HtmlStringGenerator():
         return '\n'.join(l)
 
 def url_from_html_path(p):
-    return "https://desktopfolder.github.io" + p[1:]
+    return "https://desktopfolder.github.io" + '/' + p
 
 def get_html_urls():
     import os
+    from pathlib import Path
     l = []
     here = os.path.relpath(os.path.dirname(__file__)) + '/../'
     w = dhtml.Website(here)
     for dhtml_page in w.files:
         dhtml_p = dhtml_page.filename
         fn = dhtml_page.dest_path
+
+        pl = Path(fn)
+
         t = fn.replace('-', ' ').title()
         #if not os.path.isfile(dhtml_p):
         #    print('get_html_urls warning: Could not find', dhtml_p, 'so default title being used.')
@@ -40,7 +44,7 @@ def get_html_urls():
         t = dhtml_page.meta.get('page-title', t)
 
         print(fn)
-        l.append({"url": url_from_html_path(p if fn != "index.html" else root), "name": t})
+        l.append({"url": url_from_html_path(fn if pl.name != "index.html" else str(pl.parent)), "name": t})
 
     return l
 

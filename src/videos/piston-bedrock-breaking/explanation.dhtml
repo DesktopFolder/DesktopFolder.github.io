@@ -5,5 +5,5 @@ page.description=(Kind of) explaining piston-based bedrock breaking
 page.image=https://cdn.discordapp.com/attachments/721171727673196605/823412989070671882/brbr.png
 ---
 <body class="wider">
-{{generators[md][videos/piston-bedrock-breaking/explanation.md]}}
+{{generators[md][src/videos/piston-bedrock-breaking/explanation.md]}}
 </body>

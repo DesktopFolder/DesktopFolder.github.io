@@ -6,5 +6,5 @@ page.image=https://cdn.discordapp.com/attachments/721171727673196605/82341298907
 video.data=videos/infinite.json
 ---
 <body class="wider">
-{{generators[md][videos/infinite-3way/faq.md]}}
+{{generators[md][src/videos/infinite-3way/faq.md]}}
 </body>

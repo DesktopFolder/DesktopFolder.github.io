@@ -1,3 +1,4 @@
 {
-    "source-directories": [ "src/" ]
+    "source-directories": [ "src/" ],
+    "destination-directory": "./"
 }

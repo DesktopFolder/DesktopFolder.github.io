@@ -6,5 +6,5 @@ src=templates/generic.html
 ---
 <body class="wider">
 <!-- Yes, this is extremely dumb lol -->
-{{generators[md][resources/bedrock-breaking.md]}}
+{{generators[md][src/resources/bedrock-breaking.md]}}
 </body>
