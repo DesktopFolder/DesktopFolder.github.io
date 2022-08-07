@@ -39,6 +39,7 @@ def get_html_urls():
 #                #headers = il.import_module('.dhtml.py').parse_dhtml_headers(p)
         t = dhtml_page.meta.get('page-title', t)
 
+        print(fn)
         l.append({"url": url_from_html_path(p if fn != "index.html" else root), "name": t})
 
     return l

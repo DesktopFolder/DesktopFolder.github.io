@@ -1,4 +1,4 @@
-from os.path import join, isfile
+from os.path import join, isfile, normpath
 
 
 def parse_dhtml(filename):
@@ -41,17 +41,19 @@ def omerge(into, outof):
 
 
 def normalize_filename(fn):
-    while fn.startswith('./'):
-        fn = fn.removeprefix('./')
-    return fn
+    # while fn.startswith('./'):
+    #    fn = fn.removeprefix('./')
+    # import re # yes, I know
+    #fn = re.suball(r'[^/]+/\.\.', '', fn)
+    return normpath(fn)
 
 
 class Page:
-    def __init__(self, filename):
+    def __init__(self, filename, dest):
         if not isfile(filename):
             raise FileNotFoundError(f'{filename} does not exist.')
         # e.g. SomeVideo.html
-        self.dest_path = to_html(filename)
+        self.dest_path = dest
         self.meta, self.data = parse_dhtml(filename)
         self.filename = filename
         self.template = self.meta.get('page.template', 'templates/generic.html')
@@ -83,12 +85,12 @@ class Website:
                 open(self.website_file, 'r').read()))
 
         # Load our relative directories.
-        self.source_dirs = [join(directory, d)
+        self.source_dirs = [normalize_filename(join(directory, d))
                             for d in self.website['source-directories']]
-        self.source_files = [join(directory, f)
+        self.source_files = [normalize_filename(join(directory, f))
                              for f in self.website['source-files']]
-        self.destination_dir = join(
-            directory, self.website['destination-directory'])
+        self.destination_dir = normalize_filename(join(
+            directory, self.website['destination-directory']))
         self.files = list()
         self.src_filenames = list()
 
@@ -122,7 +124,7 @@ class Website:
                 [str(x) for x in pathlib.Path(src).glob('**/*.dhtml')])
 
         for src in self.src_filenames:
-            self.files.append(Page(src))
+            self.files.append(Page(src, map_file(src)))
 
     def __repr__(self):
         import json
