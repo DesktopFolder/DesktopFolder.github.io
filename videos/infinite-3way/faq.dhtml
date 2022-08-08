@@ -1,9 +1,0 @@
----
-page.title=Infinite 3-Way Bedrock Breaker FAQ
-website.title=DesktopFolder.github.io
-page.description=A variety of notes and bits of information on the infinite 3-way bedrock breaker.
-page.image=https://cdn.discordapp.com/attachments/721171727673196605/823412989070671882/brbr.png
----
-<body class="wider">
-{{generators[md][videos/infinite-3way/faq.md]}}
-</body>

@@ -1,0 +1,12 @@
+---
+page.title=DesktopWebsite
+website.title=Desktop's Website
+page.description=Stuff You Might Need
+src=templates/index.html
+---
+{{generators[tools][html-pages][<li><a href="$url">$name</a></li>]}}
+
+<div class="page-container">
+<iframe src="$video:link" title="$video:title" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<!--https://www.youtube.com/embed/4NcXcfiVFsA-->
+</div>

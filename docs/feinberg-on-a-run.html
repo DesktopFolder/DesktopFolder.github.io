@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <title>Is Feinberg on a run?</title>
+
+    <script type="module">
+        // As suggested by:
+        // https://www.matuzo.at/blog/html-boilerplate/
+        document.documentElement.classList.remove('no-js');
+        document.documentElement.classList.add('js');
+    </script>
+
+    <link rel="stylesheet" href="../styles.css">
+    <!--<link rel="stylesheet" href="path/to/print.css" media="print">-->
+    
+
+    <meta name="description" content="Discover the answer!" />
+    <meta property="og:title" content="Is Feinberg on a run?" />
+    <meta property="og:site_name" content="Desktop's Toolbox" />
+    <meta property="og:description" content="Discover the answer!" />
+    <meta property="og:image" content="https://publicdomainvectors.org/photos/rodentia-icons_folder-black.png" />
+</head>
+
+<body>
+    <h2 id="title">Is Feinberg on a run?</h2>
+
+    <p style="position:absolute;right:1.5em;bottom:1em;margin:0;font-size:70%" onclick="reset()">reset</p>
+</body>
+<script>
+function reset() {
+    localStorage.setItem('loaded', -1);
+    location.reload();
+    return false;
+}
+
+var loaded = parseInt(localStorage.getItem('loaded'), 10), loaded_num = loaded?loaded+1:1;
+localStorage.setItem('loaded', loaded_num);
+
+var responses = [
+    'Yes.',
+    'Yep.',
+    'Oh, for sure.',
+    'Yes... he\'s on a run.',
+    'Do you remember what I said last time?',
+    'HE IS ON A RUN.',
+    'HE IS ON A RUN.',
+    'HE IS ON A RUN.',
+    '...Fine. You win.',
+    'Yes, Feinberg is on a run! Wow, go Feinberg!',
+    'Yes, Feinberg is on a run! Wow, go Feinberg!',
+    'Wow, Feinberg is so good!',
+    'Feinberg... hahaha... on a run! Wow! Ha...',
+    '...',
+    'Error. Maximum number of runs reached.',
+    'Error. Feinberg still on a run.',
+    'Error. Is Flen...Fine...Feinberg even streaming?',
+    'Error... he\'s... on a run. Yes. For sure.',
+    'Yes. :)',
+    'please someone help',
+    'Yep! :)',
+    'please it won\'t stop ...',
+    'it burns!!! it burns!!!!',
+    'Yes, Feinberg is on a run!'
+];
+if (responses.length < loaded_num) {
+    the_resp = 'Yes, Feinberg is on a run!';
+}
+else {
+    the_resp = responses[loaded_num];
+}
+
+var p = document.createElement("p");
+p.innerHTML = the_resp;
+tid = document.getElementById('title');
+tid.parentNode.insertBefore(p, tid.nextSibling);
+</script>
+</html>

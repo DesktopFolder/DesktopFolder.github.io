@@ -1,8 +1,9 @@
 from .generator import Generator as MainGenerator
+import dhtml
 
 
 class HtmlStringGenerator():
-    def __init__(self, to_insert, key_prefix = '$'):
+    def __init__(self, to_insert, key_prefix='$'):
         self.toi = to_insert
         self.prefix = key_prefix
 
@@ -15,39 +16,44 @@ class HtmlStringGenerator():
             l.append(s)
         return '\n'.join(l)
 
+
 def url_from_html_path(p):
-    return "https://desktopfolder.github.io" + p[1:]
+    p = p.removeprefix('docs/')
+    if p.strip('/') in ['.', 'docs']:
+        return "https://desktopfolder.github.io"
+    return "https://desktopfolder.github.io" + '/' + p
+
 
 def get_html_urls():
     import os
+    from pathlib import Path
     l = []
-    for root, dirnames, filenames in os.walk('.', topdown=True):
-        ex = ['.git', '.env', '__pycache__', 'templates']
-        dirnames[:] = [d for d in dirnames if d not in ex]
-        for fn in filenames:
-            if fn.endswith('.html'):
-                p = os.path.join(root, fn)
-                t = fn.replace('-', ' ').title()
-                dhtml_p = p[:-4] + 'dhtml'
-                if not os.path.isfile(dhtml_p):
-                    print('get_html_urls warning: Could not find', dhtml_p, 'so default title being used.')
-                else:
-                    try:
-                        import importlib as il
-                        import sys
-                        sys.path.append(os.path.join(sys.path[0], '..'))
-                        import dhtml
-                        #sys.path.append('..')
-                        #headers = il.import_module('.dhtml.py').parse_dhtml_headers(p)
-                        headers = dhtml.parse_dhtml_header(dhtml_p)
-                        if 'page-title' in headers:
-                            t = headers['page-title']
-                    except Exception as e:
-                        print('get_html_urls error:', e)
+    here = os.path.relpath(os.path.dirname(__file__)) + '/../'
+    w = dhtml.Website(here)
+    for dhtml_page in w.files:
+        dhtml_p = dhtml_page.filename
+        fn = dhtml_page.dest_path
 
-                l.append({"url": url_from_html_path(p if fn != "index.html" else root), "name": t})
+        pl = Path(fn)
+
+        t = fn.replace('-', ' ').title()
+        # if not os.path.isfile(dhtml_p):
+        #    print('get_html_urls warning: Could not find', dhtml_p, 'so default title being used.')
+        # else:
+#                import importlib as il
+#                import sys
+#                sys.path.append(os.path.join(sys.path[0], '..'))
+#                import dhtml
+#                #sys.path.append('..')
+#                #headers = il.import_module('.dhtml.py').parse_dhtml_headers(p)
+        t = dhtml_page.meta.get('page-title', t)
+
+        print(fn)
+        l.append({"url": url_from_html_path(fn if pl.name !=
+                 "index.html" else str(pl.parent)), "name": t})
 
     return l
+
 
 class Generator(MainGenerator):
     def html_pages(self):

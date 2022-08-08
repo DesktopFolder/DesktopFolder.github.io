@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <title>BOB% Leaderboard</title>
+
+    <script type="module">
+        // As suggested by:
+        // https://www.matuzo.at/blog/html-boilerplate/
+        document.documentElement.classList.remove('no-js');
+        document.documentElement.classList.add('js');
+    </script>
+
+    <link rel="stylesheet" href="../styles.css">
+    <!--<link rel="stylesheet" href="path/to/print.css" media="print">-->
+    
+
+    <meta name="description" content="Leaderboard for Break One Bedrock%." />
+    <meta property="og:title" content="BOB% Leaderboard" />
+    <meta property="og:site_name" content="DesktopFolder.github.io" />
+    <meta property="og:description" content="Leaderboard for Break One Bedrock%." />
+    <meta property="og:image" content="https://cdn.discordapp.com/attachments/721171727673196605/823412989070671882/brbr.png" />
+</head>
+
+<body class="wider">
+    <div style="margin:auto;">
+    <h2 id="title" style="text-align: center;">Break One Bedrock% Leaderboard</h2>
+    </div>
+    <button type="button" class="collapsible match-left">Rules (Show / Hide)</button>
+    <div class="info">
+        <div style="margin:0.6em;">
+            BOB% follows the same rules as <a href="https://speedrun.com/mc">normal RSG</a>. 
+            Please read and make sure you understand their rules. Most notably:
+            <ul>
+                <li> Do not use or have loaded any mods other than Fabric, Sodium, and Lithium (...along with other exceptions noted elsewhere)</li>
+                <li> Do not use an autoclicker or other external device for simulating user input. (...Just use the keybind trick, it's easy)</li>
+                <li> Use a randomly generated seed. Feel free to send in set seed runs; there just isn't a page for that. As nobody has bothered.</li>
+                <li> Type /seed and show the F3 menu after completion of the run.</li>
+            </ul>            
+            Feel free to submit runs over Discord (DesktopFolder#7146) or through <a href="https://github.com/DesktopFolder/DesktopFolder.github.io/issues/new/choose">GitHub</a>. <b>Formal verification is currently not being performed</b>.
+        </div>
+    </div>
+
+    <button type="button" class="collapsible">About (Show / Hide)</button>
+    <div class="info">
+        <div style="margin:0.6em" id="about">
+            The goal of Break One Bedrock is to break a single bedrock as fast as possible. 
+            <a href="https://www.youtube.com/watch?v=Mt7pFiThe8o">The first run</a> has some explanation and should provide a basis.
+            <br>
+            This website is a work in progress. <a href="https://github.com/DesktopFolder/DesktopFolder.github.io">Source</a>.
+            <br>
+            If you encounter any problems in using it, please <a href="https://github.com/DesktopFolder/DesktopFolder.github.io/issues/new/choose">create an issue</a>.
+        </div>
+    </div>
+
+<div id="main-content">
+<table id="runs">
+<tr>
+    <th></th>
+    <th>Time</th>
+    <th>User</th>
+    <th>Notes</th>
+</tr>
+<tr class="run"><td>1</td><td><a href="https://www.youtube.com/watch?v=zKWb_qhGO2s">2:31</a></td><td>TerraVoxel</td><td>Unverified</td></tr>
+<tr class="run"><td>2</td><td><a href="https://www.youtube.com/watch?v=GYX9MFBrvak">4:40</a></td><td>punchster2</td><td>Unverified</td></tr>
+<tr class="run"><td>3</td><td><a href="https://www.youtube.com/watch?v=Mt7pFiThe8o">5:33</a></td><td>DesktopFolder</td><td>Unverified</td></tr>
+</table>
+</div>    
+
+
+<script>
+// Only use JavaScript for unnecessary/aesthetic functionality.
+// I guess this technically doesn't qualify, so we should probably add a fallback for collapsibles.
+var colls = document.getElementsByClassName("collapsible");
+
+for (var i = 0; i < colls.length; i++) {
+    colls[i].addEventListener("click", function() {
+    this.classList.toggle("active");
+    var content = this.nextElementSibling;
+    if (content.style.display === "block") {
+      content.style.display = "none";
+    } else {
+      content.style.display = "block";
+    }
+  });
+}
+</script>
+
+<noscript>
+<style>
+.info { 
+    display: block; margin-top: 0.5em; line-height: 1.2em; font-size: 13px;
+} 
+button {
+    display: none;
+} 
+#about::after { 
+    content: "This page has been modified to work better without JavaScript (as you appear to have it disabled)."; 
+}</style></noscript>
+</body>
+
+</html>
