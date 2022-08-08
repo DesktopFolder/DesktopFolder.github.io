@@ -1,4 +1,4 @@
 {
     "source-directories": [ "src/" ],
-    "destination-directory": "./"
+    "destination-directory": "docs/"
 }

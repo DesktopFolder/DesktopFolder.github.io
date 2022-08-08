@@ -18,7 +18,8 @@ class HtmlStringGenerator():
 
 
 def url_from_html_path(p):
-    if p.strip('/') == '.':
+    p = p.removeprefix('docs/')
+    if p.strip('/') in ['.', 'docs']:
         return "https://desktopfolder.github.io"
     return "https://desktopfolder.github.io" + '/' + p
 
