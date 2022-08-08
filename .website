@@ -1,4 +1,5 @@
 {
     "source-directories": [ "src/" ],
-    "destination-directory": "docs/"
+    "destination-directory": "docs/",
+    "assets": [ "styles.css", "styles/", "drt_logo.svg", "assets/" ]
 }

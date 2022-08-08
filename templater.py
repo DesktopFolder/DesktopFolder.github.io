@@ -111,7 +111,7 @@ def main(log):
         from pathlib import Path
         import shutil
         dest_path = Path(w.destination_dir)
-        paths = [Path(s) for s in ['styles.css', 'styles/']]
+        paths = [Path(s) for s in w.assets]
 
         for p in paths:
             if p.is_dir():

@@ -75,7 +75,8 @@ class Website:
 {
     "source-directories": [ "./" ],
     "source-files": [ ],
-    "destination-directory": "."
+    "destination-directory": ".",
+    "assets": []
 }
 """
 
@@ -96,6 +97,8 @@ class Website:
                              for f in self.website['source-files']]
         self.destination_dir = normalize_filename(join(
             directory, self.website['destination-directory']))
+        self.assets = [normalize_filename(
+            join(directory, d)) for d in self.website['assets']]
         self.files = list()
         self.src_filenames = list()
 
