@@ -115,7 +115,8 @@ def main(log):
 
         for p in paths:
             if p.is_dir():
-                shutil.copytree(p, os.path.join(dest_path, p.name), dirs_exist_ok=True)
+                shutil.copytree(p, os.path.join(dest_path, p.name), dirs_exist_ok=True,
+                                ignore=shutil.ignore_patterns('.gitignore'))
             else:
                 shutil.copy(p, dest_path)
 
