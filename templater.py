@@ -53,11 +53,15 @@ def gen_file(w: dhtml.Website, p: dhtml.Page):
     print(
         f'Info: Generating {p.dest_path} from {p.filename} with template {p.template}')
     bools = ["show-card"]
+    root_offset_n = 1
+    if w.destination_dir.strip('/') == 'docs':
+        root_offset_n = 2
+    root_offset = '../' * (len(p.dest_path.split('/')) - root_offset_n)
     defaults = {
         "page-title": os.path.basename(p.filename).rsplit('.', 1)[0].replace('-', ' ').title(),
         "website-title": 'DesktopFolder',
         "page-description": 'Another incredible webpage!',
-        "path-css-common": ('../' * (len(p.dest_path.split('/')) - 1)) + 'styles.css',
+        "path-css-common": (root_offset) + 'styles.css',
         "generators": gens,
         "page-image": "https://publicdomainvectors.org/photos/rodentia-icons_folder-black.png",
         "show-card": "false",
@@ -101,6 +105,19 @@ def main(log):
     w = dhtml.Website(here)
     for f in w.files:
         gen_file(w, f)
+
+    if w.destination_dir.strip('/') != '.':
+        log(f'Cloning styles...')
+        from pathlib import Path
+        import shutil
+        dest_path = Path(w.destination_dir)
+        paths = [Path(s) for s in ['styles.css', 'styles/']]
+
+        for p in paths:
+            if p.is_dir():
+                shutil.copytree(p, os.path.join(dest_path, p.name), dirs_exist_ok=True)
+            else:
+                shutil.copy(p, dest_path)
 
 
 if __name__ == "__main__":
