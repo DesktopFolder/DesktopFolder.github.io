@@ -35,6 +35,14 @@ def to_html(filename: str):
     return filename.rsplit('.', 1)[0] + '.html'
 
 
+def ensure_html(filename: str):
+    if filename.endswith('.html'):
+        return filename
+    if filename.endswith('.dhtml'):
+        return to_html(filename)
+    return filename + '.html'
+
+
 def omerge(into, outof):
     for k, v in outof.items():
         into[k] = v
@@ -63,6 +71,8 @@ class Page:
         self.filename = filename
         self.template = self.meta.get('page.template', 'templates/generic.html')
         self.data = self.meta.get('page.content', self.data)
+        self.redirect_sources = [ensure_html(x) for x in self.meta.get('redirects', '').split(',')]
+        self.rel_url = self.dest_path
 
     def __repr__(self):
         import json

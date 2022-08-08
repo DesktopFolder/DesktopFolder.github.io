@@ -7,10 +7,10 @@ class HtmlStringGenerator():
         self.toi = to_insert
         self.prefix = key_prefix
 
-    def __getitem__(self, html_entry):
+    def __getitem__(self, html_template):
         l = []
         for i in self.toi:
-            s = html_entry
+            s = html_template
             for k, v in i.items():
                 s = s.replace(self.prefix + k, v)
             l.append(s)
@@ -55,6 +55,16 @@ def get_html_urls():
     return l
 
 
+def get_video_urls():
+    return {}
+
+
 class Generator(MainGenerator):
+    def __init__(self, website):
+        self.website = website
+
     def html_pages(self):
         return HtmlStringGenerator(get_html_urls())
+
+    def video_pages(self):
+        return HtmlStringGenerator(get_video_urls())

@@ -49,7 +49,7 @@ def omerge(into, outof):
         into[k] = v
 
 
-def gen_file(w: dhtml.Website, p: dhtml.Page):
+def gen_file(w: dhtml.Website, p: dhtml.Page, verbose=noop):
     print(
         f'Info: Generating {p.dest_path} from {p.filename} with template {p.template}')
     bools = ["show-card"]
@@ -92,6 +92,11 @@ def gen_file(w: dhtml.Website, p: dhtml.Page):
         # print(defaults)
         file.write(run_booleans(template.format(**defaults), defaults))
 
+    # This has written our actual file. But we might have to generate redirects
+    # to this page. Recursively generate those redirects while we have info.
+    for redirect_source in p.redirect_sources:
+        noop(f'Generating {redirect_source} redirect page for {p.rel_url}')
+
 
 # page linking goal
 # something like {page-link[videos/etc]}
@@ -103,6 +108,7 @@ def main(log):
     here = os.path.relpath(os.path.dirname(__file__)) + '/'
     log(f'Started templater. Location of website file: {here}')
     w = dhtml.Website(here)
+    gens.use_website(w)
     for f in w.files:
         gen_file(w, f)
 

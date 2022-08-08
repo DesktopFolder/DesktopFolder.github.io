@@ -16,6 +16,9 @@ class Generator():
         'logos': MakeLogos
     }
 
+    def __init__(self, website):
+        self.website = website
+
     def __getitem__(self, key):
         lookup, args = key.split(':', maxsplit=1)
         return Generator.string_gens.get(lookup, MakeError)(args)
