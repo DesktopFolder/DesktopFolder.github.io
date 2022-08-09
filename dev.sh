@@ -1,13 +1,13 @@
 . .env/bin/activate
 
 function run_http() {
+    cd docs/
     python -m http.server 80
 }
 
 function watch_files() {
     while true; do
-        inotifywait -e modify,create,delete,move -r src/ && \
-        python templater.py
+        fswatch -o ./src ./assets ./styles/ ./styles.css | xargs -n1 -I{} ./gen.sh
     done
 }
 

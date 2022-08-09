@@ -57,12 +57,15 @@ def normalize_filename(fn):
 
 
 class Page:
-    def __init__(self, filename, dest):
+    def __init__(self, filename, dest, dest_dir):
         if not isfile(filename):
             raise FileNotFoundError(f'{filename} does not exist.')
         # e.g. SomeVideo.html
         self.meta, self.data = parse_dhtml(filename)
-        dest_prenorm = join(self.meta.get('page-outfile', './'), dest)
+        dest_prenorm = dest
+        if 'page-outfile' in self.meta:
+            of = ensure_html(self.meta['page-outfile'])
+            dest_prenorm = join(dest_dir + '/', of)
         self.dest_path = normalize_filename(dest_prenorm)
         if self.dest_path.startswith('/'):
             of = self.meta.get('page-outfile', 'undefined')
@@ -153,7 +156,7 @@ class Website:
                 [str(x) for x in pathlib.Path(src).glob('**/*.dhtml')])
 
         for src in self.src_filenames:
-            self.files.append(Page(src, self.map_file(src)))
+            self.files.append(Page(src, self.map_file(src), self.destination_dir))
 
     def __repr__(self):
         import json

@@ -56,6 +56,14 @@ def url_from_html_path(p):
     return "https://desktopfolder.github.io" + '/' + p
 
 
+def rel_url_from_html_path(p):
+    p = p.removeprefix('/')
+    p = p.removeprefix('docs/')
+    if p.strip('/') in ['.', 'docs', '']:
+        return '/'
+    return '/' + p
+
+
 def get_html_urls():
     import os
     from pathlib import Path
@@ -131,7 +139,7 @@ def get_video_urls(w: dhtml.Website):
             {"video:embed_url": f'https://www.youtube.com/embed/{v_id}',
              "video:name": v["name"],
              "associated": [{
-                 "page:url": p["url"], "page:name": p["name"]
+                 "page:url": rel_url_from_html_path(p["url"]), "page:name": p["name"]
              } for p in v["pages"]]})
     return l
 

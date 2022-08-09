@@ -24,3 +24,16 @@ body {
         ". content ."
         ". content .";
 }
+
+.video-embed {
+}
+
+.video-container {
+    display: flex;
+    justify-content: center;
+    flex-flow: column;
+}
+
+.video-page-link .video-embed {
+
+}
