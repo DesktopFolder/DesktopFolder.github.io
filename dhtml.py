@@ -1,4 +1,4 @@
-from os.path import join, isfile, normpath
+from os.path import join, isfile, normpath, basename
 
 
 def parse_dhtml(filename):
@@ -19,13 +19,13 @@ def parse_dhtml(filename):
             key, value = key_value
             key = key.lower()
             if key == 'out':
-                meta['page.outfile'] = value
+                meta['page-outfile'] = value
             elif key == 'src':
                 # Should we rename these to `meta.`? eh
-                meta['page.template'] = value
+                meta['page-template'] = value
             elif key == 'content':
                 # Also legacy / deprecated
-                meta['page.content'] = value
+                meta['page-content'] = value
             else:
                 meta[key.replace('.', '-')] = value
     return meta, data
@@ -71,8 +71,17 @@ class Page:
         self.filename = filename
         self.template = self.meta.get('page.template', 'templates/generic.html')
         self.data = self.meta.get('page.content', self.data)
-        self.redirect_sources = [ensure_html(x) for x in self.meta.get('redirects', '').split(',')]
+        self.redirect_sources = [ensure_html(
+            x) for x in self.meta.get('redirects', '').split(',')]
         self.rel_url = self.dest_path
+
+    def page_name(self):
+        # Get a pretty name for the page
+        alt = basename(self.dest_path).replace('-', ' ').title()
+        return self.meta.get('page.title', alt)
+
+    def class_name(self):
+        return self.meta.get('class', None)
 
     def __repr__(self):
         import json

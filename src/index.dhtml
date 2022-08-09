@@ -6,7 +6,7 @@ src=templates/index.html
 class=ignore
 ---
 {{generators[tools][video-pages][<div class="video-container">
-<iframe src="$video:url" title="$video:name" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>|
-<li><a href="$page:url">$page:name</a></li></div>]}}
+<iframe src="$video:embed_url" title="$video:name" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>|
+<li><a href="$page:url">$page:name</a></li>|</div>]}}
 
 <!--https://www.youtube.com/embed/4NcXcfiVFsA-->

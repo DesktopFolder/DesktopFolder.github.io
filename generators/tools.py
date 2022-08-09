@@ -8,13 +8,45 @@ class HtmlStringGenerator():
         self.prefix = key_prefix
 
     def __getitem__(self, html_template):
-        l = []
+        lines = []
+        # html_template = ""
+        # we want to replace keys/values in html_template
+        # to generate 1 instance
+        # html_template might have associativeness though
+        # { "key" : "value" } is normally the case
+        # but we can also have { "sublist" : [ "key" : "value ] }
+        # what do we name the sublist?
+        # we should maybe also have ordering? not sure though
+        # oh yeah, we need to have the pinned one first.
+        # that's all done by what passes us toi, though
+        # maybe we just call it associated
+        templates = html_template.split('|', 2)
+        main_template = templates[0]
+        assoc_template = templates[1] if len(templates) == 3 else None
+        end_template = templates[2] if len(templates) == 3 else None
+        # this ^ should probably use variable insertion instead
+        # but whatever
         for i in self.toi:
-            s = html_template
+            # i = dict()
+            s = main_template
+            # s is template string
             for k, v in i.items():
-                s = s.replace(self.prefix + k, v)
-            l.append(s)
-        return '\n'.join(l)
+                if k != "associated":
+                    s = s.replace(self.prefix + k, v)
+                else:
+                    if assoc_template is None:
+                        raise RuntimeError(
+                            f'{html_template} has no associated template.')
+                    for assoc_page_info in v:
+                        assoc_t = assoc_template
+                        for ak, av in assoc_page_info:
+                            assoc_t = assoc_t.replace(self.prefix + ak, av)
+                        s += assoc_t + '\n'
+            if "associated" in i:
+                s += end_template
+            lines.append(s)
+
+        return '\n'.join(lines)
 
 
 def url_from_html_path(p):
@@ -48,23 +80,67 @@ def get_html_urls():
 #                #headers = il.import_module('.dhtml.py').parse_dhtml_headers(p)
         t = dhtml_page.meta.get('page-title', t)
 
-        print(fn)
-        l.append({"url": url_from_html_path(fn if pl.name !=
-                 "index.html" else str(pl.parent)), "name": t})
+        l.append({"page:url": url_from_html_path(fn if pl.name !=
+                                                 "index.html" else str(pl.parent)), "page:name": t})
 
     return l
 
 
-def get_video_urls():
-    return {}
+def get_video_urls(w: dhtml.Website):
+    import os
+    from pathlib import Path
+    video_urls = {}
+    for page in w.files:
+        cls = page.class_name()
+        if cls is not None and cls != "video":
+            continue
+        if 'video' not in page.meta:
+            continue
+        video_id = page.meta['video']
+        video_name = page.meta.get("video.name", None)
+        pinned = page.meta.get('pinned', '') == 'true'
+        # Get the page info. This is associated data.
+        page_name = page.page_name()
+        page_path = '/' + page.dest_path.removesuffix('/index.html')
+        page_priority = int(page.meta.get('page.priority', 100))
+        video_priority = int(page.meta.get('video.priority', 100))
+        if pinned:
+            video_priority = -1
+
+        if video_id not in video_urls:
+            video_urls[video_id] = {
+                "priority": video_priority,
+                "id": video_id,
+                "name": video_name,
+                "pages": list()
+            }
+        old_priority = video_urls[video_id]["priority"]
+        video_urls[video_id]["priority"] = min(old_priority, video_priority)
+        old_name = video_urls[video_id]["name"]
+        video_urls[video_id]["name"] = old_name or video_name
+        video_urls[video_id]["pages"].append(
+            {"url": page_path, "name": page_name})
+
+    videos = sorted(list(video_urls), key=lambda vi: vi['priority'])
+    l = []
+    for v in videos:
+        if v["name"] is None:
+            raise RuntimeError(f'No name for {v}')
+        l.append(
+            {"video:embed_url": f'https://www.youtube.com/embed/{v[id]}',
+             "video:name": v["name"],
+             "associated": [{
+                 "page:url": p["url"], "page:name": p["name"]
+             } for p in v["pages"]]})
+    return l
 
 
 class Generator(MainGenerator):
-    def __init__(self, website):
+    def __init__(self, website: dhtml.Website):
         self.website = website
 
     def html_pages(self):
         return HtmlStringGenerator(get_html_urls())
 
     def video_pages(self):
-        return HtmlStringGenerator(get_video_urls())
+        return HtmlStringGenerator(get_video_urls(self.website))
