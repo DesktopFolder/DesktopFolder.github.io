@@ -62,15 +62,15 @@ class Page:
             raise FileNotFoundError(f'{filename} does not exist.')
         # e.g. SomeVideo.html
         self.meta, self.data = parse_dhtml(filename)
-        dest_prenorm = join(self.meta.get('page.outfile', './'), dest)
+        dest_prenorm = join(self.meta.get('page-outfile', './'), dest)
         self.dest_path = normalize_filename(dest_prenorm)
         if self.dest_path.startswith('/'):
-            of = self.meta.get('page.outfile', 'undefined')
+            of = self.meta.get('page-outfile', 'undefined')
             raise RuntimeError(
                 f'Got root path for Page destination. (outfile: {of}, dest: {self.dest_path}, pre normalization: {dest_prenorm}, pre join: {dest})')
         self.filename = filename
-        self.template = self.meta.get('page.template', 'templates/generic.html')
-        self.data = self.meta.get('page.content', self.data)
+        self.template = self.meta.get('page-template', 'templates/generic.html')
+        self.data = self.meta.get('page-content', self.data)
         self.redirect_sources = [ensure_html(
             x) for x in self.meta.get('redirects', '').split(',')]
         self.rel_url = self.dest_path
@@ -78,7 +78,7 @@ class Page:
     def page_name(self):
         # Get a pretty name for the page
         alt = basename(self.dest_path).replace('-', ' ').title()
-        return self.meta.get('page.title', alt)
+        return self.meta.get('page-title', alt)
 
     def class_name(self):
         return self.meta.get('class', None)

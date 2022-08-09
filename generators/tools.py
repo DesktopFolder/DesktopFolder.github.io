@@ -39,7 +39,7 @@ class HtmlStringGenerator():
                             f'{html_template} has no associated template.')
                     for assoc_page_info in v:
                         assoc_t = assoc_template
-                        for ak, av in assoc_page_info:
+                        for ak, av in assoc_page_info.items():
                             assoc_t = assoc_t.replace(self.prefix + ak, av)
                         s += assoc_t + '\n'
             if "associated" in i:
@@ -97,13 +97,13 @@ def get_video_urls(w: dhtml.Website):
         if 'video' not in page.meta:
             continue
         video_id = page.meta['video']
-        video_name = page.meta.get("video.name", None)
+        video_name = page.meta.get("video-name", None)
         pinned = page.meta.get('pinned', '') == 'true'
         # Get the page info. This is associated data.
         page_name = page.page_name()
         page_path = '/' + page.dest_path.removesuffix('/index.html')
-        page_priority = int(page.meta.get('page.priority', 100))
-        video_priority = int(page.meta.get('video.priority', 100))
+        page_priority = int(page.meta.get('page-priority', 100))
+        video_priority = int(page.meta.get('video-priority', 100))
         if pinned:
             video_priority = -1
 
@@ -121,13 +121,14 @@ def get_video_urls(w: dhtml.Website):
         video_urls[video_id]["pages"].append(
             {"url": page_path, "name": page_name})
 
-    videos = sorted(list(video_urls), key=lambda vi: vi['priority'])
+    videos = sorted(video_urls.values(), key=lambda vi: vi['priority'])
     l = []
     for v in videos:
         if v["name"] is None:
             raise RuntimeError(f'No name for {v}')
+        v_id = v["id"]
         l.append(
-            {"video:embed_url": f'https://www.youtube.com/embed/{v[id]}',
+            {"video:embed_url": f'https://www.youtube.com/embed/{v_id}',
              "video:name": v["name"],
              "associated": [{
                  "page:url": p["url"], "page:name": p["name"]
