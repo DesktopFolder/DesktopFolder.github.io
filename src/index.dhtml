@@ -5,8 +5,8 @@ page.description=Stuff You Might Need
 src=templates/index.html
 class=ignore
 ---
-{{generators[tools][video-pages][<div class="video-container">
-<iframe width="480" height="315" class="video-embed" src="$video:embed_url" title="$video:name" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>|
-<li class="video-page-link"><a href="$page:url">$page:name</a></li>|</div>]}}
+{{generators[tools][video-pages][<div class="centerme"><div class="video-container">
+<div class="iframe-wrapper"><iframe width="480" height="315" class="video-embed" src="$video:embed_url" title="$video:name" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>|
+<p class="video-page-link"><a href="$page:url">$page:name</a></p>|</div></div>]}}
 
 <!--https://www.youtube.com/embed/4NcXcfiVFsA-->
