@@ -7,7 +7,7 @@ function run_http() {
 
 function watch_files() {
     while true; do
-        fswatch -o ./src ./assets ./styles/ ./styles.css | xargs -n1 -I{} ./gen.sh
+        fswatch -o ./src ./assets ./styles/ ./styles.css ./templates/ | xargs -n1 -I{} ./gen.sh
     done
 }
 

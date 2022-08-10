@@ -9,6 +9,8 @@ body {
 
   padding: 5px;
   font-size: 0.75em;
+
+  text-align: center;
 }
 .item-content {
   padding: 5px;
@@ -57,4 +59,8 @@ body {
 
 .video-page-link, .video-embed {
 
+}
+
+#index-name-icons {
+    margin-top: -5px;
 }

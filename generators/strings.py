@@ -7,7 +7,11 @@ def MakeLogos(logo_strings: str):
         return f'<a class="logo-link" href="{href}" target="_blank" rel="noopener noreferrer"><img src="{img}" style="max-height:1em;" /></a>'
     logos = {"github": logo_gen('https://github.com/DesktopFolder/desktopfolder.github.io',
                                 'assets/GitHub-Mark-120px-plus.png'),
-             "youtube": logo_gen('https://www.youtube.com/c/desktopfolder', 'assets/yt_icon_rgb.png')}
+             "youtube": logo_gen('https://www.youtube.com/c/desktopfolder',
+                                 'assets/yt_icon_rgb.png'),
+             "twitter": logo_gen('https://www.twitter.com/DesktopFolder', 'assets/Logo blue.svg'),
+             "twitch": logo_gen('https://www.twitch.tv/DesktopFolder',
+                                'assets/TwitchGlitchPurple.svg')}
     return '\n'.join([logos.get(s, f'<!--No logo for: {s}-->') for s in logo_strings.split(',')])
 
 
