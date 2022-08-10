@@ -157,7 +157,7 @@ def get_urls(w: dhtml.Website, req_cls: str):
         pinned = page.meta.get('pinned', '') == 'true'
         # Get the page info. This is associated data.
         page_name = page.page_name()
-        page_path = '/' + page.dest_path.removesuffix('/index.html')
+        page_path = rel_url_from_html_path(page.dest_path.removesuffix('/index.html'))
         page_priority = int(page.meta.get('page-priority', 100))
         if pinned:
             page_priority = -1
