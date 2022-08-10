@@ -3,4 +3,6 @@ class Generator:
         self.website = website
 
     def __getitem__(self, key):
-        return getattr(self, key.replace('-', '_'))()
+        l = key.split('@')
+        fn, args = l[0], l[1:]
+        return getattr(self, fn.replace('-', '_'))(*args)

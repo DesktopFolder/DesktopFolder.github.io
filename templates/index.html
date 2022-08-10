@@ -40,6 +40,22 @@ just need to decorate the page around it.
 {generators[strings][logos:github,youtube,twitter,twitch]}
     </p>
     </div>
+    <div class="index-item-mcsr generic-sidebar">
+        <div id="index-mcsr-bg">
+        <div id="index-mcsr-title">
+            <h2>Minecraft Speedrunning</h2>
+        </div>
+        </div>
+{generators[tools][class-pages@mcsr][<p class="mcsr-page-link"><a href="$page:url">$page:name</a></p>]}
+    </div>
+    <div class="index-item-tools generic-sidebar">
+        <div id="index-tools-bg">
+        <div id="index-tools-title">
+            <h2>Tools</h2>
+        </div>
+        </div>
+{generators[tools][class-pages@tools][<p class="tool-page-link"><a href="$page:url">$page:name</a></p>]}
+    </div>
     <div class="item-content">
 {content}
     </div>

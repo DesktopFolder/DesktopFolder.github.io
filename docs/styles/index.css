@@ -16,15 +16,27 @@ body {
   padding: 5px;
   grid-area: content;
 }
+.index-item-mcsr {
+  grid-area: mcsr;
+}
+.index-item-tools {
+  grid-area: tools;
+}
+
+.generic-sidebar {
+  text-align: center;
+  padding: 5px;
+}
+
 .container {
     width: 100%;
     display: grid;
     grid-template-columns: 25% 50% 25%;
-    grid-template-rows: auto;
+    grid-template-rows: min-content min-content min-content;
     grid-template-areas: 
         "logo content ."
-        ". content ."
-        ". content .";
+        "tools content ."
+        "mcsr content .";
 }
 
 .video-embed {
@@ -65,6 +77,36 @@ body {
     margin-top: -5px;
 }
 
+/* MCSR */
+div#index-mcsr-bg {
+    background-image: url("../assets/mcsr_logo.gif");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    
+    padding-top: 14px;
+    padding-bottom: 14px;
+}
+
+div#index-mcsr-title {
+    backdrop-filter: brightness(140%);
+}
+
+div#index-mcsr-title h2 {
+    text-align: center;
+    filter: none;
+    margin: 0;
+}
+
+.generic-sidebar p {
+    margin: 0;
+    line-height: 1.6em;
+}
+
+.generic-sidebar {
+    margin-top: 30px;
+}
+
 
 /***** MEDIA QUERIES *****/
 @media (max-width: 1000px) {
@@ -74,6 +116,8 @@ body {
     grid-template-rows: auto;
     grid-template-areas: 
         "logo"
+        "tools"
+        "mcsr"
         "content"
         "content";
 }

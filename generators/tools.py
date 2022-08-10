@@ -144,6 +144,31 @@ def get_video_urls(w: dhtml.Website):
     return l
 
 
+def get_urls(w: dhtml.Website, req_cls: str):
+    import os
+    from pathlib import Path
+
+    pages = []
+
+    for page in w.files:
+        cls = page.class_name()
+        if cls is None or cls != req_cls:
+            continue
+        pinned = page.meta.get('pinned', '') == 'true'
+        # Get the page info. This is associated data.
+        page_name = page.page_name()
+        page_path = '/' + page.dest_path.removesuffix('/index.html')
+        page_priority = int(page.meta.get('page-priority', 100))
+        if pinned:
+            page_priority = -1
+
+        pages.append((page_name, page_path, page_priority))
+
+    pages = [{"page:name": p[0], "page:url": p[1]}
+             for p in sorted(pages, key=lambda pi: pi[2])]
+    return pages
+
+
 class Generator(MainGenerator):
     def __init__(self, website: dhtml.Website):
         self.website = website
@@ -153,3 +178,9 @@ class Generator(MainGenerator):
 
     def video_pages(self):
         return HtmlStringGenerator(get_video_urls(self.website))
+
+    def class_pages(self, cls=None):
+        if cls is None:
+            print(f'Failure: Missing argument cls for class_pages')
+            return "<!-- Failed to collect class pages -->"
+        return HtmlStringGenerator(get_urls(self.website, cls))

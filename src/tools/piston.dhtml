@@ -4,6 +4,7 @@ website.title=DesktopFolder.github.io
 page.description=A 3-way bedrock breaker piston and overhead calculator.
 page.image=https://cdn.discordapp.com/attachments/721171727673196605/823412989070671882/brbr.png
 css.extras=styles.css
+class=tools
 ---
 <body class="wider">
 <div class="query-container">
