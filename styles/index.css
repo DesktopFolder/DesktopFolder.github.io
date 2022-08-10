@@ -36,7 +36,12 @@ body {
     grid-template-areas: 
         "logo content ."
         "tools content ."
-        "mcsr content .";
+        "mcsr content ."
+        ". content ."
+        ". content ."
+        ". content ."
+        ". content ."
+        ". content .";
 }
 
 .video-embed {
@@ -92,9 +97,8 @@ div#index-mcsr-title {
     backdrop-filter: brightness(140%);
 }
 
-div#index-mcsr-title h2 {
+div.generic-sidebar h2 {
     text-align: center;
-    filter: none;
     margin: 0;
 }
 
