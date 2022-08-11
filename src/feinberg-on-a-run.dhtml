@@ -45,10 +45,50 @@ var responses = [
     'Yep! :)',
     'please it won\'t stop ...',
     'it burns!!! it burns!!!!',
-    'Yes, Feinberg is on a run!'
+    'Yes, Feinberg is on a run!',
+    'Yes, Feinberg is on a run!',
+    'Yes, Feinberg is on a run!',
+    'You refreshed so many times, Feinberg quit SSG and started playing AA.',
+    'Do you REALLY think Feinberg could just - you know, get AA runs?',
+    'Seriously.',
+    'No, he\'s not on a run. It\'s AA. That category is awful.',
+    'Wait, no, he\'s got a sub 4 now? I guess - yeah, he\'s been on a run.',
+    'Feinberg is on NOTHING BECAUSE HE IS\'T PLAYING SSG.',
+    'Feinberg just got another AA world record.',
+    'Sure. Why not. Feinberg can be on a run, again. Okay.',
+    'it isn\'t okay',
+    'Maybe, maybe one day it can be ok for Feinberg to be on a run?',
+    'Feinberg <i>could</i> be on a run.',
+    'Feinberg could <i>be</i> on a run.',
+    'Feinberg could be on a <i>run</i>.',
+    '...',
+    '.....',
+    '.......',
+    '.........',
+    '...........P(feinberg-on-run) = ...',
+    '(calculating)',
+    'P(feinberg-on-run) ~= .99994',
+    'Why don\'t you just <a href="https://twitch.tv/feinberg">check for yourself?</a>',
+    'Are you really that lazy?',
+    'Fine. Feinberg is on a run.',
+    'I said, <b>Feinberg is on a run.</a>',
+    'Are you even listening?',
+    'Okay, here is what we will do. I am going to get a floppy disc, okay?',
+    'And on that floppy disc, I will write: Yes, Feinberg is on a run!',
+    'Wow, yippee! - you, reading the output of my floppy disc.',
+    'I bet you won\'t even <i>realize</i> it\'s not me anymore, will you?',
+    '...okay, well, have fun.'
 ];
 if (responses.length < loaded_num) {
     the_resp = 'Yes, Feinberg is on a run!';
+}
+else if (loaded_num == responses.length + 20)
+{
+    the_resp = 'I came back to get my floppy disc back. You\'re... really still here? Okay.';
+}
+else if (loaded_num == responses.length + 100)
+{
+    the_resp = 'Have you ever considered other hobbies?';
 }
 else {
     the_resp = responses[loaded_num];
