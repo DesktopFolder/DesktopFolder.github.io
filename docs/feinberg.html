@@ -26,7 +26,7 @@
 <body>
     <h2 id="title">Is Feinberg on a run?</h2>
 
-    <p style="position:absolute;right:1.5em;bottom:1em;margin:0;font-size:70%" onclick="reset()">reset</p>
+    <p id="reset-button" style="position:absolute;right:1.5em;bottom:1em;margin:0;font-size:70%" onclick="reset()">reset</p>
 </body>
 <script>
 function reset() {
@@ -141,6 +141,12 @@ else if (loaded_num == responses.length + 40)
     the_resp = 'You are hopeless. <b><i>HOPELESS.</b></i>';
 }
 else {
+    var cst = responses.length + 80;
+
+    if (loaded_num > cst)
+    {
+        document.getElementById("reset-button").style.fontSize = ((loaded_num - cst) * 5 + 20) + 'px';
+    }
     the_resp = 'Yes, Feinberg is on a run!';
 }
 
