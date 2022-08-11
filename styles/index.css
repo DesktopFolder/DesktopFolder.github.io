@@ -84,10 +84,12 @@ body {
 
 /* MCSR */
 div#index-mcsr-bg {
+    /*
     background-image: url("../assets/mcsr_logo.gif");
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
+    */
     
     padding-top: 14px;
     padding-bottom: 14px;
@@ -100,6 +102,12 @@ div#index-mcsr-title {
 div.generic-sidebar h2 {
     text-align: center;
     margin: 0;
+    line-height: 0.9em;
+}
+
+.index-img {
+    margin-bottom: -27px;
+    max-height: 96px;
 }
 
 .generic-sidebar p {
