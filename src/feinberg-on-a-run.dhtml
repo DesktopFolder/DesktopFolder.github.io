@@ -21,6 +21,10 @@ function reset() {
 var loaded = parseInt(localStorage.getItem('loaded'), 10), loaded_num = loaded?loaded+1:1;
 localStorage.setItem('loaded', loaded_num);
 
+function setTo(i) {
+    localStorage.setItem('loaded', i);
+}
+
 var responses = [
     'Yes.',
     'Yep.',
@@ -53,7 +57,7 @@ var responses = [
     'Seriously.',
     'No, he\'s not on a run. It\'s AA. That category is awful.',
     'Wait, no, he\'s got a sub 4 now? I guess - yeah, he\'s been on a run.',
-    'Feinberg is on NOTHING BECAUSE HE IS\'T PLAYING SSG.',
+    'Feinberg is on NOTHING BECAUSE HE ISN\'T PLAYING SSG.',
     'Feinberg just got another AA world record.',
     'Sure. Why not. Feinberg can be on a run, again. Okay.',
     'it isn\'t okay',
@@ -79,19 +83,48 @@ var responses = [
     'I bet you won\'t even <i>realize</i> it\'s not me anymore, will you?',
     '...okay, well, have fun.'
 ];
-if (responses.length < loaded_num) {
-    the_resp = 'Yes, Feinberg is on a run!';
+
+function setToOffset(i) {
+    localStorage.setItem('loaded', i + responses.length);
 }
-else if (loaded_num == responses.length + 20)
+
+function getVal() {
+    var loaded = parseInt(localStorage.getItem('loaded'), 10), loaded_num = loaded?loaded+1:1;
+    return loaded;
+}
+
+function undoLoad() {
+    localStorage.setItem('loaded', loaded_num - 1);
+}
+
+if (loaded_num < responses.length) {
+    var d = Math.random();
+    if (d < 0.2) {
+        the_resp = 'Yes, Feinberg is on a run!';
+        undoLoad();
+    }
+    else {
+        the_resp = responses[loaded_num];
+    }
+}
+else if (loaded_num == responses.length + 10)
 {
     the_resp = 'I came back to get my floppy disc back. You\'re... really still here? Okay.';
 }
-else if (loaded_num == responses.length + 100)
+else if (loaded_num == responses.length + 20)
 {
     the_resp = 'Have you ever considered other hobbies?';
 }
+else if (loaded_num == responses.length + 30)
+{
+    the_resp = 'That floppy was vintage. I actually kind of want it back.';
+}
+else if (loaded_num == responses.length + 40)
+{
+    the_resp = 'You are hopeless. <b><i>HOPELESS.</b></i>';
+}
 else {
-    the_resp = responses[loaded_num];
+    the_resp = 'Yes, Feinberg is on a run!';
 }
 
 var p = document.createElement("p");
