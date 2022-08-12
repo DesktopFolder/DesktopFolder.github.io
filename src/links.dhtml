@@ -1,0 +1,24 @@
+---
+page.title=Links
+page.description=Social & other links
+class=ignore
+---
+<style>
+body {
+    text-align: center;
+}
+
+#big-logos {
+    font-size: 4em;
+}
+</style>
+
+<body>
+<h1>Links</h1>
+
+<p id="big-logos">
+{{generators[strings][logos:youtube,twitch,twitter,github]}}
+</p>
+
+<p>&amp; <a href="/">this website</a>
+</body>

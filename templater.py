@@ -59,7 +59,7 @@ def gen_file(w: dhtml.Website, p: dhtml.Page, verbose=noop):
     root_offset = '../' * (len(p.dest_path.split('/')) - root_offset_n)
     defaults = {
         "page-title": os.path.basename(p.filename).rsplit('.', 1)[0].replace('-', ' ').title(),
-        "website-title": 'DesktopFolder',
+        "website-title": 'Desktop\'s Website',
         "page-description": 'Another incredible webpage!',
         "path-css-common": (root_offset) + 'styles.css',
         "generators": gens,
