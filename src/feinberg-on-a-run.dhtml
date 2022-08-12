@@ -21,10 +21,6 @@ function reset() {
 var loaded = parseInt(localStorage.getItem('loaded'), 10), loaded_num = loaded?loaded+1:1;
 localStorage.setItem('loaded', loaded_num);
 
-function setTo(i) {
-    localStorage.setItem('loaded', i);
-}
-
 var responses = [
     'Yes.',
     'Yep.',
@@ -84,13 +80,17 @@ var responses = [
     '...okay, well, have fun.'
 ];
 
-function setToOffset(i) {
+function setLoadedToOffset(i) {
     localStorage.setItem('loaded', i + responses.length);
 }
 
-function getVal() {
+function getLoadedVal() {
     var loaded = parseInt(localStorage.getItem('loaded'), 10), loaded_num = loaded?loaded+1:1;
     return loaded;
+}
+
+function setLoadedTo(i) {
+    localStorage.setItem('loaded', i);
 }
 
 function undoLoad() {
@@ -126,11 +126,21 @@ else if (loaded_num == responses.length + 40)
 else {
     var cst = responses.length + 80;
 
+    var d = Math.random() * 100;
+    if (d < 5) {
+        the_resp = 'You\'ve refreshed this page over ' + loaded_num + ' times. Are you proud of yourself?';
+    }
+    else if (d < 7) {
+        the_resp = 'Why don\'t you just <b><i><a href="https://twitch.tv/feinberg" target="_blank" rel="noopener noreferrer">check for yourself?</a></i></b>';
+    }
+    else {
+        the_resp = 'Yes, Feinberg is on a run!';
+    }
+
     if (loaded_num > cst)
     {
         document.getElementById("reset-button").style.fontSize = ((loaded_num - cst) * 5 + 20) + 'px';
     }
-    the_resp = 'Yes, Feinberg is on a run!';
 }
 
 var p = document.createElement("p");
