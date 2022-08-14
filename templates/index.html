@@ -46,7 +46,7 @@ just need to decorate the page around it.
         <img class="index-img" src="/assets/mcsr_logo.gif" />
         <div id="index-mcsr-bg">
         <div id="index-mcsr-title">
-            <h2>Minecraft Speedrunning</h2>
+            <h3>Minecraft Speedrunning</h3>
         </div>
         </div>
 {generators[tools][class-pages@mcsr][<p class="mcsr-page-link"><a href="$page:url">$page:name</a></p>]}
@@ -54,13 +54,25 @@ just need to decorate the page around it.
     <div class="index-item-tools generic-sidebar">
         <div id="index-tools-bg">
         <div id="index-tools-title">
-            <h2>Tools</h2>
+            <h3>Tools</h3>
         </div>
         </div>
 {generators[tools][class-pages@tools][<p class="tool-page-link"><a href="$page:url">$page:name</a></p>]}
     </div>
+    <div class="index-item-refs generic-sidebar">
+        <div id="index-refs-bg">
+        <div id="index-refs-title">
+            <h3>Other Pages</h3>
+        </div>
+        </div>
+        <a href="https://sidneys1.github.io">Sidneys1's Blog</a>
+    </div>
     <div class="item-content">
 {content}
+    </div>
+
+    <div class="index-item-right right-sidebar">
+{generators[tools][class-pages@right-things][<p class="right-page-link"><a href="$page:url">$page:name</a></p>]}
     </div>
 </div>
 </html>
