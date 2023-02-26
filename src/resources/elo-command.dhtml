@@ -1,0 +1,16 @@
+---
+page.title=Fossabot !elo Command
+website.title=Desktop's Website
+page.description=A quick !elo Fossabot guide
+src=templates/generic.html
+---
+<body class="wider">
+    <p>To get Fossabot to evaluate your !elo command, you need to create the following two commands. First, create the !uuid command:</p>
+<pre style="white-space: pre-wrap">
+$(eval r=$(customapi https://api.mojang.com/users/profiles/minecraft/$(index1 DEFAULTVALUE)); r['id'])
+</pre>
+<p><b>Important: The DEFAULTVALUE should be replaced with the default Minecraft username (i.e., your username)</b></p><p>Then, create the !elo command:</p>
+<pre style="white-space: pre-wrap">
+$(eval r=$(customapi https://mcsrranked.com/api/users/$(references uuid)); `stats for ${r['data']['nickname']} - elo: ${r['data']['elo_rate']} | rank: ${r['data']['elo_rank']} | record: ${r['data']['records']['2']['win']} W - ${r['data']['records']['2']['lose']} L`)
+</pre>
+</body>
