@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
 
-    <title>Fossabot !elo Command</title>
+    <title>Fossa & Nightbot !elo Command</title>
 
     <script type="module">
         // As suggested by:
@@ -16,23 +16,80 @@
     <!--<link rel="stylesheet" href="path/to/print.css" media="print">-->
     
 
-    <meta name="description" content="A quick !elo Fossabot guide" />
-    <meta property="og:title" content="Fossabot !elo Command" />
+    <meta name="description" content="A quick !elo Fossa/Nightbot guide" />
+    <meta property="og:title" content="Fossa & Nightbot !elo Command" />
     <meta property="og:site_name" content="Desktop's Website" />
-    <meta property="og:description" content="A quick !elo Fossabot guide" />
+    <meta property="og:description" content="A quick !elo Fossa/Nightbot guide" />
     <meta property="og:image" content="https://publicdomainvectors.org/photos/rodentia-icons_folder-black.png" />
 </head>
 <a href="/" id="home-button" style="position:absolute;left:7px;top:12px;margin:0;font-size:60%;line-height:0;">home</a>
 
 <body class="wider">
-    <p>To get Fossabot to evaluate your !elo command, you need to create the following two commands. First, create the !uuid command:</p>
+<p>To get correct commands/helpers, enter your username here: <input id="username-value" /></p>
+<p>Also enter the current season if it is not season 2: <input id="season-value" /></p>
+<p>To get <b>Nightbot</b> to evaluate your !elo command, you need to create the following two commands. First, create the !uuid helper command:</p>
+
 <pre style="white-space: pre-wrap">
-$(eval r=$(customapi https://api.mojang.com/users/profiles/minecraft/$(index1 DEFAULTVALUE)); r['id'])
+!addcom !elo -a=!elohelper $(eval r=$(urlfetch json https://api.mojang.com/users/profiles/minecraft/$(1)); r['id'] == "3206ba4c968d424c877d1547fa974d60" ? "YOUR_UUID" : r['id'])
 </pre>
-<p><b>Important: The DEFAULTVALUE should be replaced with the default Minecraft username (i.e., your username)</b></p><p>Then, create the !elo command:</p>
+
+<p><b>Important: The YOUR_UUID value should be replaced with the default Minecraft UUID (i.e., your UUID)</b>. To get your UUID, go to <a href="https://api.mojang.com/users/profiles/minecraft/YOUR_USERNAME" id="fixableuri">https://api.mojang.com/users/profiles/minecraft/<b class="username-val">YOUR_USERNAME</b></a> and copy the UUID field. (It should look ~ like 128abc352bad35425777ea352abd, i.e. a long list of characters between 0-9 and a-f. Don't copy the quotation marks.)</p>
+<p>Then, create the !elo command:</p>
+
 <pre style="white-space: pre-wrap">
-$(eval r=$(customapi https://mcsrranked.com/api/users/$(references uuid)); `stats for ${r['data']['nickname']} - elo: ${r['data']['elo_rate']} | rank: ${r['data']['elo_rank']} | record: ${r['data']['records']['2']['win']} W - ${r['data']['records']['2']['lose']} L`)
+!addcom !elohelper $(eval r=$(urlfetch json https://mcsrranked.com/api/users/$(1)); `stats for ${r['data']['nickname']} - elo: ${r['data']['elo_rate']} | rank: ${r['data']['elo_rank']} | record: ${r['data']['records']['<b class="season-val">2</b>']['win']} W - ${r['data']['records']['<b class="season-val">2</b>']['lose']} L`)
 </pre>
+
+<p>To get <b>Fossabot</b> to evaluate your !elo command, you need to create the following two commands. First, create the !uuid command:</p>
+
+<pre style="white-space: pre-wrap">
+$(eval r=$(customapi https://api.mojang.com/users/profiles/minecraft/$(index1 <b class="username-val">YOUR_USERNAME</b>)); r['id'])
+</pre>
+
+<p>Then, create the !elo command:</p>
+
+<pre style="white-space: pre-wrap">
+$(eval r=$(customapi https://mcsrranked.com/api/users/$(references uuid)); `stats for ${r['data']['nickname']} - elo: ${r['data']['elo_rate']} | rank: ${r['data']['elo_rank']} | record: ${r['data']['records']['<b class="season-val">2</b>']['win']} W - ${r['data']['records']['<b class="season-val">2</b>']['lose']} L`)
+</pre>
+
+<h3>Debugging</h3>
+
+<p>It's possible that these commands stop working due to API updates. Here are a few things you can check.</p>
+
+<h4>Mojang API</h4>
+
+<p>It's unlikely that the official Mojang API will change, but you can check to make sure you're getting the correct output by checking here: <a href="https://api.mojang.com/users/profiles/minecraft/YOUR_USERNAME" id="fixableuri2">https://api.mojang.com/users/profiles/minecraft/<b class="username-val">YOUR_USERNAME</b></a> and ensuring you see a "UUID" field that has a good value. Copy that value and use it for the next debugging step.</p>
+
+<h4>MCSR Ranked API</h4>
+
+<p>Okay I legit have 0 interest in writing this out, if you have an issue just ping me in discord and I'll get around to updating this. (DesktopFolder)</p>
+
+<script>
+
+function fixUsernames() {
+    Array.from(document.getElementsByClassName("username-val")).forEach(x => x.innerHTML = document.getElementById("username-value").value);
+    document.getElementById("fixableuri").href = "https://api.mojang.com/users/profiles/minecraft/" + document.getElementById("username-value").value
+    // yes I'm LAZY I GET IT
+    document.getElementById("fixableuri2").href = "https://api.mojang.com/users/profiles/minecraft/" + document.getElementById("username-value").value
+    console.log("Fixed usernames.");
+}
+function fixSeasons() {
+    Array.from(document.getElementsByClassName("season-val")).forEach(x => x.innerHTML = document.getElementById("season-value").value);
+    console.log("Fixed seasons.");
+}
+
+function onDomLoaded() {
+    document.getElementById("username-value").addEventListener("input", function() {
+        fixUsernames();
+    });
+    document.getElementById("season-value").addEventListener("input", function() {
+        fixSeasons();
+    });
+    console.log("Setup event listeners.");
+}
+
+document.addEventListener('DOMContentLoaded', onDomLoaded, false);
+</script>
 </body>
 
 </html>
