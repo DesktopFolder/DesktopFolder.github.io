@@ -5,40 +5,29 @@ page.description=A quick !elo Fossa/Nightbot guide
 src=templates/generic.html
 ---
 <body class="wider">
-<p>To get correct commands/helpers, enter your username here: <input id="username-value" /></p>
-<p>Also enter the current season if it is not season 2 (the first season is called season 2... sorry. I didn't make the api. Season 2 ends mid march 2023, then presumably this needs to be 3): <input id="season-value" /> (Quick side note: Because these are commands for bots, which are usually pretty constrained and who wants to bother figuring this syntax out, they are kind of simple. The reason the season value matters is that these commands will only use the stats from the season you pick. Maybe someone will make a better command I'll steal and put here. [quick flex, my bot doesn't have this issue :D])</p>
-<p>To get <b>Nightbot</b> to evaluate your !elo command, you need to create the following two commands. First, create the !uuid helper command:</p>
+<p><b>Updated for API 1.1.x</b> To get correct commands/helpers, enter your username here: <input id="username-value" /></p>
+<p>Also enter the current season if it is not season 2 (Season 2 runs from mid February to mid March 2023): <input id="season-value" /></p>
+<p>To get <b>Nightbot</b> to evaluate your !elo command, you need to create the following commands. First, create the !elohelper command:</p>
 
 <pre style="white-space: pre-wrap">
-!addcom !elo -a=!elohelper $(eval r=$(urlfetch json https://api.mojang.com/users/profiles/minecraft/$(1)); r['id'] == "3206ba4c968d424c877d1547fa974d60" ? "YOUR_UUID" : r['id'])
+!addcom !elo -a=!elohelper $(eval '$(1)' == 'null' ? '<b class="username-val">YOUR_USERNAME</b>' : '$(1)')
 </pre>
 
-<p><b>Important: The YOUR_UUID value should be replaced with the default Minecraft UUID (i.e., your UUID)</b>. To get your UUID, go to <a href="https://api.mojang.com/users/profiles/minecraft/YOUR_USERNAME" id="fixableuri" target="_blank">https://api.mojang.com/users/profiles/minecraft/<b class="username-val">YOUR_USERNAME</b></a> and copy the UUID field. (It should look ~ like 128abc352bad35425777ea352abd, i.e. a long list of characters between 0-9 and a-f. Don't copy the quotation marks.)</p>
-<p>Then, create the !elo command:</p>
+<p>Then add the !elo command:</p>
 
 <pre style="white-space: pre-wrap">
-!addcom !elohelper $(eval r=$(urlfetch json https://mcsrranked.com/api/users/$(1)); `stats for ${r['data']['nickname']} - elo: ${r['data']['elo_rate']} | rank: ${r['data']['elo_rank']} | record: ${r['data']['records']['<b class="season-val">2</b>']['win']} W - ${r['data']['records']['<b class="season-val">2</b>']['lose']} L`)
+!addcom !elohelper $(eval r=$(urlfetch json https://mcsrranked.com/api/users/$(1)); d=r['data']; `stats for ${d['nickname']} - elo: ${d['elo_rate']} | rank: ${d['elo_rank']} | record: ${d['records']['<b class="season-val">2</b>']['win']} W - ${d['records']['<b class="season-val">2</b>']['lose']} L`)
 </pre>
 
-<p>To get <b>Fossabot</b> to evaluate your !elo command, you need to create the following two commands. First, create the !uuid command:</p>
+<p>To get <b>Fossabot</b> to evaluate your !elo command, you only need one command (note: untested). Make your !elo command the following:</p>
 
 <pre style="white-space: pre-wrap">
-$(eval r=$(customapi https://api.mojang.com/users/profiles/minecraft/$(index1 <b class="username-val">YOUR_USERNAME</b>)); r['id'])
-</pre>
-
-<p>Then, create the !elo command:</p>
-
-<pre style="white-space: pre-wrap">
-$(eval r=$(customapi https://mcsrranked.com/api/users/$(references uuid)); `stats for ${r['data']['nickname']} - elo: ${r['data']['elo_rate']} | rank: ${r['data']['elo_rank']} | record: ${r['data']['records']['<b class="season-val">2</b>']['win']} W - ${r['data']['records']['<b class="season-val">2</b>']['lose']} L`)
+$(eval r=$(customapi https://mcsrranked.com/api/users/$(index1 <b class="username-val">YOUR_USERNAME</b>)); `stats for ${r['data']['nickname']} - elo: ${r['data']['elo_rate']} | rank: ${r['data']['elo_rank']} | record: ${r['data']['records']['<b class="season-val">2</b>']['win']} W - ${r['data']['records']['<b class="season-val">2</b>']['lose']} L`)
 </pre>
 
 <h3>Debugging</h3>
 
 <p>It's possible that these commands stop working due to API updates. Here are a few things you can check.</p>
-
-<h4>Mojang API</h4>
-
-<p>It's unlikely that the official Mojang API will change, but you can check to make sure you're getting the correct output by checking here: <a href="https://api.mojang.com/users/profiles/minecraft/YOUR_USERNAME" id="fixableuri2" target="_blank">https://api.mojang.com/users/profiles/minecraft/<b class="username-val">YOUR_USERNAME</b></a> and ensuring you see a "UUID" field that has a good value. Copy that value and use it for the next debugging step.</p>
 
 <h4>MCSR Ranked API</h4>
 
