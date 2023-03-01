@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
 
-    <title>Fossa & Nightbot !elo Command</title>
+    <title>Elo Viewer</title>
 
     <script type="module">
         // As suggested by:
@@ -16,10 +16,10 @@
     <!--<link rel="stylesheet" href="path/to/print.css" media="print">-->
     
 
-    <meta name="description" content="A quick !elo Fossa/Nightbot guide" />
-    <meta property="og:title" content="Fossa & Nightbot !elo Command" />
+    <meta name="description" content="A small elo grapher" />
+    <meta property="og:title" content="Elo Viewer" />
     <meta property="og:site_name" content="Desktop's Website" />
-    <meta property="og:description" content="A quick !elo Fossa/Nightbot guide" />
+    <meta property="og:description" content="A small elo grapher" />
     <meta property="og:image" content="https://publicdomainvectors.org/photos/rodentia-icons_folder-black.png" />
 </head>
 <a href="/" id="home-button" style="position:absolute;left:7px;top:12px;margin:0;font-size:60%;line-height:0;">home</a>
@@ -54,6 +54,24 @@ class Player {
         this.lastPolled = timestamp();
     }
 
+    fetchingPoll() {
+        if (!this.shouldPoll()) { return; }
+        console.log("Submitting fetch for " + this.username);
+        fetch('https://mcsrranked.com/api/users/' + this.username, {mode:'cors'})
+            .then((response) => response.json())
+            .then((data) => {
+                console.log(data);
+                let output = document.getElementById("json-output");
+                output.innerHTML = JSON.stringify(data);
+                if (data.status == "error") { 
+                    console.log("Refusing to update application with bad data.");
+                    this.polled(); // don't make multiple erroring requests
+                    return;
+                }
+                this.manualUpdate(data.data);
+            });
+    }
+
     asData() {
         return JSON.stringify(this.data);
     }
@@ -86,69 +104,58 @@ class Application {
 
     // Setup - load our relevant data
     constructor() {
-        this.version = this.getItem('version', 0);
         this.players = new Map(); // These are lazy loaded.
     }
 
+    doUpgrades() {
+        if (this.getItem('version', 0) < 1) {
+        }
+    }
+
     // This really assumes no multithreading (i.e. multiple tabs)
-    #loadPlayer(username) {
+    #loadPlayerData(username) {
         // don't at me
         return JSON.parse(this.getItem('player:' + username) || '[]');
     }
     getPlayer(username) {
         if (this.players.has(username)) { return this.players[username]; }
-        this.players.set(username, new Player(this.#loadPlayer(username), username)); 
+        this.players.set(username, new Player(this.#loadPlayerData(username), username)); 
         return this.players.get(username);
     }
 
     commit() {
         for (const [name, player] of this.players) {
-            const res = JSON.stringify(player);
+            const res = JSON.stringify(player.data);
             this.setItem('player:' + player, res);
             console.log(`Stored player ${player} as: ${res}`);
-        } 
+        }
+        this.setItem('version', 1);
     }
 
-    updateFrom(data) {
-        // data here is the JSON returned by MCSRRanked API.
-        // so, it could change, etc.
-        // we don't really care about that because this is for fun anyhow
+    #fetchingUpdate(username) {
+        // Load the player that we're updating from.
+        var p = this.getPlayer(username);
 
-        // First, we want to ensure that this is a valid player. Check for success.
-        if (data.status == "error") { 
-            console.log("Refusing to update application with bad data.");
+        // Next, we want to save elo rate and rank right now, along with a timestamp.
+        p.fetchingPoll();
+        console.log(`Polled for ${p.username}`);
+    }
+
+    loadUsername(username) {
+        if (!/^([a-zA-Z0-9_]{2,17})$/.test(username)) {
             return;
         }
 
-        // Next, load the player that we're updating from.
-        var p = this.getPlayer(data.data.nickname);
-
-        // Next, we want to save elo rate and rank right now, along with a timestamp.
-        p.manualUpdate(data.data);
-        console.log(`Manually updated for ${data.data.nickname}`);
+        this.#fetchingUpdate(username);
     }
 }
 
 var application = new Application();
 
-function loadUsername(username) {
-    if (!/^([a-zA-Z0-9_]{2,17})$/.test(username)) {
-        return;
-    }
-    console.log("Submitting fetch for " + username);
-    fetch('https://mcsrranked.com/api/users/' + username, {mode:'cors'})
-        .then((response) => response.json())
-        .then((data) => {
-            console.log(data);
-            output = document.getElementById("json-output");
-            output.innerHTML = JSON.stringify(data);
-            application.updateFrom(data);
-        });
-}
-
 function onDomLoaded() {
+    application.doUpgrades();
     document.getElementById("username-value").addEventListener("change", function() {
-        loadUsername(document.getElementById("username-value").value);
+        application.loadUsername(document.getElementById("username-value").value);
     });
     console.log("Setup event listeners.");
 }

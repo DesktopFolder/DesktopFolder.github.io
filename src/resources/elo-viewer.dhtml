@@ -1,7 +1,7 @@
 ---
-page.title=Fossa & Nightbot !elo Command
+page.title=Elo Viewer
 website.title=Desktop's Website
-page.description=A quick !elo Fossa/Nightbot guide
+page.description=A small elo grapher
 src=templates/generic.html
 ---
 <body class="wider">
@@ -35,13 +35,13 @@ class Player {
     }
 
     fetchingPoll() {
-        if (!shouldPoll()) { return; }
+        if (!this.shouldPoll()) { return; }
         console.log("Submitting fetch for " + this.username);
-        fetch('https://mcsrranked.com/api/users/' + username, {mode:'cors'})
+        fetch('https://mcsrranked.com/api/users/' + this.username, {mode:'cors'})
             .then((response) => response.json())
             .then((data) => {
                 console.log(data);
-                output = document.getElementById("json-output");
+                let output = document.getElementById("json-output");
                 output.innerHTML = JSON.stringify(data);
                 if (data.status == "error") { 
                     console.log("Refusing to update application with bad data.");
@@ -87,8 +87,8 @@ class Application {
         this.players = new Map(); // These are lazy loaded.
     }
 
-    doUpdates() {
-        if (getItem('version', 0) < 1) {
+    doUpgrades() {
+        if (this.getItem('version', 0) < 1) {
         }
     }
 
@@ -114,7 +114,7 @@ class Application {
 
     #fetchingUpdate(username) {
         // Load the player that we're updating from.
-        var p = this.getPlayer(data.data.nickname);
+        var p = this.getPlayer(username);
 
         // Next, we want to save elo rate and rank right now, along with a timestamp.
         p.fetchingPoll();
@@ -133,7 +133,7 @@ class Application {
 var application = new Application();
 
 function onDomLoaded() {
-    application.doUpdates();
+    application.doUpgrades();
     document.getElementById("username-value").addEventListener("change", function() {
         application.loadUsername(document.getElementById("username-value").value);
     });
