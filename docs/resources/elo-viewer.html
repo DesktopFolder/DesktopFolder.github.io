@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <title>Fossa & Nightbot !elo Command</title>
+
+    <script type="module">
+        // As suggested by:
+        // https://www.matuzo.at/blog/html-boilerplate/
+        document.documentElement.classList.remove('no-js');
+        document.documentElement.classList.add('js');
+    </script>
+
+    <link rel="stylesheet" href="../styles.css">
+    <!--<link rel="stylesheet" href="path/to/print.css" media="print">-->
+    
+
+    <meta name="description" content="A quick !elo Fossa/Nightbot guide" />
+    <meta property="og:title" content="Fossa & Nightbot !elo Command" />
+    <meta property="og:site_name" content="Desktop's Website" />
+    <meta property="og:description" content="A quick !elo Fossa/Nightbot guide" />
+    <meta property="og:image" content="https://publicdomainvectors.org/photos/rodentia-icons_folder-black.png" />
+</head>
+<a href="/" id="home-button" style="position:absolute;left:7px;top:12px;margin:0;font-size:60%;line-height:0;">home</a>
+
+<body class="wider">
+<p>Username: <input id="username-value" /></p>
+<p id="json-output"></p>
+<script>
+// I'm just going to quickly preface this.
+// I have no knowledge whatsoever of best practice within JS.
+// This is just me going based off of some very basic assumptions.
+// This may not be good code. (And most likely isn't.)
+
+// Helpers
+function timestamp() {
+    return Math.floor(Date.now() / 1000);
+}
+
+class Player {
+    constructor(data, username) {
+        this.lastPolled = null;
+        this.data = data;
+        this.username = username;
+    }
+
+    shouldPoll() {
+        // Check if it's been 5 minutes since we last polled.
+        return (timestamp() - (this.lastPolled || 0)) > (5 * 60);
+    }
+
+    polled() {
+        this.lastPolled = timestamp();
+    }
+
+    asData() {
+        return JSON.stringify(this.data);
+    }
+
+    manualUpdate(data) {
+        if (data.nickname != this.username) {
+            console.log(`Error: manualUpdate received nickname ${data.nickname} but is ${this.username}`);
+            return;
+        }
+
+        this.polled();
+
+        this.data.push([this.lastPolled, data.elo_rank, data.elo_rate]);
+    }
+}
+
+class Application {
+    // LocalStorage accessors/modifiers
+    getItem(id, default_value = null) {
+        return localStorage.getItem('_elo:' + id) || default_value;
+    }
+
+    setItem(id, val) {
+        return localStorage.setItem('_elo:' + id, val);
+    }
+
+    removeItem(id) {
+        return localStorage.removeItem('_elo:' + id);
+    }
+
+    // Setup - load our relevant data
+    constructor() {
+        this.version = this.getItem('version', 0);
+        this.players = new Map(); // These are lazy loaded.
+    }
+
+    // This really assumes no multithreading (i.e. multiple tabs)
+    #loadPlayer(username) {
+        // don't at me
+        return JSON.parse(this.getItem('player:' + username) || '[]');
+    }
+    getPlayer(username) {
+        if (this.players.has(username)) { return this.players[username]; }
+        this.players.set(username, new Player(this.#loadPlayer(username), username)); 
+        return this.players.get(username);
+    }
+
+    commit() {
+        for (const [name, player] of this.players) {
+            const res = JSON.stringify(player);
+            this.setItem('player:' + player, res);
+            console.log(`Stored player ${player} as: ${res}`);
+        } 
+    }
+
+    updateFrom(data) {
+        // data here is the JSON returned by MCSRRanked API.
+        // so, it could change, etc.
+        // we don't really care about that because this is for fun anyhow
+
+        // First, we want to ensure that this is a valid player. Check for success.
+        if (data.status == "error") { 
+            console.log("Refusing to update application with bad data.");
+            return;
+        }
+
+        // Next, load the player that we're updating from.
+        var p = this.getPlayer(data.data.nickname);
+
+        // Next, we want to save elo rate and rank right now, along with a timestamp.
+        p.manualUpdate(data.data);
+        console.log(`Manually updated for ${data.data.nickname}`);
+    }
+}
+
+var application = new Application();
+
+function loadUsername(username) {
+    if (!/^([a-zA-Z0-9_]{2,17})$/.test(username)) {
+        return;
+    }
+    console.log("Submitting fetch for " + username);
+    fetch('https://mcsrranked.com/api/users/' + username, {mode:'cors'})
+        .then((response) => response.json())
+        .then((data) => {
+            console.log(data);
+            output = document.getElementById("json-output");
+            output.innerHTML = JSON.stringify(data);
+            application.updateFrom(data);
+        });
+}
+
+function onDomLoaded() {
+    document.getElementById("username-value").addEventListener("change", function() {
+        loadUsername(document.getElementById("username-value").value);
+    });
+    console.log("Setup event listeners.");
+}
+
+document.addEventListener('DOMContentLoaded', onDomLoaded, false);
+</script>
+</body>
+
+</html>

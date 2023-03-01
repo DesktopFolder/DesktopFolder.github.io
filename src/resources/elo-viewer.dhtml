@@ -1,0 +1,145 @@
+---
+page.title=Fossa & Nightbot !elo Command
+website.title=Desktop's Website
+page.description=A quick !elo Fossa/Nightbot guide
+src=templates/generic.html
+---
+<body class="wider">
+<p>Username: <input id="username-value" /></p>
+<p id="json-output"></p>
+<script>
+// I'm just going to quickly preface this.
+// I have no knowledge whatsoever of best practice within JS.
+// This is just me going based off of some very basic assumptions.
+// This may not be good code. (And most likely isn't.)
+
+// Helpers
+function timestamp() {
+    return Math.floor(Date.now() / 1000);
+}
+
+class Player {
+    constructor(data, username) {
+        this.lastPolled = null;
+        this.data = data;
+        this.username = username;
+    }
+
+    shouldPoll() {
+        // Check if it's been 5 minutes since we last polled.
+        return (timestamp() - (this.lastPolled || 0)) > (5 * 60);
+    }
+
+    polled() {
+        this.lastPolled = timestamp();
+    }
+
+    fetchingPoll() {
+        if (!shouldPoll()) { return; }
+        console.log("Submitting fetch for " + this.username);
+        fetch('https://mcsrranked.com/api/users/' + username, {mode:'cors'})
+            .then((response) => response.json())
+            .then((data) => {
+                console.log(data);
+                output = document.getElementById("json-output");
+                output.innerHTML = JSON.stringify(data);
+                if (data.status == "error") { 
+                    console.log("Refusing to update application with bad data.");
+                    this.polled(); // don't make multiple erroring requests
+                    return;
+                }
+                this.manualUpdate(data.data);
+            });
+    }
+
+    asData() {
+        return JSON.stringify(this.data);
+    }
+
+    manualUpdate(data) {
+        if (data.nickname != this.username) {
+            console.log(`Error: manualUpdate received nickname ${data.nickname} but is ${this.username}`);
+            return;
+        }
+
+        this.polled();
+
+        this.data.push([this.lastPolled, data.elo_rank, data.elo_rate]);
+    }
+}
+
+class Application {
+    // LocalStorage accessors/modifiers
+    getItem(id, default_value = null) {
+        return localStorage.getItem('_elo:' + id) || default_value;
+    }
+
+    setItem(id, val) {
+        return localStorage.setItem('_elo:' + id, val);
+    }
+
+    removeItem(id) {
+        return localStorage.removeItem('_elo:' + id);
+    }
+
+    // Setup - load our relevant data
+    constructor() {
+        this.players = new Map(); // These are lazy loaded.
+    }
+
+    doUpdates() {
+        if (getItem('version', 0) < 1) {
+        }
+    }
+
+    // This really assumes no multithreading (i.e. multiple tabs)
+    #loadPlayerData(username) {
+        // don't at me
+        return JSON.parse(this.getItem('player:' + username) || '[]');
+    }
+    getPlayer(username) {
+        if (this.players.has(username)) { return this.players[username]; }
+        this.players.set(username, new Player(this.#loadPlayerData(username), username)); 
+        return this.players.get(username);
+    }
+
+    commit() {
+        for (const [name, player] of this.players) {
+            const res = JSON.stringify(player.data);
+            this.setItem('player:' + player, res);
+            console.log(`Stored player ${player} as: ${res}`);
+        }
+        this.setItem('version', 1);
+    }
+
+    #fetchingUpdate(username) {
+        // Load the player that we're updating from.
+        var p = this.getPlayer(data.data.nickname);
+
+        // Next, we want to save elo rate and rank right now, along with a timestamp.
+        p.fetchingPoll();
+        console.log(`Polled for ${p.username}`);
+    }
+
+    loadUsername(username) {
+        if (!/^([a-zA-Z0-9_]{2,17})$/.test(username)) {
+            return;
+        }
+
+        this.#fetchingUpdate(username);
+    }
+}
+
+var application = new Application();
+
+function onDomLoaded() {
+    application.doUpdates();
+    document.getElementById("username-value").addEventListener("change", function() {
+        application.loadUsername(document.getElementById("username-value").value);
+    });
+    console.log("Setup event listeners.");
+}
+
+document.addEventListener('DOMContentLoaded', onDomLoaded, false);
+</script>
+</body>
