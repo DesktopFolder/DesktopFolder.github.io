@@ -6,7 +6,13 @@ src=templates/generic.html
 ---
 <body class="wider">
 <p>Username: <input id="username-value" /></p>
-<p id="json-output"></p>
+<p style="display: none" id="json-output"></p>
+
+<canvas id="incredible-elo-chart"></canvas>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@^3"></script>
+<script src="https://cdn.jsdelivr.net/npm/luxon@^2"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@^1"></script>
 <script>
 // I'm just going to quickly preface this.
 // I have no knowledge whatsoever of best practice within JS.
@@ -27,7 +33,7 @@ class Player {
 
     shouldPoll() {
         // Check if it's been 5 minutes since we last polled.
-        return (timestamp() - (this.lastPolled || 0)) > (5 * 60);
+        return (timestamp() - (this.lastPolled || 0)) > (1 * 60);
     }
 
     polled() {
@@ -35,7 +41,10 @@ class Player {
     }
 
     fetchingPoll() {
-        if (!this.shouldPoll()) { return; }
+        if (!this.shouldPoll()) {
+            console.log(`Did not poll for ${this.username} due to timeout.`);
+            return;
+        }
         console.log("Submitting fetch for " + this.username);
         fetch('https://mcsrranked.com/api/users/' + this.username, {mode:'cors'})
             .then((response) => response.json())
@@ -46,18 +55,28 @@ class Player {
                 if (data.status == "error") { 
                     console.log("Refusing to update application with bad data.");
                     this.polled(); // don't make multiple erroring requests
+                    application.stopTimer();
                     return;
                 }
                 this.manualUpdate(data.data);
-            });
+                application.saveRenderPlayer(this);
+            })
+            .catch((e) => {});
     }
 
     asData() {
-        return JSON.stringify(this.data);
+        return JSON.stringify(this.data.filter((e, i, a) => (i == 0 || a[i - 1][1] != e[1] || a[i - 1][2] != e[2])));
+    }
+
+    toEloChartData() {
+        return this.data.map(o => ({x: o[0] * 1000, y: o[2]}));
+    }
+    toRankChartData() {
+        return this.data.map(o => ({x: o[0] * 1000, y: o[1]}));
     }
 
     manualUpdate(data) {
-        if (data.nickname != this.username) {
+        if (data.nickname.toLowerCase() != this.username) {
             console.log(`Error: manualUpdate received nickname ${data.nickname} but is ${this.username}`);
             return;
         }
@@ -69,17 +88,31 @@ class Player {
 }
 
 class Application {
+    static #FEINBERG_LINE = 'rgb(255, 99, 132)';
+    static #FEINBERG_BG = 'rgb(75, 192, 192)';
+    static #DEFAULT_LINE = 'rgba(113, 121, 126, 0.8)';
+    static #DEFAULT_BG = 'rgba(226, 242, 252, 0.4)';
+    static #DEFAULT_FG_LINE = 'rgba(178, 121, 126, 0.9)';
+
+    timer = null;
+
     // LocalStorage accessors/modifiers
     getItem(id, default_value = null) {
-        return localStorage.getItem('_elo:' + id) || default_value;
+        return localStorage.getItem('_elo:' + id.toLowerCase()) || default_value;
     }
 
     setItem(id, val) {
-        return localStorage.setItem('_elo:' + id, val);
+        return localStorage.setItem('_elo:' + id.toLowerCase(), val);
     }
 
     removeItem(id) {
-        return localStorage.removeItem('_elo:' + id);
+        return localStorage.removeItem('_elo:' + id.toLowerCase());
+    }
+
+    stopTimer() {
+        if (this.timer != null) {
+            clearInterval(this.timer); 
+        }
     }
 
     // Setup - load our relevant data
@@ -87,9 +120,73 @@ class Application {
         this.players = new Map(); // These are lazy loaded.
     }
 
-    doUpgrades() {
+    init() {
         if (this.getItem('version', 0) < 1) {
+            // Version upgrade things?
         }
+        this.ctx = document.getElementById("incredible-elo-chart");
+        this.data = {
+            labels: [],
+            datasets: [{
+                label: 'Elo Value',
+                backgroundColor: Application.#DEFAULT_BG,
+                borderColor: Application.#DEFAULT_LINE, 
+                fill: true,
+                data: [],
+                yAxisID: 'ELO',
+            }, {
+                label: 'MCSR Rank',
+                backgroundColor: Application.#DEFAULT_BG,
+                borderColor: Application.#DEFAULT_FG_LINE, 
+                fill: false,
+                data: [],
+                yAxisID: 'RANK',
+            }
+            ],
+        };
+        this.graph = new Chart(this.ctx, {
+            type: 'line',
+            data: this.data,
+            options: {
+                plugins: {
+                    title: {
+                        text: 'Elo Graph',
+                        display: true
+                    }
+                },
+                scales: {
+                    x: {
+                        type: 'time',
+                        time: {
+                            tooltipFormat: 'DD T'
+                        },
+                        title: {
+                            display: true,
+                            text: 'Date'
+                        }
+                    },
+                    ELO: {
+                        type: 'linear',
+                        position: 'left',
+                        id: 'ELO',
+                        title: {
+                            display: true,
+                            text: 'Elo'
+                        }
+                    },
+                    RANK: {
+                        type: 'linear',
+                        position: 'right',
+                        id: 'RANK',
+                        title: {
+                            display: true,
+                            text: 'Rank'
+                        },
+                        reverse: true,
+                    }
+                }
+            }
+        });
     }
 
     // This really assumes no multithreading (i.e. multiple tabs)
@@ -97,17 +194,28 @@ class Application {
         // don't at me
         return JSON.parse(this.getItem('player:' + username) || '[]');
     }
-    getPlayer(username) {
-        if (this.players.has(username)) { return this.players[username]; }
+    getPlayer(someUsername) {
+        let username = someUsername.toLowerCase();
+        if (username == 'feinberg') {
+            this.graph.data.datasets[0].backgroundColor = Application.#FEINBERG_BG;
+            this.graph.data.datasets[0].borderColor = Application.#FEINBERG_LINE;
+            this.graph.update();
+        }
+        if (this.players.has(username)) { return this.players.get(username); }
         this.players.set(username, new Player(this.#loadPlayerData(username), username)); 
         return this.players.get(username);
     }
 
     commit() {
         for (const [name, player] of this.players) {
-            const res = JSON.stringify(player.data);
-            this.setItem('player:' + player, res);
-            console.log(`Stored player ${player} as: ${res}`);
+            if (player.data.length == 0) {
+                console.log(`Did not store player ${player.username} (invalid data)`);
+                continue;
+            }
+            const res = player.asData();
+            const key = 'player:' + player.username;
+            this.setItem(key, res);
+            console.log(`Stored player ${player.username} at '${key}' as: ${res}`);
         }
         this.setItem('version', 1);
     }
@@ -118,7 +226,18 @@ class Application {
 
         // Next, we want to save elo rate and rank right now, along with a timestamp.
         p.fetchingPoll();
-        console.log(`Polled for ${p.username}`);
+        console.log(`(Ran fetching update for ${p.username})`);
+    }
+
+    saveRenderPlayer(player) {
+        this.commit();
+
+        this.graph.data.datasets[0].data = player.toEloChartData();
+        this.graph.data.datasets[1].data = player.toRankChartData();
+        this.graph.update();
+
+        this.stopTimer();
+        this.timer = setInterval(() => this.#fetchingUpdate(player.username), 60 * 1000);
     }
 
     loadUsername(username) {
@@ -126,16 +245,21 @@ class Application {
             return;
         }
 
-        this.#fetchingUpdate(username);
+        this.#fetchingUpdate(username.toLowerCase());
     }
 }
 
 var application = new Application();
 
 function onDomLoaded() {
-    application.doUpgrades();
-    document.getElementById("username-value").addEventListener("change", function() {
-        application.loadUsername(document.getElementById("username-value").value);
+    application.init();
+    document.getElementById("username-value").addEventListener("change", function(e) {
+        // do nothing for now
+        // application.loadUsername(document.getElementById("username-value").value);
+    });
+    document.getElementById("username-value").addEventListener("keypress", function(e) {
+        if (e.key == 'Enter')
+            application.loadUsername(document.getElementById("username-value").value);
     });
     console.log("Setup event listeners.");
 }
