@@ -8,6 +8,9 @@ src=templates/generic.html
 <p>Username: <input id="username-value" /></p>
 <p style="display: none" id="json-output"></p>
 
+<h3>Important - How do I use this?</h3>
+<p><i>Note: This is a test project that is not really tested & may have bugs.</i> To use this elo/rank grapher, simply enter your Minecraft username, press enter, then leave the page open while you play games. The tab will automatically update and gather elo data, and save it locally. Because it uses browser storage, this data will not be shared across browsers/computers. Because it gathers data using JavaScript on your browser, this data will not update if you do not have the tab open.</p>
+
 <canvas id="incredible-elo-chart"></canvas>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@^3"></script>
