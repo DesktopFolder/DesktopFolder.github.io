@@ -6,12 +6,14 @@ src=templates/generic.html
 path.to.folder=elo
 ---
 <body class="wider">
-<p>Username: <input id="username-value" /></p>
+<p>Username: <input id="username-value" /> 
+Chart tension: <input id="tension-value" type="number" step="any" min="0" max="1" value="0.4"/></p>
 <p style="display: none" id="json-output"></p>
 
 <canvas id="incredible-elo-chart"></canvas>
 
 <p id="current-url-p" style="text-align: center;">Share this graph: <a id="current-url" href=""></a></p>
+<p style="text-align: center;">This application is a work in progress (& made for fun). For feedback or questions, ping me on Discord (@DesktopFolder) or make an issue <a href="https://github.com/DesktopFolder/desktopfolder.github.io">in the repository</a>.</p>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@^3"></script>
 <script src="https://cdn.jsdelivr.net/npm/luxon@^2"></script>
@@ -194,6 +196,7 @@ class Application {
                 fill: true,
                 data: [],
                 yAxisID: 'ELO',
+                tension: 0.4,
             }, /*{
                 label: 'MCSR Rank',
                 backgroundColor: Application.#DEFAULT_BG,
@@ -307,6 +310,11 @@ class Application {
         }
     }
 
+    doTension(t) {
+        this.graph.data.datasets[0].tension = t;
+        this.graph.update();
+    }
+
     saveRenderPlayer(player) {
         // this.commit();
 
@@ -355,6 +363,14 @@ function onDomLoaded() {
             application.loadUsername(username);
             updateUrl(username);
         }
+    });
+
+    document.getElementById("tension-value").addEventListener("input", function(e) {
+        let t = parseFloat(document.getElementById("tension-value").value);
+        if (isNaN(t) || t == null) return;
+        if (t > 1.0 || t < 0.0) return;
+
+        application.doTension(t);
     });
     console.log("Setup event listeners.");
 
