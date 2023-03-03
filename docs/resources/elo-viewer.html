@@ -78,6 +78,7 @@ class Player {
     fetchingPoll(i = 0) {
         if (!this.shouldPoll() && i == 0) {
             console.log(`Did not poll for ${this.username} due to timeout. (Page 0 request)`);
+            application.maybeRerender(this);
             return;
         }
         console.log("Submitting fetch for " + this.username);
@@ -100,6 +101,7 @@ class Player {
                     console.log(`Set base elo to ${this.base_elo}`);
                     if (data.data[0].match_date == this.prev_date) {
                         console.log(`No update found.`);
+                        application.maybeRerender(this);
                         return;
                     }
                     this.prev_date = data.data[0].match_date;
@@ -192,6 +194,7 @@ class Application {
     // Setup - load our relevant data
     constructor() {
         this.players = new Map(); // These are lazy loaded.
+        this.activePlayer = null;
     }
 
     init() {
@@ -315,6 +318,12 @@ class Application {
         console.log(`(Ran fetching update for ${p.username})`);
     }
 
+    maybeRerender(player) {
+        if (player.username != this.activePlayer) {
+            this.saveRenderPlayer(player);
+        }
+    }
+
     saveRenderPlayer(player) {
         // this.commit();
 
@@ -324,6 +333,7 @@ class Application {
 
         this.stopTimer();
         this.timer = setInterval(() => this.#fetchingUpdate(player.username), 60 * 1000);
+        this.activePlayer = player.username;
     }
 
     loadUsername(username) {
