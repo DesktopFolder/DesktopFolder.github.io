@@ -81,7 +81,7 @@ class Player {
             return;
         }
         console.log("Submitting fetch for " + this.username);
-        fetch('https://mcsrranked.com/api/users/' + this.username + '/matches?page=' + i, {mode:'cors'})
+        fetch('https://mcsrranked.com/api/users/' + this.username + '/matches?filter=2&page=' + i, {mode:'cors'})
             .then((response) => response.json())
             .then((data) => {
                 console.log(`Got data for ${this.username}`);
