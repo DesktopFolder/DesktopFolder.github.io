@@ -3,12 +3,15 @@ page.title=Elo Viewer
 website.title=Desktop's Website
 page.description=A small elo grapher
 src=templates/generic.html
+path.to.folder=elo
 ---
 <body class="wider">
 <p>Username: <input id="username-value" /></p>
 <p style="display: none" id="json-output"></p>
 
 <canvas id="incredible-elo-chart"></canvas>
+
+<p id="current-url-p" style="text-align: center;">Share this graph: <a id="current-url" href=""></a></p>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@^3"></script>
 <script src="https://cdn.jsdelivr.net/npm/luxon@^2"></script>
@@ -327,6 +330,19 @@ class Application {
 
 var application = new Application();
 
+function updateUrl(username) {
+    var o = document.getElementById("current-url");
+    var newUrl = 'https://' + location.host + location.pathname;
+    // this should use join, but shh
+    const u = (username == 0) ? '' : ('username=' + username);
+    const res = [u].filter(v => v).join('&');
+    if (res.length != 0) {
+        newUrl = newUrl + '?' + res;
+    }
+    o.href = newUrl;
+    o.innerHTML = newUrl;
+}
+
 function onDomLoaded() {
     application.init();
     document.getElementById("username-value").addEventListener("change", function(e) {
@@ -334,10 +350,21 @@ function onDomLoaded() {
         // application.loadUsername(document.getElementById("username-value").value);
     });
     document.getElementById("username-value").addEventListener("keypress", function(e) {
-        if (e.key == 'Enter')
-            application.loadUsername(document.getElementById("username-value").value);
+        if (e.key == 'Enter') {
+            const username = document.getElementById("username-value").value;
+            application.loadUsername(username);
+            updateUrl(username);
+        }
     });
     console.log("Setup event listeners.");
+
+    // Parse URL parameters.
+    const url = new URL(window.location.href);
+    const username = url.searchParams.get("username") || "";
+    document.getElementById("username-value").value = username;
+    application.loadUsername(username);
+
+    updateUrl(username);
 }
 
 document.addEventListener('DOMContentLoaded', onDomLoaded, false);

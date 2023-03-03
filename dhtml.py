@@ -67,6 +67,7 @@ class Page:
             of = ensure_html(self.meta['page-outfile'])
             dest_prenorm = join(dest_dir + '/', of)
         self.dest_path = normalize_filename(dest_prenorm)
+        self.fdest = self.meta.get('path-to-folder', None)
         if self.dest_path.startswith('/'):
             of = self.meta.get('page-outfile', 'undefined')
             raise RuntimeError(

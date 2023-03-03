@@ -87,10 +87,16 @@ def gen_file(w: dhtml.Website, p: dhtml.Page, verbose=noop):
     from pathlib import Path
     output_file = Path(p.dest_path)
     output_file.parent.mkdir(exist_ok=True, parents=True)
+    output_data = run_booleans(template.format(**defaults), defaults)
     with open(output_file, 'w') as file:
         # print(template)
         # print(defaults)
-        file.write(run_booleans(template.format(**defaults), defaults))
+        file.write(output_data)
+
+    if p.fdest is not None:
+        fdo = Path(dhtml.normpath(Path('docs/' + p.fdest + '/' + 'index.html')))
+        fdo.parent.mkdir(exist_ok=True, parents=True)
+        open(fdo, 'w').write(output_data)
 
     # This has written our actual file. But we might have to generate redirects
     # to this page. Recursively generate those redirects while we have info.
