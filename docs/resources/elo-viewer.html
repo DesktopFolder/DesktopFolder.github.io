@@ -30,9 +30,6 @@
 
 <canvas id="incredible-elo-chart"></canvas>
 
-<h3>Important - How do I use this?</h3>
-<p><i>Note: This is a test project that is not really tested & may have bugs.</i> To use this elo/rank grapher, simply enter your Minecraft username, press enter, then leave the page open while you play games. The tab will automatically update and gather elo data, and save it locally. Because it uses browser storage, this data will not be shared across browsers/computers. Because it gathers data using JavaScript on your browser, this data will not update if you do not have the tab open.</p>
-
 <script src="https://cdn.jsdelivr.net/npm/chart.js@^3"></script>
 <script src="https://cdn.jsdelivr.net/npm/luxon@^2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@^1"></script>
@@ -52,27 +49,44 @@ class Player {
         this.lastPolled = null;
         this.data = data;
         this.username = username;
+        this.base_elo = 0;
+        this.prev_date = 0;
     }
 
     shouldPoll() {
         // Check if it's been 5 minutes since we last polled.
-        return (timestamp() - (this.lastPolled || 0)) > (1 * 60);
+        return (timestamp() - (this.lastPolled || 0)) > (5 * 60);
     }
 
     polled() {
         this.lastPolled = timestamp();
     }
 
-    fetchingPoll() {
-        if (!this.shouldPoll()) {
-            console.log(`Did not poll for ${this.username} due to timeout.`);
+    scoreChangeFrom(md) {
+        const uuid = md.members.find((item) => (item.nickname.toLowerCase() == this.username)).uuid;
+        return md.score_changes.find((item) => (item.uuid == uuid)).score;
+    }
+
+    enemyFrom(md) {
+        return md.members.find((item) => (item.nickname.toLowerCase() != this.username));
+    }
+
+    eloFrom(md) {
+        return md.members.find((item) => (item.nickname.toLowerCase() == this.username)).elo_rate;
+    }
+
+    fetchingPoll(i = 0) {
+        if (!this.shouldPoll() && i == 0) {
+            console.log(`Did not poll for ${this.username} due to timeout. (Page 0 request)`);
             return;
         }
         console.log("Submitting fetch for " + this.username);
-        fetch('https://mcsrranked.com/api/users/' + this.username, {mode:'cors'})
+        fetch('https://mcsrranked.com/api/users/' + this.username + '/matches?page=' + i, {mode:'cors'})
             .then((response) => response.json())
             .then((data) => {
-                console.log(data);
+                console.log(`Got data for ${this.username}`);
+                // LOGGING / INVALID DATA
+                // console.log(data);
                 let output = document.getElementById("json-output");
                 output.innerHTML = JSON.stringify(data);
                 if (data.status == "error") { 
@@ -81,8 +95,26 @@ class Player {
                     application.stopTimer();
                     return;
                 }
+                if (data.data.length > 0 && i == 0) {
+                    this.base_elo = this.eloFrom(data.data[0]);
+                    console.log(`Set base elo to ${this.base_elo}`);
+                    if (data.data[0].match_date == this.prev_date) {
+                        console.log(`No update found.`);
+                        return;
+                    }
+                    this.prev_date = data.data[0].match_date;
+                    this.data = [];
+                }
+
+                // VALID DATA FROM HERE
                 this.manualUpdate(data.data);
                 application.saveRenderPlayer(this);
+
+                // Maybe launch another fetch.
+                if (data.data.length >= 20) {
+                    console.log(`Queued another read for page ${i + 1} for ${this.username}`);
+                    setTimeout(() => this.fetchingPoll(i + 1), 2000);
+                }
             })
             .catch((e) => {});
     }
@@ -92,21 +124,40 @@ class Player {
     }
 
     toEloChartData() {
-        return this.data.map(o => ({x: o[0] * 1000, y: o[2]}));
+        return this.data;
+        //return this.data.map(o => ({x: o[0] * 1000, y: o[2]}));
     }
     toRankChartData() {
-        return this.data.map(o => ({x: o[0] * 1000, y: o[1]}));
+        return this.data;
+        //return this.data.map(o => ({x: o[0] * 1000, y: o[1]}));
     }
 
     manualUpdate(data) {
-        if (data.nickname.toLowerCase() != this.username) {
-            console.log(`Error: manualUpdate received nickname ${data.nickname} but is ${this.username}`);
-            return;
-        }
+        //if (data.nickname.toLowerCase() != this.username) {
+        //    console.log(`Error: manualUpdate received nickname ${data.nickname} but is ${this.username}`);
+        //    return;
+        //}
 
         this.polled();
 
-        this.data.push([this.lastPolled, data.elo_rank, data.elo_rate]);
+        for (const d of data) {
+            if (d.match_type != 2) continue;
+            if (d.score_changes == null) continue;
+            let c = this.scoreChangeFrom(d);
+            
+            // we go most recent to least recent
+            // first set the data, then make the change
+            this.data.push({
+                x: d.match_date * 1000,
+                y: this.base_elo,
+                enemy: this.enemyFrom(d).nickname,
+                change: c,
+            });
+
+            this.base_elo -= c;
+        }
+
+        // this.data.push([this.lastPolled, data.elo_rank, data.elo_rate]);
     }
 }
 
@@ -157,14 +208,14 @@ class Application {
                 fill: true,
                 data: [],
                 yAxisID: 'ELO',
-            }, {
+            }, /*{
                 label: 'MCSR Rank',
                 backgroundColor: Application.#DEFAULT_BG,
                 borderColor: Application.#DEFAULT_FG_LINE, 
                 fill: false,
                 data: [],
                 yAxisID: 'RANK',
-            }
+            }*/
             ],
         };
         this.graph = new Chart(this.ctx, {
@@ -175,6 +226,16 @@ class Application {
                     title: {
                         text: 'Elo Graph',
                         display: true
+                    },
+                    tooltip: {
+                        enabled: true,
+                        callbacks: {
+                            label: function (context) {
+                                const c = context.raw.change;
+                                let cval = c > 0 ? '+' + String(c) : String(c);
+                                return `${cval} VS ${context.raw.enemy}`;
+                            }
+                        }
                     }
                 },
                 scales: {
@@ -197,7 +258,7 @@ class Application {
                             text: 'Elo'
                         }
                     },
-                    RANK: {
+                    /*RANK: {
                         type: 'linear',
                         position: 'right',
                         id: 'RANK',
@@ -206,13 +267,14 @@ class Application {
                             text: 'Rank'
                         },
                         reverse: true,
-                    }
+                    }*/
                 }
             }
         });
     }
 
     // This really assumes no multithreading (i.e. multiple tabs)
+    // UNUSED - DEPRECATED
     #loadPlayerData(username) {
         // don't at me
         return JSON.parse(this.getItem('player:' + username) || '[]');
@@ -225,10 +287,11 @@ class Application {
             this.graph.update();
         }
         if (this.players.has(username)) { return this.players.get(username); }
-        this.players.set(username, new Player(this.#loadPlayerData(username), username)); 
+        this.players.set(username, new Player([], username)); 
         return this.players.get(username);
     }
 
+    // UNUSED - DEPRECATED
     commit() {
         for (const [name, player] of this.players) {
             if (player.data.length == 0) {
@@ -253,10 +316,10 @@ class Application {
     }
 
     saveRenderPlayer(player) {
-        this.commit();
+        // this.commit();
 
         this.graph.data.datasets[0].data = player.toEloChartData();
-        this.graph.data.datasets[1].data = player.toRankChartData();
+        //this.graph.data.datasets[1].data = player.toRankChartData();
         this.graph.update();
 
         this.stopTimer();
