@@ -602,10 +602,16 @@ function onDomLoaded() {
 
     updateUrls(username);
 
-    /*
-    fetch(`https://mcsrranked.com/api/users/${this.username}/matches?filter=2&count=${application.config.pageCount}&page=${i}`, {mode:'cors'})
-        .then((response) => response.json())
-        */
+    // User counting!! Very simple.
+    if (!location.host.contains("localhost")) {
+        console.log("User counting!");
+        fetch("https://api.countapi.xyz/hit/disrespec.tech/visits-elo")
+             .then((response) => response.json())
+             .then((data) => {
+                console.log(`You are visitor ${data.value}`);
+             })
+             .catch((e) => { console.log(`CountAPI error: ${e}`); });
+    }
     console.log("Finished application setup.");
 }
 
