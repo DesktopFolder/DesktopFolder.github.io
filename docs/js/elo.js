@@ -15,6 +15,10 @@ function isValidColour(s) {
     return e.style.borderColor.length != 0;
 }
 
+function doGrouping() {
+    return document.getElementById("group-sessions").checked;
+}
+
 class Player {
     constructor(username) {
         this.lastPolled = null;
@@ -28,6 +32,7 @@ class Player {
         this.prev_date = 0;
         this.isActive = false;
         this.timer = null;
+        this.loading = 'Inactive';
     }
 
     setInactive() {
@@ -88,6 +93,7 @@ class Player {
                 // console.log(data);
                 // let output = document.getElementById("json-output");
                 // output.innerHTML = JSON.stringify(data);
+                this.loading = `Queried API page ${i}...`;
 
                 // Player is invalid in some way.
                 if (data.status == "error") { 
@@ -126,6 +132,12 @@ class Player {
                     setTimeout(() => {
                         if (this.isActive) { this.fetchingPoll(i + 1) }
                     }, 2000);
+                }
+                else {
+                    this.loading = `Fetched all ${this.data.length} values.`;
+                    setTimeout(() => {
+                        if (this.isActive) { this.loading = null; application.rerender(); }
+                    }, 3000);
                 }
 
                 application.rerender();
@@ -215,12 +227,16 @@ class Application {
             // Version upgrade things?
         }
         this.ctx = document.getElementById("incredible-elo-chart");
+
+        document.getElementById("bg-col-value").value = this.getItem("bg-colour", Application.#DEFAULT_BG);
+        document.getElementById("line-col-value").value = this.getItem("line-colour", Application.#DEFAULT_LINE);
+
         this.data = {
             labels: [],
             datasets: [{
                 label: 'Elo Value',
-                backgroundColor: Application.#DEFAULT_BG,
-                borderColor: Application.#DEFAULT_LINE, 
+                backgroundColor: document.getElementById("bg-col-value").value,
+                borderColor: document.getElementById("line-col-value").value, 
                 fill: true,
                 data: [],
                 yAxisID: 'ELO',
@@ -304,10 +320,22 @@ class Application {
     maybeSetColours() {
         let bg = document.getElementById("bg-col-value").value;
         let line = document.getElementById("line-col-value").value;
-        if (bg != Application.#DEFAULT_BG && isValidColour(bg))
+        if (bg != Application.#DEFAULT_BG) {
+            if (isValidColour(bg)) {
+            this.setItem("bg-colour", bg);
             this.graph.data.datasets[0].backgroundColor = bg;
-        if (line != Application.#DEFAULT_LINE && isValidColour(line))
+            } else {
+                this.removeItem("bg-colour");
+            }
+        }
+        if (line != Application.#DEFAULT_LINE) {
+            if (isValidColour(line)) {
+            this.setItem("line-colour", line);
             this.graph.data.datasets[0].borderColor = line;
+            } else {
+                this.removeItem("line-colour");
+            }
+        }
     }
 
     rerender() {
@@ -333,7 +361,8 @@ class Application {
         // This enables our delayed callback system.
         if (eloChartData.length > 0) {
             this.graph.data.datasets[0].data = eloChartData;
-            this.graph.options.plugins.title.text = `Elo Graph for ${this.activePlayer.overrideNick || this.activePlayer.nickname}`;
+            let loadingtext = this.activePlayer.loading == null ? '' : ` (${this.activePlayer.loading})`;
+            this.graph.options.plugins.title.text = `Elo Graph for ${this.activePlayer.overrideNick || this.activePlayer.nickname}${loadingtext}`;
             console.log(`Rerendered for ${this.activePlayer.username}`);
         }
         else {
