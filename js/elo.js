@@ -362,6 +362,11 @@ class Application {
             // I don't know Oliver's ingame name lol
             player.overrideNick = 'RedLime (MCSR Developer)';
         }
+        else if (username == 'desktopfolder') {
+            player.overrideNick = 'DesktopFolder (NOT A WEB DEVELOPER, PLEASE BELIEVE ME)';
+            this.graph.data.datasets[0].backgroundColor = 'rgba(85, 172, 238, 0.4)';
+            this.graph.data.datasets[0].borderColor = 'rgba(34,102,153,1)';
+        }
     }
 
     removeEasterEggs(player) {
