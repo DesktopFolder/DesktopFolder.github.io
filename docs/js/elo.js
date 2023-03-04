@@ -603,7 +603,7 @@ function onDomLoaded() {
     updateUrls(username);
 
     // User counting!! Very simple.
-    if (!location.host.contains("localhost")) {
+    if (!location.host.includes("localhost")) {
         console.log("User counting!");
         fetch("https://api.countapi.xyz/hit/disrespec.tech/visits-elo")
              .then((response) => response.json())
