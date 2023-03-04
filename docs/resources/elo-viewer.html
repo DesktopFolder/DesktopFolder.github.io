@@ -14,7 +14,7 @@
 
     <link rel="stylesheet" href="../styles.css">
     <!--<link rel="stylesheet" href="path/to/print.css" media="print">-->
-    
+    <link rel="stylesheet" href="/styles/elo.css">
 
     <meta name="description" content="A small elo grapher" />
     <meta property="og:title" content="Elo Viewer" />
@@ -25,385 +25,58 @@
 <a href="/" id="home-button" style="position:absolute;left:7px;top:12px;margin:0;font-size:60%;line-height:0;">home</a>
 
 <body class="wider">
-<p>Username: <input id="username-value" /> 
-Chart tension: <input id="tension-value" type="number" step="any" min="0" max="1" value="0.4"/></p>
-<p style="display: none" id="json-output"></p>
+
+<!--Basic configuration provided by the user.-->
+<p id="username-header" style="text-align: center;">
+    Username: 
+    <input id="username-value" placeholder="Minecraft username..." class="enter-update" /> 
+</p>
+
+<p class="basic-config">
+    Chart tension: 
+    <input id="tension-value" type="number" step="any" min="0" max="1" value="0.2" style="width:3em;"/>
+
+    Line Colour:
+    <input id="line-col-value" placeholder="rgba(113, 121, 126, 0.8)" value="rgba(113, 121, 126, 0.8)" class="app-rerender"/>
+
+    Background Colour:
+    <input id="bg-col-value" placeholder="rgba(226, 242, 252, 0.4)" value="rgba(226, 242, 252, 0.4)" class="app-rerender"/>
+</p>
+
+(<b>Experimental</b>) Session Grouping (WIP come back in a few days): 
+<input class="app-rerender" type="checkbox" placeholder="" id="group-sessions" style="width:auto;"> 
+
+Easter Eggs: 
+<input class="app-rerender" type="checkbox" placeholder="" id="allow-eggs" style="width:auto;" checked> 
 
 <canvas id="incredible-elo-chart"></canvas>
 
+<!--Crossposting & sharing-->
 <p id="current-url-p" style="text-align: center;">Share this graph: <a id="current-url" href=""></a></p>
-<p style="text-align: center;">This application is a work in progress (& made for fun). For feedback or questions, ping me on Discord (@DesktopFolder) or make an issue <a href="https://github.com/DesktopFolder/desktopfolder.github.io">in the repository</a>.</p>
+<p id="other-urls-p" style="text-align: center;">
+<a id="nacho-url" href="https://nacho-cs.github.io/" target="_blank">Nacho Games Viewer</a><b style="margin-left:1.28em;margin-right:1em">&middot;</b>
+<a id="pasta-url" href="https://mcsr-ranked-stats-viewer.vercel.app/" target="_blank">Pasta Stats Viewer</a>
+</p>
 
+<!--Notices & Information-->
+<p style="text-align: center;">
+This application is a work in progress (& made for fun). For feedback or questions, ping me on Discord (@DesktopFolder with ID 7146) or make an issue <a href="https://github.com/DesktopFolder/desktopfolder.github.io">in the repository</a>. Pull requests may also be accepted.
+</p>
+<p style="text-align: center;">
+<i>
+This application is made possible through the <a href="https://mcsrranked.com/">MCSR Ranked</a> API. If you'd like to support the MCSR Ranked project, please consider supporting it via the <a href="https://www.patreon.com/mcsrranked">Patreon</a>.
+</i>
+</p>
+
+
+<!--Debugging things (just chuck these at the end, doesn't really matter)-->
+<p style="display: none" id="json-output"></p>
+<div style="display: none" id="validColour"></div>
+<!--Import our scripts here. Chart.JS, Luxon, and the adapter are all used for our graphing system. (Luxon & the adapter are used for date formatting)-->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@^3"></script>
 <script src="https://cdn.jsdelivr.net/npm/luxon@^2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@^1"></script>
-<script>
-// I'm just going to quickly preface this.
-// I have no knowledge whatsoever of best practice within JS.
-// This is just me going based off of some very basic assumptions.
-// This may not be good code. (And most likely isn't.)
-
-// Helpers
-function timestamp() {
-    return Math.floor(Date.now() / 1000);
-}
-
-class Player {
-    constructor(data, username) {
-        this.lastPolled = null;
-        this.data = data;
-        this.username = username;
-        this.base_elo = 0;
-        this.prev_date = 0;
-    }
-
-    shouldPoll() {
-        // Check if it's been 5 minutes since we last polled.
-        return (timestamp() - (this.lastPolled || 0)) > (5 * 60);
-    }
-
-    polled() {
-        this.lastPolled = timestamp();
-    }
-
-    scoreChangeFrom(md) {
-        const uuid = md.members.find((item) => (item.nickname.toLowerCase() == this.username)).uuid;
-        return md.score_changes.find((item) => (item.uuid == uuid)).score;
-    }
-
-    enemyFrom(md) {
-        return md.members.find((item) => (item.nickname.toLowerCase() != this.username));
-    }
-
-    eloFrom(md) {
-        return md.members.find((item) => (item.nickname.toLowerCase() == this.username)).elo_rate;
-    }
-
-    fetchingPoll(i = 0) {
-        if (!this.shouldPoll() && i == 0) {
-            console.log(`Did not poll for ${this.username} due to timeout. (Page 0 request)`);
-            application.maybeRerender(this);
-            return;
-        }
-        console.log("Submitting fetch for " + this.username);
-        fetch('https://mcsrranked.com/api/users/' + this.username + '/matches?filter=2&page=' + i, {mode:'cors'})
-            .then((response) => response.json())
-            .then((data) => {
-                console.log(`Got data for ${this.username}`);
-                // LOGGING / INVALID DATA
-                // console.log(data);
-                let output = document.getElementById("json-output");
-                output.innerHTML = JSON.stringify(data);
-                if (data.status == "error") { 
-                    console.log("Refusing to update application with bad data.");
-                    this.polled(); // don't make multiple erroring requests
-                    application.stopTimer();
-                    return;
-                }
-                if (data.data.length > 0 && i == 0) {
-                    this.base_elo = this.eloFrom(data.data[0]);
-                    console.log(`Set base elo to ${this.base_elo}`);
-                    if (data.data[0].match_date == this.prev_date) {
-                        console.log(`No update found.`);
-                        application.maybeRerender(this);
-                        return;
-                    }
-                    this.prev_date = data.data[0].match_date;
-                    this.data = [];
-                }
-
-                // VALID DATA FROM HERE
-                this.manualUpdate(data.data);
-                application.saveRenderPlayer(this);
-
-                // Maybe launch another fetch.
-                if (data.data.length >= 20) {
-                    console.log(`Queued another read for page ${i + 1} for ${this.username}`);
-                    setTimeout(() => this.fetchingPoll(i + 1), 2000);
-                }
-            })
-            .catch((e) => {});
-    }
-
-    asData() {
-        return JSON.stringify(this.data.filter((e, i, a) => (i == 0 || a[i - 1][1] != e[1] || a[i - 1][2] != e[2])));
-    }
-
-    toEloChartData() {
-        return this.data;
-        //return this.data.map(o => ({x: o[0] * 1000, y: o[2]}));
-    }
-    toRankChartData() {
-        return this.data;
-        //return this.data.map(o => ({x: o[0] * 1000, y: o[1]}));
-    }
-
-    manualUpdate(data) {
-        //if (data.nickname.toLowerCase() != this.username) {
-        //    console.log(`Error: manualUpdate received nickname ${data.nickname} but is ${this.username}`);
-        //    return;
-        //}
-
-        this.polled();
-
-        for (const d of data) {
-            if (d.match_type != 2) continue;
-            if (d.score_changes == null) continue;
-            let c = this.scoreChangeFrom(d);
-            
-            // we go most recent to least recent
-            // first set the data, then make the change
-            this.data.push({
-                x: d.match_date * 1000,
-                y: this.base_elo,
-                enemy: this.enemyFrom(d).nickname,
-                change: c,
-            });
-
-            this.base_elo -= c;
-        }
-
-        // this.data.push([this.lastPolled, data.elo_rank, data.elo_rate]);
-    }
-}
-
-class Application {
-    static #FEINBERG_LINE = 'rgb(255, 99, 132)';
-    static #FEINBERG_BG = 'rgb(75, 192, 192)';
-    static #DEFAULT_LINE = 'rgba(113, 121, 126, 0.8)';
-    static #DEFAULT_BG = 'rgba(226, 242, 252, 0.4)';
-    static #DEFAULT_FG_LINE = 'rgba(178, 121, 126, 0.9)';
-
-    timer = null;
-
-    // LocalStorage accessors/modifiers
-    getItem(id, default_value = null) {
-        return localStorage.getItem('_elo:' + id.toLowerCase()) || default_value;
-    }
-
-    setItem(id, val) {
-        return localStorage.setItem('_elo:' + id.toLowerCase(), val);
-    }
-
-    removeItem(id) {
-        return localStorage.removeItem('_elo:' + id.toLowerCase());
-    }
-
-    stopTimer() {
-        if (this.timer != null) {
-            clearInterval(this.timer); 
-        }
-    }
-
-    // Setup - load our relevant data
-    constructor() {
-        this.players = new Map(); // These are lazy loaded.
-        this.activePlayer = null;
-    }
-
-    init() {
-        if (this.getItem('version', 0) < 1) {
-            // Version upgrade things?
-        }
-        this.ctx = document.getElementById("incredible-elo-chart");
-        this.data = {
-            labels: [],
-            datasets: [{
-                label: 'Elo Value',
-                backgroundColor: Application.#DEFAULT_BG,
-                borderColor: Application.#DEFAULT_LINE, 
-                fill: true,
-                data: [],
-                yAxisID: 'ELO',
-                tension: 0.4,
-            }, /*{
-                label: 'MCSR Rank',
-                backgroundColor: Application.#DEFAULT_BG,
-                borderColor: Application.#DEFAULT_FG_LINE, 
-                fill: false,
-                data: [],
-                yAxisID: 'RANK',
-            }*/
-            ],
-        };
-        this.graph = new Chart(this.ctx, {
-            type: 'line',
-            data: this.data,
-            options: {
-                plugins: {
-                    title: {
-                        text: 'Elo Graph',
-                        display: true
-                    },
-                    tooltip: {
-                        enabled: true,
-                        callbacks: {
-                            label: function (context) {
-                                const c = context.raw.change;
-                                let cval = c > 0 ? '+' + String(c) : String(c);
-                                return `${cval} VS ${context.raw.enemy}`;
-                            }
-                        }
-                    }
-                },
-                scales: {
-                    x: {
-                        type: 'time',
-                        time: {
-                            tooltipFormat: 'DD T'
-                        },
-                        title: {
-                            display: true,
-                            text: 'Date'
-                        }
-                    },
-                    ELO: {
-                        type: 'linear',
-                        position: 'left',
-                        id: 'ELO',
-                        title: {
-                            display: true,
-                            text: 'Elo'
-                        }
-                    },
-                    /*RANK: {
-                        type: 'linear',
-                        position: 'right',
-                        id: 'RANK',
-                        title: {
-                            display: true,
-                            text: 'Rank'
-                        },
-                        reverse: true,
-                    }*/
-                }
-            }
-        });
-    }
-
-    // This really assumes no multithreading (i.e. multiple tabs)
-    // UNUSED - DEPRECATED
-    #loadPlayerData(username) {
-        // don't at me
-        return JSON.parse(this.getItem('player:' + username) || '[]');
-    }
-    getPlayer(someUsername) {
-        let username = someUsername.toLowerCase();
-        if (username == 'feinberg') {
-            this.graph.data.datasets[0].backgroundColor = Application.#FEINBERG_BG;
-            this.graph.data.datasets[0].borderColor = Application.#FEINBERG_LINE;
-            this.graph.update();
-        }
-        if (this.players.has(username)) { return this.players.get(username); }
-        this.players.set(username, new Player([], username)); 
-        return this.players.get(username);
-    }
-
-    // UNUSED - DEPRECATED
-    commit() {
-        for (const [name, player] of this.players) {
-            if (player.data.length == 0) {
-                console.log(`Did not store player ${player.username} (invalid data)`);
-                continue;
-            }
-            const res = player.asData();
-            const key = 'player:' + player.username;
-            this.setItem(key, res);
-            console.log(`Stored player ${player.username} at '${key}' as: ${res}`);
-        }
-        this.setItem('version', 1);
-    }
-
-    #fetchingUpdate(username) {
-        // Load the player that we're updating from.
-        var p = this.getPlayer(username);
-
-        // Next, we want to save elo rate and rank right now, along with a timestamp.
-        p.fetchingPoll();
-        console.log(`(Ran fetching update for ${p.username})`);
-    }
-
-    maybeRerender(player) {
-        if (player.username != this.activePlayer) {
-            this.saveRenderPlayer(player);
-        }
-    }
-
-    doTension(t) {
-        this.graph.data.datasets[0].tension = t;
-        this.graph.update();
-    }
-
-    saveRenderPlayer(player) {
-        // this.commit();
-
-        this.graph.data.datasets[0].data = player.toEloChartData();
-        //this.graph.data.datasets[1].data = player.toRankChartData();
-        this.graph.update();
-
-        this.stopTimer();
-        this.timer = setInterval(() => this.#fetchingUpdate(player.username), 60 * 1000);
-        this.activePlayer = player.username;
-    }
-
-    loadUsername(username) {
-        if (!/^([a-zA-Z0-9_]{2,17})$/.test(username)) {
-            return;
-        }
-
-        this.#fetchingUpdate(username.toLowerCase());
-    }
-}
-
-var application = new Application();
-
-function updateUrl(username) {
-    var o = document.getElementById("current-url");
-    var newUrl = 'https://' + location.host + location.pathname;
-    // this should use join, but shh
-    const u = (username == 0) ? '' : ('username=' + username);
-    const res = [u].filter(v => v).join('&');
-    if (res.length != 0) {
-        newUrl = newUrl + '?' + res;
-    }
-    o.href = newUrl;
-    o.innerHTML = newUrl;
-}
-
-function onDomLoaded() {
-    application.init();
-    document.getElementById("username-value").addEventListener("change", function(e) {
-        // do nothing for now
-        // application.loadUsername(document.getElementById("username-value").value);
-    });
-    document.getElementById("username-value").addEventListener("keypress", function(e) {
-        if (e.key == 'Enter') {
-            const username = document.getElementById("username-value").value;
-            application.loadUsername(username);
-            updateUrl(username);
-        }
-    });
-
-    document.getElementById("tension-value").addEventListener("input", function(e) {
-        let t = parseFloat(document.getElementById("tension-value").value);
-        if (isNaN(t) || t == null) return;
-        if (t > 1.0 || t < 0.0) return;
-
-        application.doTension(t);
-    });
-    console.log("Setup event listeners.");
-
-    // Parse URL parameters.
-    const url = new URL(window.location.href);
-    const username = url.searchParams.get("username") || "";
-    document.getElementById("username-value").value = username;
-    application.loadUsername(username);
-
-    updateUrl(username);
-}
-
-document.addEventListener('DOMContentLoaded', onDomLoaded, false);
-</script>
+<script src="/js/elo.js"></script><!--All of our actual logic resides here.-->
 </body>
 
 </html>

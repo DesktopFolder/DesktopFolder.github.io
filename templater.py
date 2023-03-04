@@ -132,6 +132,9 @@ def main(log):
             else:
                 shutil.copy(p, dest_path)
 
+        shutil.copytree('./js', os.path.join(dest_path, 'js/'), dirs_exist_ok=True,
+                        ignore=shutil.ignore_patterns('.gitignore'))
+
 
 if __name__ == "__main__":
     import sys
