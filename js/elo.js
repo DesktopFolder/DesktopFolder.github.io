@@ -439,6 +439,13 @@ function onDomLoaded() {
     for (const appChanger of Array.from(document.getElementsByClassName("app-rerender"))) {
         appChanger.addEventListener("change", function() {
             console.log("Attempting application rerender through app-rerender class.");
+
+            if (document.getElementById("group-sessions").checked) {
+                document.getElementById("warn-experimental").innerHTML = 'No seriously, this does nothing';
+            }
+            else {
+                document.getElementById("warn-experimental").innerHTML = 'WIP come back in a few days';
+            }
             application.rerender();
         });
     }
