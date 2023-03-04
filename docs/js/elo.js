@@ -313,6 +313,11 @@ class Application {
             type: 'line',
             data: this.data,
             options: {
+                elements: {
+                    point: { 
+                        radius: 1,
+                    }
+                },
                 plugins: {
                     title: {
                         text: 'Elo Graph',
@@ -430,6 +435,8 @@ class Application {
     rerender() {
         if (this.enabled("allow-zoom")) this.enableZoom();
         else this.disableZoom();
+        if (this.enabled("clean-graph")) this.graph.options.elements.point.radius = 1;
+        else this.graph.options.elements.point.radius = 3;
 
         if (this.activePlayer == null) {
             console.log("Warning: this.activePlayer was null when rerender()");
@@ -595,6 +602,10 @@ function onDomLoaded() {
 
     updateUrls(username);
 
+    /*
+    fetch(`https://mcsrranked.com/api/users/${this.username}/matches?filter=2&count=${application.config.pageCount}&page=${i}`, {mode:'cors'})
+        .then((response) => response.json())
+        */
     console.log("Finished application setup.");
 }
 
