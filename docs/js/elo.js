@@ -377,6 +377,11 @@ class Application {
             // thanks for being my unwitting test subject for this app though
             this.graph.data.datasets[0].label = 'Elo Value (It\'s high, right?)';
         }
+        else if (username == 'toph033') {
+            player.overrideNick = 'Toph';
+            this.graph.data.datasets[0].backgroundColor = 'rgba(134, 252, 212, 0.4)';
+            this.graph.data.datasets[0].borderColor = 'rgba(74, 94, 81, 0.9)';
+        }
     }
 
     removeEasterEggs(player) {
