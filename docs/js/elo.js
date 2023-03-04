@@ -151,8 +151,7 @@ class Player {
 
     toEloChartData() {
         if (this.data.length == 0) return [];
-        // let data = this.data.map(o => { o.comprises = 1; return o; });
-        let data = this.data;
+        let data = this.data.map(o => { o.comprises = 1; return o; });
 
         const begin = document.getElementById("begin-date").value;
         if (begin !== "") {
@@ -174,8 +173,8 @@ class Player {
             
             let last_time = data[0].x + 2*MINUTES;
             let last_allowed = data[0];
-            let won = 0.0;
-            let lost = 0.0;
+            let won = 0;
+            let lost = 0;
             data = data.filter((d) => {
                 const prev = last_time;
                 last_time = d.x;
@@ -185,16 +184,19 @@ class Player {
                     last_allowed.change = last_allowed.y - d.y;
                     last_allowed.wr = Math.round(won * 100.0 / (won + lost), 2);
                     last_allowed = d;
-                    won = 0.0;
-                    lost = 0.0;
+                    won = 0;
+                    lost = 0;
                 }
                 // otherwise, increment last allowed count
-                else last_allowed.comprises += 1;
+                else {
+                    last_allowed.comprises += 1;
+                }
 
-                if (d.rawChange > 0) won += 1.0;
-                else lost += 1.0; // TODO - draw accounting? I don't really care so
+                if (d.won) won += 1;
+                else lost += 1; // TODO - draw accounting? I don't really care so
                 return allow;
             });
+            data[data.length - 1].wr = Math.round(won * 100.0 / (won + lost), 2);
         }
 
         return data;
@@ -209,6 +211,7 @@ class Player {
         for (const d of data) {
             if (d.match_type != 2) continue;
             if (d.score_changes == null) continue;
+            const ourData = this.dataFrom(d);
             let c = this.scoreChangeFrom(d);
             
             // we go most recent to least recent
@@ -220,7 +223,7 @@ class Player {
                 comprises: 1,
                 wr: null,
                 change: c,
-                rawChange: c,
+                won: ourData.uuid == d.winner,
             });
 
             this.rawData.push({
@@ -437,7 +440,7 @@ class Application {
             this.doPerUserEasterEggs(this.activePlayer);
         }
         else {
-            console.log(`Removing easter eggs for ${player.username}`);
+            console.log(`Removing easter eggs for ${this.activePlayer.username}`);
             this.removeEasterEggs(this.activePlayer);
         }
 
@@ -469,6 +472,11 @@ class Application {
         if (username == 'feinberg') {
             this.graph.data.datasets[0].backgroundColor = Application.#FEINBERG_BG;
             this.graph.data.datasets[0].borderColor = Application.#FEINBERG_LINE;
+        }
+        if (username == 'sickrates') {
+            this.graph.data.datasets[0].backgroundColor = Application.#FEINBERG_BG;
+            this.graph.data.datasets[0].borderColor = Application.#FEINBERG_LINE;
+            player.overrideNick = 'Feinberg Alt #1';
         }
         else if (username == 'shenaningans') {
             player.overrideNick = 'Ella';
