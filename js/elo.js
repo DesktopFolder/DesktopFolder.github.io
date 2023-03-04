@@ -323,6 +323,7 @@ class Application {
             this.doPerUserEasterEggs(this.activePlayer);
         }
         else {
+            console.log(`Removing easter eggs for ${player.username}`);
             this.removeEasterEggs(this.activePlayer);
         }
 
@@ -343,6 +344,10 @@ class Application {
     }
 
     doPerUserEasterEggs(player) {
+        // Reset everything. Yeah this is ugly but whatever.
+        // Who expects performance out of javascript web apps anyways? Lol!
+        this.removeEasterEggs(player);
+
         // We're having so much fun, aren't we?
         console.log(`Doing easter eggs for ${player.username}`);
         let username = player.username;
@@ -367,13 +372,18 @@ class Application {
             this.graph.data.datasets[0].backgroundColor = 'rgba(85, 172, 238, 0.4)';
             this.graph.data.datasets[0].borderColor = 'rgba(34,102,153,1)';
         }
+        else if (username == 'fulham') {
+            // ngl I don't watch fulham's stream enough to know any fun easter eggs
+            // thanks for being my unwitting test subject for this app though
+            this.graph.data.datasets[0].label = 'Elo Value (It\'s high, right?)';
+        }
     }
 
     removeEasterEggs(player) {
-        console.log(`Removing easter eggs for ${player.username}`);
         player.overrideNick = null;
         this.graph.data.datasets[0].backgroundColor = Application.#DEFAULT_BG;
         this.graph.data.datasets[0].borderColor = Application.#DEFAULT_LINE;
+        this.graph.data.datasets[0].label = 'Elo Value';
     }
 
     // Entry point for our application.
