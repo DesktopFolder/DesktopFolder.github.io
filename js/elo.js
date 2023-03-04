@@ -489,6 +489,12 @@ class Application {
             this.graph.data.datasets[0].borderColor = Application.#FEINBERG_LINE;
             player.overrideNick = 'Feinberg Alt #1';
         }
+        if (username == 'illuminahd') {
+            player.overrideNick = 'Illumina (WR holding in our hearts)';
+        }
+        if (username == 'zylenox') {
+            player.overrideNick = 'Zylenox (WR holder - 1.16.1 RSG)';
+        }
         else if (username == 'shenaningans') {
             player.overrideNick = 'Ella';
             this.graph.data.datasets[0].backgroundColor = 'rgba(207,191,246,0.5)';
@@ -611,6 +617,9 @@ function onDomLoaded() {
                 console.log(`You are visitor ${data.value}`);
              })
              .catch((e) => { console.log(`CountAPI error: ${e}`); });
+    }
+    else {
+        console.log("Not user counting (localhost)");
     }
     console.log("Finished application setup.");
 }
