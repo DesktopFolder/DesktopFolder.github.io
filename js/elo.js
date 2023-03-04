@@ -175,8 +175,10 @@ class Player {
             let last_allowed = data[0];
             let won = 0;
             let lost = 0;
+            const first_elo = data[data.length - 1].y;
             data = data.filter((d) => {
                 const prev = last_time;
+                // prev is now the NEXT data point chronologically
                 last_time = d.x;
                 const allow = prev - d.x > MINUTES; 
                 // if we allow it, we are now last allowed
@@ -196,7 +198,9 @@ class Player {
                 else lost += 1; // TODO - draw accounting? I don't really care so
                 return allow;
             });
-            data[data.length - 1].wr = Math.round(won * 100.0 / (won + lost), 2);
+            let first_post_filter = data[data.length - 1]; 
+            first_post_filter.wr = Math.round(won * 100.0 / (won + lost), 2);
+            first_post_filter.change = first_post_filter.y - first_elo;
         }
 
         return data;
