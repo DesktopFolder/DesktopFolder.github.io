@@ -43,11 +43,24 @@
     <input id="bg-col-value" placeholder="rgba(226, 242, 252, 0.4)" value="rgba(226, 242, 252, 0.4)" class="app-rerender"/>
 </p>
 
-(<b>Experimental</b>) Session Grouping (<span id="warn-experimental">WIP come back in a few days</span>): 
+(<b>Experimental</b>) Session Grouping: 
 <input class="app-rerender" type="checkbox" placeholder="" id="group-sessions" style="width:auto;"> 
+
+Zoom: 
+<input class="app-rerender" type="checkbox" placeholder="" id="allow-zoom" style="width:auto;" checked> 
 
 Easter Eggs: 
 <input class="app-rerender" type="checkbox" placeholder="" id="allow-eggs" style="width:auto;" checked> 
+
+<p id="basic-buttons">
+    <button onclick="application.graph.resetZoom()">Reset Zoom</button>
+
+    <label for="begin-date">Earliest Date:</label>
+    <input class="app-rerender" type="date" id="begin-date" name="earliest-date" value="">
+
+    Grouping threshold (minutes):
+    <input id="group-thresh-val" placeholder="threshold in minutes..." style="width:2.5em;" value="30" class="app-rerender"/>
+</p>
 
 <canvas id="incredible-elo-chart"></canvas>
 
@@ -73,9 +86,16 @@ This application is made possible through the <a href="https://mcsrranked.com/">
 <p style="display: none" id="json-output"></p>
 <div style="display: none" id="validColour"></div>
 <!--Import our scripts here. Chart.JS, Luxon, and the adapter are all used for our graphing system. (Luxon & the adapter are used for date formatting)-->
+<!-- MUST COME FIRST-->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@^3"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.0"></script>
+
 <script src="https://cdn.jsdelivr.net/npm/luxon@^2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@^1"></script>
+
+<!--Our stuff-->
 <script src="/js/elo.js"></script><!--All of our actual logic resides here.-->
 </body>
 

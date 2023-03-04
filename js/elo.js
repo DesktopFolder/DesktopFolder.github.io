@@ -150,7 +150,46 @@ class Player {
     //}
 
     toEloChartData() {
-        return this.data;
+        if (this.data.length == 0) return [];
+        // let data = this.data.map(o => { o.comprises = 1; return o; });
+        let data = this.data;
+
+        const begin = document.getElementById("begin-date").value;
+        if (begin !== "") {
+            const ts = (new Date(begin)).getTime();
+            data = data.filter((d) => d.x > ts);
+        }
+
+        if (application.enabled("group-sessions")) {
+            const tval = parseInt(document.getElementById("group-thresh-val").value) || 30;
+            const MINUTES = tval * 60 * 1000;
+            
+            let last_time = data[0].x + 2*MINUTES;
+            let last_allowed = data[0];
+            let won = 0.0;
+            let lost = 0.0;
+            data = data.filter((d) => {
+                const prev = last_time;
+                last_time = d.x;
+                const allow = prev - d.x > MINUTES; 
+                // if we allow it, we are now last allowed
+                if (allow) {
+                    last_allowed.change = last_allowed.y - d.y;
+                    last_allowed.wr = Math.round(won * 100.0 / (won + lost), 2);
+                    last_allowed = d;
+                    won = 0.0;
+                    lost = 0.0;
+                }
+                // otherwise, increment last allowed count
+                else last_allowed.comprises += 1;
+
+                if (d.rawChange > 0) won += 1.0;
+                else lost += 1.0; // TODO - draw accounting? I don't really care so
+                return allow;
+            });
+        }
+
+        return data;
         //return this.data.map(o => ({x: o[0] * 1000, y: o[2]}));
     }
     toRankChartData() {
@@ -170,13 +209,17 @@ class Player {
                 x: d.match_date * 1000,
                 y: this.base_elo,
                 enemy: this.enemyFrom(d).nickname,
+                comprises: 1,
+                wr: null,
                 change: c,
+                rawChange: c,
             });
 
             this.rawData.push({
                 x: d.match_date * 1000,
                 y: this.base_elo,
                 enemy: this.enemyFrom(d).nickname,
+                comprises: 1,
                 change: c,
             });
 
@@ -199,6 +242,10 @@ class Application {
         pollMinutes: 5,
     };
 
+    enabled(id) {
+        return document.getElementById(id).checked;
+    }
+
     // LocalStorage accessors/modifiers
     getItem(id, default_value = null) {
         return localStorage.getItem('_elo:' + id.toLowerCase()) || default_value;
@@ -210,10 +257,6 @@ class Application {
 
     removeItem(id) {
         return localStorage.removeItem('_elo:' + id.toLowerCase());
-    }
-
-    isEaster() {
-        return document.getElementById("allow-eggs").checked;
     }
 
     // Setup - load our relevant data
@@ -266,7 +309,9 @@ class Application {
                             label: function (context) {
                                 const c = context.raw.change;
                                 let cval = c > 0 ? '+' + String(c) : String(c);
-                                return `${context.raw.y} (${cval} vs ${context.raw.enemy})`;
+                                const enemies = (context.raw.comprises > 1) ? `${context.raw.comprises} players, ${context.raw.wr}% winrate`
+                                                                            : context.raw.enemy;
+                                return `${context.raw.y} (${cval} vs ${enemies})`;
                             }
                         }
                     }
@@ -304,6 +349,35 @@ class Application {
                 }
             }
         });
+        this.graph.update();
+    }
+
+    disableZoom() {
+        console.log("Disabling zoom.");
+        this.graph.options.plugins.zoom = 
+            { 
+            };
+    }
+
+    enableZoom() {
+        console.log("Enabling zoom.");
+        this.graph.options.plugins.zoom = 
+            { 
+                zoom: {
+                            wheel: {
+                                enabled: true,
+                            },
+                            pinch: {
+                                enabled: true,
+                            },
+                            mode: 'x',
+                        },
+                pan: {
+                    enabled: true,
+                    mode: 'x',
+                }
+            };
+        this.graph.update();
     }
 
     getPlayer(username) {
@@ -339,15 +413,19 @@ class Application {
     }
 
     rerender() {
+        if (this.enabled("allow-zoom")) this.enableZoom();
+        else this.disableZoom();
+
         if (this.activePlayer == null) {
             console.log("Warning: this.activePlayer was null when rerender()");
+            this.graph.update();
             return;
         }
 
         // This is where all of our rendering code should stem from.
         let eloChartData = this.activePlayer.toEloChartData();
 
-        if (this.isEaster()) {
+        if (this.enabled("allow-eggs")) {
             this.doPerUserEasterEggs(this.activePlayer);
         }
         else {
@@ -411,6 +489,9 @@ class Application {
             this.graph.data.datasets[0].backgroundColor = 'rgba(134, 252, 212, 0.4)';
             this.graph.data.datasets[0].borderColor = 'rgba(74, 94, 81, 0.9)';
         }
+        else if (username == 'commandleo') {
+            player.overrideNick = 'Leo (Storage tech pro)';
+        }
     }
 
     removeEasterEggs(player) {
@@ -423,13 +504,13 @@ class Application {
     // Entry point for our application.
     loadUsername(inputUsername) {
         let username = inputUsername.toLowerCase();
-        if (!/^([a-z0-9_]{2,17})$/.test(username)) {
-            return;
+
+        if (/^([a-z0-9_]{2,17})$/.test(username)) {
+            if (this.activePlayer != null) this.activePlayer.setInactive();
+            this.activePlayer = this.getPlayer(username);
+            this.activePlayer.setActive();
+            this.setItem("last-player", username);
         }
-        
-        if (this.activePlayer != null) this.activePlayer.setInactive();
-        this.activePlayer = this.getPlayer(username);
-        this.activePlayer.setActive();
 
         // Just always rerender.
         this.rerender();
@@ -474,12 +555,6 @@ function onDomLoaded() {
         appChanger.addEventListener("change", function() {
             console.log("Attempting application rerender through app-rerender class.");
 
-            if (document.getElementById("group-sessions").checked) {
-                document.getElementById("warn-experimental").innerHTML = 'No seriously, this does nothing';
-            }
-            else {
-                document.getElementById("warn-experimental").innerHTML = 'WIP come back in a few days';
-            }
             application.rerender();
         });
     }
@@ -494,7 +569,7 @@ function onDomLoaded() {
 
     // Parse URL parameters.
     const url = new URL(window.location.href);
-    const username = url.searchParams.get("username") || "";
+    const username = url.searchParams.get("username") || application.getItem("last-player", "");
     document.getElementById("username-value").value = username;
     application.loadUsername(username);
 
