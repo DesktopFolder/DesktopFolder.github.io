@@ -40,6 +40,9 @@ Easter Eggs:
     <label for="begin-date">Earliest Date:</label>
     <input class="app-rerender" type="date" id="begin-date" name="earliest-date" value="">
 
+    <label for="end-date">Latest Date:</label>
+    <input class="app-rerender" type="date" id="end-date" name="latest-date" value="">
+
     Grouping threshold (minutes):
     <input id="group-thresh-val" placeholder="threshold in minutes..." style="width:2.5em;" value="30" class="app-rerender"/>
 </p>

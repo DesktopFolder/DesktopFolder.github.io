@@ -159,6 +159,11 @@ class Player {
             const ts = (new Date(begin)).getTime();
             data = data.filter((d) => d.x > ts);
         }
+        const end = document.getElementById("end-date").value;
+        if (end !== "") {
+            const ts = (new Date(begin)).getTime();
+            data = data.filter((d) => d.x < ts);
+        }
 
         if (application.enabled("group-sessions")) {
             const tval = parseInt(document.getElementById("group-thresh-val").value) || 30;
