@@ -80,15 +80,15 @@ class Player {
 
     fetchingPoll(i = 0) {
         if (!this.shouldPoll() && i == 0) {
-            console.log(`Player: Did not poll for ${this.username} due to internal ratelimit. (Page 0 request)`);
+            application.log(`Player: Did not poll for ${this.username} due to internal ratelimit. (Page 0 request)`);
             return;
         }
         this.polled();
-        console.log(`Player: Submitting fetch for ${this.username}`);
+        application.log(`Player: Submitting fetch for ${this.username}`);
         fetch(`https://mcsrranked.com/api/users/${this.username}/matches?filter=2&count=${application.config.pageCount}&page=${i}`, {mode:'cors'})
             .then((response) => response.json())
             .then((data) => {
-                console.log(`Got data for ${this.username}`);
+                application.log(`Got data for ${this.username}`);
                 // LOGGING / INVALID DATA
                 // console.log(data);
                 // let output = document.getElementById("json-output");
@@ -109,12 +109,12 @@ class Player {
                     this.base_elo = ourData.elo_rate;
                     this.nickname = ourData.nickname;
                     this.base_rank = ourData.elo_rank;
-                    console.log(`Player ${this.username}: Set base elo to ${this.base_elo}`);
+                    application.log(`Player ${this.username}: Set base elo to ${this.base_elo}`);
 
                     // If latest match has already been loaded, exit.
                     const latest_match_date = data.data[0].match_date;
                     if (latest_match_date == this.prev_date) {
-                        console.log(`Player ${this.username}: No update found.`);
+                        application.log(`Player ${this.username}: No update found.`);
                         return;
                     }
 
@@ -128,7 +128,7 @@ class Player {
 
                 // Maybe launch another fetch.
                 if (data.data.length >= application.config.pageCount) {
-                    console.log(`Queued another read for page ${i + 1} for ${this.username}`);
+                    application.log(`Queued another read for page ${i + 1} for ${this.username}`);
                     setTimeout(() => {
                         if (this.isActive) { this.fetchingPoll(i + 1) }
                     }, 2000);
@@ -157,13 +157,13 @@ class Player {
         if (begin !== "") {
             const ts = (new Date(begin)).getTime();
             data = data.filter((d) => d.x > ts);
-            console.log(`Filtered with begin ${begin}`);
+            application.log(`Filtered with begin ${begin}`);
         }
         const end = document.getElementById("end-date").value;
         if (end !== "") {
             const ts = (new Date(end)).getTime();
             data = data.filter((d) => d.x < ts);
-            console.log(`Filtered with end ${end}`);
+            application.log(`Filtered with end ${end}`);
         }
         if (data.length == 0) return [];
 
@@ -278,6 +278,8 @@ class Application {
     constructor() {
         this.players = new Map(); // These are lazy loaded.
         this.activePlayer = null;
+        // atm just enable this via console.
+        this.doLogging = this.getItem('do-logging') != null;
     }
 
     init() {
@@ -373,14 +375,14 @@ class Application {
     }
 
     disableZoom() {
-        console.log("Disabling zoom.");
+        application.log("Disabling zoom.");
         this.graph.options.plugins.zoom = 
             { 
             };
     }
 
     enableZoom() {
-        console.log("Enabling zoom.");
+        application.log("Enabling zoom.");
         this.graph.options.plugins.zoom = 
             { 
                 zoom: {
@@ -451,7 +453,7 @@ class Application {
             this.doPerUserEasterEggs(this.activePlayer);
         }
         else {
-            console.log(`Removing easter eggs for ${this.activePlayer.username}`);
+            application.log(`Removing easter eggs for ${this.activePlayer.username}`);
             this.removeEasterEggs(this.activePlayer);
         }
 
@@ -463,10 +465,10 @@ class Application {
             this.graph.data.datasets[0].data = eloChartData;
             let loadingtext = this.activePlayer.loading == null ? '' : ` (${this.activePlayer.loading})`;
             this.graph.options.plugins.title.text = `Elo Graph for ${this.activePlayer.overrideNick || this.activePlayer.nickname}${loadingtext}`;
-            console.log(`Rerendered for ${this.activePlayer.username}`);
+            application.log(`Rerendered for ${this.activePlayer.username}`);
         }
         else {
-            console.log(`Did not rerender for ${this.activePlayer.username} as data was 0.`);
+            application.log(`Did not rerender for ${this.activePlayer.username} as data was 0.`);
         }
         // Always call update graph, we just don't update the data necessarily.
         this.graph.update();
@@ -478,7 +480,7 @@ class Application {
         this.removeEasterEggs(player);
 
         // We're having so much fun, aren't we?
-        console.log(`Doing easter eggs for ${player.username}`);
+        application.log(`Doing easter eggs for ${player.username}`);
         let username = player.username;
         if (username == 'feinberg') {
             this.graph.data.datasets[0].backgroundColor = Application.#FEINBERG_BG;
@@ -548,6 +550,12 @@ class Application {
         // Just always rerender.
         this.rerender();
     }
+
+    log(m) {
+        if (this.doLogging) {
+            console.log(m);
+        }
+    }
 }
 
 var application = new Application();
@@ -577,7 +585,7 @@ function onDomLoaded() {
 
     document.getElementById("username-value").addEventListener("keypress", function(e) {
         if (e.key == 'Enter') {
-            console.log("Enter keypress -> Firing username update.");
+            application.log("Enter keypress -> Firing username update.");
             const username = document.getElementById("username-value").value;
             application.loadUsername(username);
             updateUrls(username);
@@ -586,7 +594,7 @@ function onDomLoaded() {
 
     for (const appChanger of Array.from(document.getElementsByClassName("app-rerender"))) {
         appChanger.addEventListener("change", function() {
-            console.log("Attempting application rerender through app-rerender class.");
+            application.log("Attempting application rerender through app-rerender class.");
 
             application.rerender();
         });
@@ -610,7 +618,7 @@ function onDomLoaded() {
 
     // User counting!! Very simple.
     if (!location.host.includes("localhost")) {
-        console.log("User counting!");
+        application.log("User counting!");
         if (application.getItem("unique-visitor") == null) {
             application.setItem("unique-visitor", "visited");
             fetch("https://api.countapi.xyz/hit/disrespec.tech/unique-visits-elo")
@@ -636,9 +644,9 @@ function onDomLoaded() {
              .catch((e) => { console.log(`CountAPI error: ${e}`); });
     }
     else {
-        console.log("Not user counting (localhost)");
+        application.log("Not user counting (localhost)");
     }
-    console.log("Finished application setup.");
+    application.log("Finished application setup.");
 }
 
 document.addEventListener('DOMContentLoaded', onDomLoaded, false);
