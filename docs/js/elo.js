@@ -335,6 +335,9 @@ class Application {
         }
         this.ctx = document.getElementById("incredible-elo-chart");
 
+        const tens = application.getItem("tension-value", '0.2');
+        document.getElementById("tension-value").value = tens;
+
         document.getElementById("bg-col-value").value = this.getItem(
             "bg-colour",
             Application.#DEFAULT_BG
@@ -356,7 +359,7 @@ class Application {
                     fill: true,
                     data: [],
                     yAxisID: "ELO",
-                    tension: 0.2,
+                    tension: this.getTension(tens) || 0.2,
                     pointBackgroundColor: function(c) {
                         let idx = c.dataIndex;
                         let p = c.dataset.data[idx];
@@ -474,7 +477,17 @@ class Application {
         return this.players.get(username);
     }
 
-    doTension(t) {
+    getTension(tsrc) {
+        let t = parseFloat(tsrc);
+        if (isNaN(t) || t == null) return null;
+        if (t > 1.0 || t < 0.0) return null;
+        return t;
+    }
+
+    doTension(tsrc) {
+        application.setItem("tension-value", tsrc);
+        let t = this.getTension(tsrc);
+        if (t == null) return;
         this.graph.data.datasets[0].tension = t;
         this.graph.update();
     }
@@ -687,11 +700,8 @@ function onDomLoaded() {
     document
         .getElementById("tension-value")
         .addEventListener("input", function (e) {
-            let t = parseFloat(document.getElementById("tension-value").value);
-            if (isNaN(t) || t == null) return;
-            if (t > 1.0 || t < 0.0) return;
-
-            application.doTension(t);
+            const inputval = document.getElementById("tension-value").value;
+            application.doTension(inputval);
         });
 
     // Parse URL parameters.
@@ -705,6 +715,7 @@ function onDomLoaded() {
     updateUrls(username);
 
     // User counting!! Very simple.
+    // ok this looks less simple now LOL
     if (!location.host.includes("localhost")) {
         application.log("User counting!");
         if (application.getItem("unique-visitor") == null) {
