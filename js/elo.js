@@ -687,9 +687,11 @@ function onDomLoaded() {
     document
         .getElementById("tension-value")
         .addEventListener("input", function (e) {
-            let t = parseFloat(document.getElementById("tension-value").value);
+            const inputval = document.getElementById("tension-value").value;
+            let t = parseFloat(inputval);
             if (isNaN(t) || t == null) return;
             if (t > 1.0 || t < 0.0) return;
+            application.setItem("tension-value", inputval);
 
             application.doTension(t);
         });
@@ -700,11 +702,13 @@ function onDomLoaded() {
         url.searchParams.get("username") ||
         application.getItem("last-player", "");
     document.getElementById("username-value").value = username;
+    document.getElementById("tension-value").value = application.getItem("tension-value", '0.2');
     application.loadUsername(username);
 
     updateUrls(username);
 
     // User counting!! Very simple.
+    // ok this looks less simple now LOL
     if (!location.host.includes("localhost")) {
         application.log("User counting!");
         if (application.getItem("unique-visitor") == null) {
