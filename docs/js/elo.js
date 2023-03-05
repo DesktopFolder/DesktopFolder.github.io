@@ -357,6 +357,15 @@ class Application {
                     data: [],
                     yAxisID: "ELO",
                     tension: 0.2,
+                    pointBackgroundColor: function(c) {
+                        let idx = c.dataIndex;
+                        let p = c.dataset.data[idx];
+                        if (p == null) return;
+                        if (p.comprises > 1) {
+                            // return 'rgba(255, 0, 0, 0.3)';
+                        }
+                        return 'rgba(0, 0, 0, 0.1)';
+                    },
                 } /*{
                 label: 'MCSR Rank',
                 backgroundColor: Application.#DEFAULT_BG,
