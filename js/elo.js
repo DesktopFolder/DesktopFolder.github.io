@@ -618,7 +618,15 @@ function onDomLoaded() {
                  .then((data) => {
                      console.log(`You are unique visitor ${data.value}`);
                  })
-                 .catch((e) => { console.log(`CountAPI error (unique)`); });
+                 .catch((e) => { console.log(`CountAPI error (unique): ${e}`); });
+        }
+        else {
+            fetch("https://api.countapi.xyz/info/disrespec.tech/unique-visits-elo")
+                 .then((response) => response.json())
+                 .then((data) => {
+                     console.log(`You were a part of ${data.value} unique visitors!`);
+                 })
+                 .catch((e) => { console.log(`CountAPI error: ${e})`; });
         }
         fetch("https://api.countapi.xyz/hit/disrespec.tech/visits-elo")
              .then((response) => response.json())
