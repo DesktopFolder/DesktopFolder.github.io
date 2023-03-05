@@ -618,7 +618,7 @@ function onDomLoaded() {
                  .then((data) => {
                      console.log(`You are unique visitor ${data.value}`);
                  })
-                 .catch((e) => { console.log(`CountAPI error (unique)`); };
+                 .catch((e) => { console.log(`CountAPI error (unique)`); });
         }
         fetch("https://api.countapi.xyz/hit/disrespec.tech/visits-elo")
              .then((response) => response.json())
