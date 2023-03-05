@@ -10,7 +10,7 @@ function timestamp() {
 
 function isValidColour(s) {
     let e = document.getElementById("validColour");
-    e.style.borderColor = '';
+    e.style.borderColor = "";
     e.style.borderColor = s;
     return e.style.borderColor.length != 0;
 }
@@ -32,13 +32,13 @@ class Player {
         this.prev_date = 0;
         this.isActive = false;
         this.timer = null;
-        this.loading = 'Inactive';
+        this.loading = "Inactive";
     }
 
     setInactive() {
         this.isActive = false;
         if (this.timer != null) {
-            clearInterval(this.timer); 
+            clearInterval(this.timer);
             this.timer = null;
         }
     }
@@ -49,12 +49,18 @@ class Player {
             this.fetchingPoll(0);
         }
         if (this.timer == null)
-            this.timer = setInterval(() => this.fetchingPoll(0), application.config.pollMinutes * 60 * 1000 + 1000);
+            this.timer = setInterval(
+                () => this.fetchingPoll(0),
+                application.config.pollMinutes * 60 * 1000 + 1000
+            );
     }
 
     shouldPoll() {
         // Check if it's been 5 minutes since we last polled.
-        return (timestamp() - (this.lastPolled || 0)) > (application.config.pollMinutes * 60);
+        return (
+            timestamp() - (this.lastPolled || 0) >
+            application.config.pollMinutes * 60
+        );
     }
 
     polled() {
@@ -62,30 +68,43 @@ class Player {
     }
 
     scoreChangeFrom(matchData) {
-        const uuid = matchData.members.find((item) => (item.nickname.toLowerCase() == this.username)).uuid;
-        return matchData.score_changes.find((item) => (item.uuid == uuid)).score;
+        const uuid = matchData.members.find(
+            (item) => item.nickname.toLowerCase() == this.username
+        ).uuid;
+        return matchData.score_changes.find((item) => item.uuid == uuid).score;
     }
 
     enemyFrom(matchData) {
-        return matchData.members.find((item) => (item.nickname.toLowerCase() != this.username));
+        return matchData.members.find(
+            (item) => item.nickname.toLowerCase() != this.username
+        );
     }
 
     eloFrom(matchData) {
-        return matchData.members.find((item) => (item.nickname.toLowerCase() == this.username)).elo_rate;
+        return matchData.members.find(
+            (item) => item.nickname.toLowerCase() == this.username
+        ).elo_rate;
     }
 
     dataFrom(matchData) {
-        return matchData.members.find((item) => (item.nickname.toLowerCase() == this.username));
+        return matchData.members.find(
+            (item) => item.nickname.toLowerCase() == this.username
+        );
     }
 
     fetchingPoll(i = 0) {
         if (!this.shouldPoll() && i == 0) {
-            application.log(`Player: Did not poll for ${this.username} due to internal ratelimit. (Page 0 request)`);
+            application.log(
+                `Player: Did not poll for ${this.username} due to internal ratelimit. (Page 0 request)`
+            );
             return;
         }
         this.polled();
         application.log(`Player: Submitting fetch for ${this.username}`);
-        fetch(`https://mcsrranked.com/api/users/${this.username}/matches?filter=2&count=${application.config.pageCount}&page=${i}`, {mode:'cors'})
+        fetch(
+            `https://mcsrranked.com/api/users/${this.username}/matches?filter=2&count=${application.config.pageCount}&page=${i}`,
+            { mode: "cors" }
+        )
             .then((response) => response.json())
             .then((data) => {
                 application.log(`Got data for ${this.username}`);
@@ -96,8 +115,10 @@ class Player {
                 this.loading = `Queried API page ${i}...`;
 
                 // Player is invalid in some way.
-                if (data.status == "error") { 
-                    console.log(`Player ${this.username}: Refusing to update application with bad data.`);
+                if (data.status == "error") {
+                    console.log(
+                        `Player ${this.username}: Refusing to update application with bad data.`
+                    );
                     this.setInactive();
                     return;
                 }
@@ -109,12 +130,16 @@ class Player {
                     this.base_elo = ourData.elo_rate;
                     this.nickname = ourData.nickname;
                     this.base_rank = ourData.elo_rank;
-                    application.log(`Player ${this.username}: Set base elo to ${this.base_elo}`);
+                    application.log(
+                        `Player ${this.username}: Set base elo to ${this.base_elo}`
+                    );
 
                     // If latest match has already been loaded, exit.
                     const latest_match_date = data.data[0].match_date;
                     if (latest_match_date == this.prev_date) {
-                        application.log(`Player ${this.username}: No update found.`);
+                        application.log(
+                            `Player ${this.username}: No update found.`
+                        );
                         return;
                     }
 
@@ -128,21 +153,33 @@ class Player {
 
                 // Maybe launch another fetch.
                 if (data.data.length >= application.config.pageCount) {
-                    application.log(`Queued another read for page ${i + 1} for ${this.username}`);
+                    application.log(
+                        `Queued another read for page ${i + 1} for ${
+                            this.username
+                        }`
+                    );
                     setTimeout(() => {
-                        if (this.isActive) { this.fetchingPoll(i + 1) }
+                        if (this.isActive) {
+                            this.fetchingPoll(i + 1);
+                        }
                     }, 2000);
-                }
-                else {
+                } else {
                     this.loading = `Fetched all ${this.data.length} values.`;
                     setTimeout(() => {
-                        if (this.isActive) { this.loading = null; application.rerender(); }
+                        if (this.isActive) {
+                            this.loading = null;
+                            application.rerender();
+                        }
                     }, 3000);
                 }
 
                 application.rerender();
             })
-            .catch((e) => { console.log(`Player ${this.username}: Fetches interrupted by: ${e}`); });
+            .catch((e) => {
+                console.log(
+                    `Player ${this.username}: Fetches interrupted by: ${e}`
+                );
+            });
     }
 
     //asData() {
@@ -151,27 +188,32 @@ class Player {
 
     toEloChartData() {
         if (this.data.length == 0) return [];
-        let data = this.data.map(o => { o.comprises = 1; return o; });
+        let data = this.data.map((o) => {
+            o.comprises = 1;
+            return o;
+        });
 
         const begin = document.getElementById("begin-date").value;
         if (begin !== "") {
-            const ts = (new Date(begin)).getTime();
+            const ts = new Date(begin).getTime();
             data = data.filter((d) => d.x > ts);
             application.log(`Filtered with begin ${begin}`);
         }
         const end = document.getElementById("end-date").value;
         if (end !== "") {
-            const ts = (new Date(end)).getTime();
+            const ts = new Date(end).getTime();
             data = data.filter((d) => d.x < ts);
             application.log(`Filtered with end ${end}`);
         }
         if (data.length == 0) return [];
 
         if (application.enabled("group-sessions")) {
-            const tval = parseInt(document.getElementById("group-thresh-val").value) || 30;
+            const tval =
+                parseInt(document.getElementById("group-thresh-val").value) ||
+                30;
             const MINUTES = tval * 60 * 1000;
-            
-            let last_time = data[0].x + 2*MINUTES;
+
+            let last_time = data[0].x + 2 * MINUTES;
             let last_allowed = data[0];
             let won = 0;
             let lost = 0;
@@ -180,11 +222,14 @@ class Player {
                 const prev = last_time;
                 // prev is now the NEXT data point chronologically
                 last_time = d.x;
-                const allow = prev - d.x > MINUTES; 
+                const allow = prev - d.x > MINUTES;
                 // if we allow it, we are now last allowed
                 if (allow) {
                     last_allowed.change = last_allowed.y - d.y;
-                    last_allowed.wr = Math.round(won * 100.0 / (won + lost), 2);
+                    last_allowed.wr = Math.round(
+                        (won * 100.0) / (won + lost),
+                        2
+                    );
                     last_allowed = d;
                     won = 0;
                     lost = 0;
@@ -198,8 +243,8 @@ class Player {
                 else lost += 1; // TODO - draw accounting? I don't really care so
                 return allow;
             });
-            let first_post_filter = data[data.length - 1]; 
-            first_post_filter.wr = Math.round(won * 100.0 / (won + lost), 2);
+            let first_post_filter = data[data.length - 1];
+            first_post_filter.wr = Math.round((won * 100.0) / (won + lost), 2);
             first_post_filter.change = first_post_filter.y - first_elo;
         }
 
@@ -217,7 +262,7 @@ class Player {
             if (d.score_changes == null) continue;
             const ourData = this.dataFrom(d);
             let c = this.scoreChangeFrom(d);
-            
+
             // we go most recent to least recent
             // first set the data, then make the change
             this.data.push({
@@ -244,15 +289,15 @@ class Player {
 }
 
 class Application {
-    static #FEINBERG_LINE = 'rgb(255, 99, 132)';
-    static #FEINBERG_BG = 'rgb(75, 192, 192)';
-    static #DEFAULT_LINE = 'rgba(113, 121, 126, 0.8)';
-    static #DEFAULT_BG = 'rgba(226, 242, 252, 0.4)';
+    static #FEINBERG_LINE = "rgb(255, 99, 132)";
+    static #FEINBERG_BG = "rgb(75, 192, 192)";
+    static #DEFAULT_LINE = "rgba(113, 121, 126, 0.8)";
+    static #DEFAULT_BG = "rgba(226, 242, 252, 0.4)";
     //static #DEFAULT_FG_LINE = 'rgba(178, 121, 126, 0.9)';
 
     timer = null;
 
-    config = { 
+    config = {
         pageCount: 50,
         pollMinutes: 5,
     };
@@ -263,15 +308,17 @@ class Application {
 
     // LocalStorage accessors/modifiers
     getItem(id, default_value = null) {
-        return localStorage.getItem('_elo:' + id.toLowerCase()) || default_value;
+        return (
+            localStorage.getItem("_elo:" + id.toLowerCase()) || default_value
+        );
     }
 
     setItem(id, val) {
-        return localStorage.setItem('_elo:' + id.toLowerCase(), val);
+        return localStorage.setItem("_elo:" + id.toLowerCase(), val);
     }
 
     removeItem(id) {
-        return localStorage.removeItem('_elo:' + id.toLowerCase());
+        return localStorage.removeItem("_elo:" + id.toLowerCase());
     }
 
     // Setup - load our relevant data
@@ -279,84 +326,95 @@ class Application {
         this.players = new Map(); // These are lazy loaded.
         this.activePlayer = null;
         // atm just enable this via console.
-        this.doLogging = this.getItem('do-logging') != null;
+        this.doLogging = this.getItem("do-logging") != null;
     }
 
     init() {
-        if (this.getItem('version', 0) < 1) {
+        if (this.getItem("version", 0) < 1) {
             // Version upgrade things?
         }
         this.ctx = document.getElementById("incredible-elo-chart");
 
-        document.getElementById("bg-col-value").value = this.getItem("bg-colour", Application.#DEFAULT_BG);
-        document.getElementById("line-col-value").value = this.getItem("line-colour", Application.#DEFAULT_LINE);
+        document.getElementById("bg-col-value").value = this.getItem(
+            "bg-colour",
+            Application.#DEFAULT_BG
+        );
+        document.getElementById("line-col-value").value = this.getItem(
+            "line-colour",
+            Application.#DEFAULT_LINE
+        );
 
         this.data = {
             labels: [],
-            datasets: [{
-                label: 'Elo Value',
-                backgroundColor: document.getElementById("bg-col-value").value,
-                borderColor: document.getElementById("line-col-value").value, 
-                fill: true,
-                data: [],
-                yAxisID: 'ELO',
-                tension: 0.2,
-            }, /*{
+            datasets: [
+                {
+                    label: "Elo Value",
+                    backgroundColor:
+                        document.getElementById("bg-col-value").value,
+                    borderColor:
+                        document.getElementById("line-col-value").value,
+                    fill: true,
+                    data: [],
+                    yAxisID: "ELO",
+                    tension: 0.2,
+                } /*{
                 label: 'MCSR Rank',
                 backgroundColor: Application.#DEFAULT_BG,
                 borderColor: Application.#DEFAULT_FG_LINE, 
                 fill: false,
                 data: [],
                 yAxisID: 'RANK',
-            }*/
+            }*/,
             ],
         };
         this.graph = new Chart(this.ctx, {
-            type: 'line',
+            type: "line",
             data: this.data,
             options: {
                 elements: {
-                    point: { 
+                    point: {
                         radius: 1,
-                    }
+                    },
                 },
                 plugins: {
                     title: {
-                        text: 'Elo Graph',
-                        display: true
+                        text: "Elo Graph",
+                        display: true,
                     },
                     tooltip: {
                         enabled: true,
                         callbacks: {
                             label: function (context) {
                                 const c = context.raw.change;
-                                let cval = c > 0 ? '+' + String(c) : String(c);
-                                const enemies = (context.raw.comprises > 1) ? `${context.raw.comprises} players, ${context.raw.wr}% winrate`
-                                                                            : context.raw.enemy;
+                                let cval = c > 0 ? "+" + String(c) : String(c);
+                                const enemies =
+                                    context.raw.comprises > 1
+                                        ? `${context.raw.comprises} players, ${context.raw.wr}% winrate`
+                                        : context.raw.enemy;
                                 return `${context.raw.y} (${cval} vs ${enemies})`;
-                            }
-                        }
-                    }
+                            },
+                        },
+                    },
                 },
                 scales: {
                     x: {
-                        type: 'time',
+                        type: "time",
                         time: {
-                            tooltipFormat: 'DD T'
+                            tooltipFormat: "DD T",
                         },
                         title: {
                             display: true,
-                            text: 'Date'
-                        }
+                            text: "Date",
+                        },
                     },
                     ELO: {
-                        type: 'linear',
-                        position: 'left',
-                        id: 'ELO',
+                        type: "linear",
+                        position: "left",
+                        id: "ELO",
                         title: {
                             display: true,
-                            text: 'Elo'
-                        }
+                            text: "Elo",
+                        },
                     },
                     /*RANK: {
                         type: 'linear',
@@ -368,43 +426,42 @@ class Application {
                         },
                         reverse: true,
                     }*/
-                }
-            }
+                },
+            },
         });
         this.graph.update();
     }
 
     disableZoom() {
         application.log("Disabling zoom.");
-        this.graph.options.plugins.zoom = 
-            { 
-            };
+        this.graph.options.plugins.zoom = {};
     }
 
     enableZoom() {
         application.log("Enabling zoom.");
-        this.graph.options.plugins.zoom = 
-            { 
-                zoom: {
-                            wheel: {
-                                enabled: true,
-                            },
-                            pinch: {
-                                enabled: true,
-                            },
-                            mode: 'x',
-                        },
-                pan: {
+        this.graph.options.plugins.zoom = {
+            zoom: {
+                wheel: {
                     enabled: true,
-                    mode: 'x',
-                }
-            };
+                },
+                pinch: {
+                    enabled: true,
+                },
+                mode: "x",
+            },
+            pan: {
+                enabled: true,
+                mode: "x",
+            },
+        };
         this.graph.update();
     }
 
     getPlayer(username) {
-        if (this.players.has(username)) { return this.players.get(username); }
-        this.players.set(username, new Player(username)); 
+        if (this.players.has(username)) {
+            return this.players.get(username);
+        }
+        this.players.set(username, new Player(username));
         return this.players.get(username);
     }
 
@@ -418,16 +475,16 @@ class Application {
         let line = document.getElementById("line-col-value").value;
         if (bg != Application.#DEFAULT_BG) {
             if (isValidColour(bg)) {
-            this.setItem("bg-colour", bg);
-            this.graph.data.datasets[0].backgroundColor = bg;
+                this.setItem("bg-colour", bg);
+                this.graph.data.datasets[0].backgroundColor = bg;
             } else {
                 this.removeItem("bg-colour");
             }
         }
         if (line != Application.#DEFAULT_LINE) {
             if (isValidColour(line)) {
-            this.setItem("line-colour", line);
-            this.graph.data.datasets[0].borderColor = line;
+                this.setItem("line-colour", line);
+                this.graph.data.datasets[0].borderColor = line;
             } else {
                 this.removeItem("line-colour");
             }
@@ -437,7 +494,8 @@ class Application {
     rerender() {
         if (this.enabled("allow-zoom")) this.enableZoom();
         else this.disableZoom();
-        if (this.enabled("clean-graph")) this.graph.options.elements.point.radius = 1;
+        if (this.enabled("clean-graph"))
+            this.graph.options.elements.point.radius = 1;
         else this.graph.options.elements.point.radius = 3;
 
         if (this.activePlayer == null) {
@@ -451,9 +509,10 @@ class Application {
 
         if (this.enabled("allow-eggs")) {
             this.doPerUserEasterEggs(this.activePlayer);
-        }
-        else {
-            application.log(`Removing easter eggs for ${this.activePlayer.username}`);
+        } else {
+            application.log(
+                `Removing easter eggs for ${this.activePlayer.username}`
+            );
             this.removeEasterEggs(this.activePlayer);
         }
 
@@ -463,12 +522,18 @@ class Application {
         // This enables our delayed callback system.
         if (eloChartData.length > 0) {
             this.graph.data.datasets[0].data = eloChartData;
-            let loadingtext = this.activePlayer.loading == null ? '' : ` (${this.activePlayer.loading})`;
-            this.graph.options.plugins.title.text = `Elo Graph for ${this.activePlayer.overrideNick || this.activePlayer.nickname}${loadingtext}`;
+            let loadingtext =
+                this.activePlayer.loading == null
+                    ? ""
+                    : ` (${this.activePlayer.loading})`;
+            this.graph.options.plugins.title.text = `Elo Graph for ${
+                this.activePlayer.overrideNick || this.activePlayer.nickname
+            }${loadingtext}`;
             application.log(`Rerendered for ${this.activePlayer.username}`);
-        }
-        else {
-            application.log(`Did not rerender for ${this.activePlayer.username} as data was 0.`);
+        } else {
+            application.log(
+                `Did not rerender for ${this.activePlayer.username} as data was 0.`
+            );
         }
         // Always call update graph, we just don't update the data necessarily.
         this.graph.update();
@@ -482,50 +547,51 @@ class Application {
         // We're having so much fun, aren't we?
         application.log(`Doing easter eggs for ${player.username}`);
         let username = player.username;
-        if (username == 'feinberg') {
-            this.graph.data.datasets[0].backgroundColor = Application.#FEINBERG_BG;
-            this.graph.data.datasets[0].borderColor = Application.#FEINBERG_LINE;
+        if (username == "feinberg") {
+            this.graph.data.datasets[0].backgroundColor =
+                Application.#FEINBERG_BG;
+            this.graph.data.datasets[0].borderColor =
+                Application.#FEINBERG_LINE;
         }
-        if (username == 'sickrates') {
-            this.graph.data.datasets[0].backgroundColor = Application.#FEINBERG_BG;
-            this.graph.data.datasets[0].borderColor = Application.#FEINBERG_LINE;
-            player.overrideNick = 'Feinberg Alt #1';
+        if (username == "sickrates") {
+            this.graph.data.datasets[0].backgroundColor =
+                Application.#FEINBERG_BG;
+            this.graph.data.datasets[0].borderColor =
+                Application.#FEINBERG_LINE;
+            player.overrideNick = "Feinberg Alt #1";
         }
-        if (username == 'illuminahd') {
-            player.overrideNick = 'Illumina (WR holding in our hearts)';
+        if (username == "illuminahd") {
+            player.overrideNick = "Illumina (WR holding in our hearts)";
         }
-        if (username == 'zylenox') {
-            player.overrideNick = 'Zylenox (WR holder - 1.16.1 RSG)';
-        }
-        else if (username == 'shenaningans') {
-            player.overrideNick = 'Ella';
-            this.graph.data.datasets[0].backgroundColor = 'rgba(207,191,246,0.5)';
-            this.graph.data.datasets[0].borderColor = 'rgba(81,55,130,1)';
-        }
-        else if (username == 'hamazonau') {
-            player.overrideNick = 'Hamazon (Top 50 AU)';
-        }
-        else if (username == 'redlime') {
+        if (username == "zylenox") {
+            player.overrideNick = "Zylenox (WR holder - 1.16.1 RSG)";
+        } else if (username == "shenaningans") {
+            player.overrideNick = "Ella";
+            this.graph.data.datasets[0].backgroundColor =
+                "rgba(207,191,246,0.5)";
+            this.graph.data.datasets[0].borderColor = "rgba(81,55,130,1)";
+        } else if (username == "hamazonau") {
+            player.overrideNick = "Hamazon (Top 50 AU)";
+        } else if (username == "redlime") {
             // I don't know Oliver's ingame name lol
-            player.overrideNick = 'RedLime (MCSR Developer)';
-        }
-        else if (username == 'desktopfolder') {
-            player.overrideNick = 'DesktopFolder (NOT A WEB DEVELOPER, PLEASE BELIEVE ME)';
-            this.graph.data.datasets[0].backgroundColor = 'rgba(85, 172, 238, 0.4)';
-            this.graph.data.datasets[0].borderColor = 'rgba(34,102,153,1)';
-        }
-        else if (username == 'fulham') {
+            player.overrideNick = "RedLime (MCSR Developer)";
+        } else if (username == "desktopfolder") {
+            player.overrideNick =
+                "DesktopFolder (NOT A WEB DEVELOPER, PLEASE BELIEVE ME)";
+            this.graph.data.datasets[0].backgroundColor =
+                "rgba(85, 172, 238, 0.4)";
+            this.graph.data.datasets[0].borderColor = "rgba(34,102,153,1)";
+        } else if (username == "fulham") {
             // ngl I don't watch fulham's stream enough to know any fun easter eggs
             // thanks for being my unwitting test subject for this app though
-            this.graph.data.datasets[0].label = 'Elo Value (It\'s high, right?)';
-        }
-        else if (username == 'toph033') {
-            player.overrideNick = 'Toph';
-            this.graph.data.datasets[0].backgroundColor = 'rgba(134, 252, 212, 0.4)';
-            this.graph.data.datasets[0].borderColor = 'rgba(74, 94, 81, 0.9)';
-        }
-        else if (username == 'commandleo') {
-            player.overrideNick = 'Leo (Storage tech pro)';
+            this.graph.data.datasets[0].label = "Elo Value (It's high, right?)";
+        } else if (username == "toph033") {
+            player.overrideNick = "Toph";
+            this.graph.data.datasets[0].backgroundColor =
+                "rgba(134, 252, 212, 0.4)";
+            this.graph.data.datasets[0].borderColor = "rgba(74, 94, 81, 0.9)";
+        } else if (username == "commandleo") {
+            player.overrideNick = "Leo (Storage tech pro)";
         }
     }
 
@@ -533,7 +599,7 @@ class Application {
         player.overrideNick = null;
         this.graph.data.datasets[0].backgroundColor = Application.#DEFAULT_BG;
         this.graph.data.datasets[0].borderColor = Application.#DEFAULT_LINE;
-        this.graph.data.datasets[0].label = 'Elo Value';
+        this.graph.data.datasets[0].label = "Elo Value";
     }
 
     // Entry point for our application.
@@ -562,12 +628,12 @@ var application = new Application();
 
 function updateUrls(username) {
     var o = document.getElementById("current-url");
-    var newUrl = 'https://' + location.host + location.pathname;
+    var newUrl = "https://" + location.host + location.pathname;
     // this should use join, but shh
-    const u = (username == 0) ? '' : ('username=' + username);
-    const res = [u].filter(v => v).join('&');
+    const u = username == 0 ? "" : "username=" + username;
+    const res = [u].filter((v) => v).join("&");
     if (res.length != 0) {
-        newUrl = newUrl + '?' + res;
+        newUrl = newUrl + "?" + res;
     }
     o.href = newUrl;
     o.innerHTML = newUrl;
@@ -575,42 +641,55 @@ function updateUrls(username) {
     // Also update the nacho thing
     // a nice long line of code ^^
     // feast thine eyes upon it...
-    document.getElementById("nacho-url").href = "https://nacho-cs.github.io/?q=" + username;
-    document.getElementById("pasta-url").href = "https://mcsr-ranked-stats-viewer.vercel.app/player/" + username;
+    document.getElementById("nacho-url").href =
+        "https://nacho-cs.github.io/?q=" + username;
+    document.getElementById("pasta-url").href =
+        "https://mcsr-ranked-stats-viewer.vercel.app/player/" + username;
 }
 
 function onDomLoaded() {
     // Config & initialization of graph.
     application.init();
 
-    document.getElementById("username-value").addEventListener("keypress", function(e) {
-        if (e.key == 'Enter') {
-            application.log("Enter keypress -> Firing username update.");
-            const username = document.getElementById("username-value").value;
-            application.loadUsername(username);
-            updateUrls(username);
-        }
-    });
+    document
+        .getElementById("username-value")
+        .addEventListener("keypress", function (e) {
+            if (e.key == "Enter") {
+                application.log("Enter keypress -> Firing username update.");
+                const username =
+                    document.getElementById("username-value").value;
+                application.loadUsername(username);
+                updateUrls(username);
+            }
+        });
 
-    for (const appChanger of Array.from(document.getElementsByClassName("app-rerender"))) {
-        appChanger.addEventListener("change", function() {
-            application.log("Attempting application rerender through app-rerender class.");
+    for (const appChanger of Array.from(
+        document.getElementsByClassName("app-rerender")
+    )) {
+        appChanger.addEventListener("change", function () {
+            application.log(
+                "Attempting application rerender through app-rerender class."
+            );
 
             application.rerender();
         });
     }
 
-    document.getElementById("tension-value").addEventListener("input", function(e) {
-        let t = parseFloat(document.getElementById("tension-value").value);
-        if (isNaN(t) || t == null) return;
-        if (t > 1.0 || t < 0.0) return;
+    document
+        .getElementById("tension-value")
+        .addEventListener("input", function (e) {
+            let t = parseFloat(document.getElementById("tension-value").value);
+            if (isNaN(t) || t == null) return;
+            if (t > 1.0 || t < 0.0) return;
 
-        application.doTension(t);
-    });
+            application.doTension(t);
+        });
 
     // Parse URL parameters.
     const url = new URL(window.location.href);
-    const username = url.searchParams.get("username") || application.getItem("last-player", "");
+    const username =
+        url.searchParams.get("username") ||
+        application.getItem("last-player", "");
     document.getElementById("username-value").value = username;
     application.loadUsername(username);
 
@@ -621,32 +700,42 @@ function onDomLoaded() {
         application.log("User counting!");
         if (application.getItem("unique-visitor") == null) {
             application.setItem("unique-visitor", "visited");
-            fetch("https://api.countapi.xyz/hit/disrespec.tech/unique-visits-elo")
-                 .then((response) => response.json())
-                 .then((data) => {
-                     console.log(`You are unique visitor ${data.value}`);
-                 })
-                 .catch((e) => { console.log(`CountAPI error (unique): ${e}`); });
-        }
-        else {
-            fetch("https://api.countapi.xyz/info/disrespec.tech/unique-visits-elo")
-                 .then((response) => response.json())
-                 .then((data) => {
-                     console.log(`You were a part of ${data.value} unique visitors!`);
-                 })
-                 .catch((e) => { console.log(`CountAPI error: ${e}`); });
+            fetch(
+                "https://api.countapi.xyz/hit/disrespec.tech/unique-visits-elo"
+            )
+                .then((response) => response.json())
+                .then((data) => {
+                    console.log(`You are unique visitor ${data.value}`);
+                })
+                .catch((e) => {
+                    console.log(`CountAPI error (unique): ${e}`);
+                });
+        } else {
+            fetch(
+                "https://api.countapi.xyz/info/disrespec.tech/unique-visits-elo"
+            )
+                .then((response) => response.json())
+                .then((data) => {
+                    console.log(
+                        `You were a part of ${data.value} unique visitors!`
+                    );
+                })
+                .catch((e) => {
+                    console.log(`CountAPI error: ${e}`);
+                });
         }
         fetch("https://api.countapi.xyz/hit/disrespec.tech/visits-elo")
-             .then((response) => response.json())
-             .then((data) => {
+            .then((response) => response.json())
+            .then((data) => {
                 console.log(`You are visitor ${data.value}`);
-             })
-             .catch((e) => { console.log(`CountAPI error: ${e}`); });
-    }
-    else {
+            })
+            .catch((e) => {
+                console.log(`CountAPI error: ${e}`);
+            });
+    } else {
         application.log("Not user counting (localhost)");
     }
     application.log("Finished application setup.");
 }
 
-document.addEventListener('DOMContentLoaded', onDomLoaded, false);
+document.addEventListener("DOMContentLoaded", onDomLoaded, false);
