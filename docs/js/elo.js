@@ -611,6 +611,15 @@ function onDomLoaded() {
     // User counting!! Very simple.
     if (!location.host.includes("localhost")) {
         console.log("User counting!");
+        if (application.getItem("unique-visitor" == null)) {
+            application.setItem("unique-visitor", "visited");
+            fetch("https://api.countapi.xyz/hit/disrespec.tech/unique-visits-elo")
+                 .then((response) => response.json())
+                 .then((data) => {
+                     console.log(`You are unique visitor ${data.value}`);
+                 })
+                 .catch((e) => { console.log(`CountAPI error (unique)`); };
+        }
         fetch("https://api.countapi.xyz/hit/disrespec.tech/visits-elo")
              .then((response) => response.json())
              .then((data) => {
