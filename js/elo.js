@@ -582,8 +582,14 @@ class Application {
                 Application.#FEINBERG_LINE;
             player.overrideNick = "Feinberg Alt #1";
         }
+        if (username == "couriway") {
+            player.overrideNick = "Couriway (Pronounced 'curry')";
+        }
         if (username == "illuminahd") {
             player.overrideNick = "Illumina (WR holding in our hearts)";
+        }
+        if (username == "Tekniik") {
+            player.overrideNick = "Tekniik (Ranked Grinder)";
         }
         if (username == "zylenox") {
             player.overrideNick = "Zylenox (WR holder - 1.16.1 RSG)";
