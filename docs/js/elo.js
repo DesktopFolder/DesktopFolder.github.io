@@ -251,6 +251,17 @@ class Player {
         return data;
         //return this.data.map(o => ({x: o[0] * 1000, y: o[2]}));
     }
+
+    toPointRadiusData(d) {
+        const comprisesToRadius = (c) => {
+            if (c <= 6) return c + 2;
+            return 6 + Math.sqrt(c);
+        };
+        if (application.enabled("smart-points"))
+            return d.map((e) => comprisesToRadius(e.comprises));
+        else
+            return d.map((e) => 3);
+    }
     toRankChartData() {
         return this.data;
         //return this.data.map(o => ({x: o[0] * 1000, y: o[1]}));
@@ -358,6 +369,8 @@ class Application {
                         document.getElementById("line-col-value").value,
                     fill: true,
                     data: [],
+                    pointRadius: undefined,
+                    hoverRadius: undefined,
                     yAxisID: "ELO",
                     tension: this.getTension(tens) || 0.2,
                     pointBackgroundColor: function(c) {
@@ -516,9 +529,14 @@ class Application {
     rerender() {
         if (this.enabled("allow-zoom")) this.enableZoom();
         else this.disableZoom();
-        if (this.enabled("clean-graph"))
+        if (this.enabled("clean-graph")) {
+            this.graph.data.datasets[0].pointRadius = undefined;
+            this.graph.data.datasets[0].hoverRadius = undefined;
             this.graph.options.elements.point.radius = 1;
-        else this.graph.options.elements.point.radius = 3;
+        }
+        else {
+            this.graph.options.elements.point.radius = 3;
+        }
 
         if (this.activePlayer == null) {
             console.log("Warning: this.activePlayer was null when rerender()");
@@ -526,8 +544,8 @@ class Application {
             return;
         }
 
-        // This is where all of our rendering code should stem from.
         let eloChartData = this.activePlayer.toEloChartData();
+        // This is where all of our rendering code should stem from.
 
         if (this.enabled("allow-eggs")) {
             this.doPerUserEasterEggs(this.activePlayer);
@@ -544,6 +562,8 @@ class Application {
         // This enables our delayed callback system.
         if (eloChartData.length > 0) {
             this.graph.data.datasets[0].data = eloChartData;
+            if (!this.enabled("clean-graph")) this.graph.data.datasets[0].pointRadius = this.activePlayer.toPointRadiusData(eloChartData);
+            if (!this.enabled("clean-graph")) this.graph.data.datasets[0].hoverRadius = this.activePlayer.toPointRadiusData(eloChartData).map((c) => c + 2);
             let loadingtext =
                 this.activePlayer.loading == null
                     ? ""
