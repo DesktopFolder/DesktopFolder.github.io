@@ -9,10 +9,10 @@ path.to.folder=elo
 <body class="wider">
 
 <!--Basic configuration provided by the user.-->
-<p id="username-header" style="text-align: center;">
+<div id="username-header" style="text-align: center; width: 100%;">
     Username: 
-    <input id="username-value" placeholder="Minecraft username..." class="enter-update" /> 
-</p>
+    <input id="username-value" class="big-query" placeholder="Minecraft username..." class="enter-update" /> 
+</div>
 
 <p class="basic-config">
     Chart tension: 

@@ -21,3 +21,11 @@
     padding-top: 0;
     padding-bottom: 0;
 }
+
+.big-query {
+    width: 50%;
+    border: 1px solid #cfd6db;
+    padding: 0.5rem 1rem;
+    font-size: 1.2rem;
+    border-radius: 0.3rem;
+}
