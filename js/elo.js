@@ -253,12 +253,15 @@ class Player {
     }
 
     toPointRadiusData(d) {
-        const comprisesToRadius = (c) => {
+        const comprisesToRadius1 = (c) => {
             if (c <= 6) return c + 2;
             return 6 + Math.sqrt(c);
         };
+        const comprisesToRadius2 = (c) => {
+            return (6.5 * c) / (c / 2 + 6) + 2;
+        };
         if (application.enabled("smart-points"))
-            return d.map((e) => comprisesToRadius(e.comprises));
+            return d.map((e) => comprisesToRadius2(e.comprises));
         else
             return d.map((e) => 3);
     }
