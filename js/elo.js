@@ -262,8 +262,7 @@ class Player {
         };
         if (application.enabled("smart-points"))
             return d.map((e) => comprisesToRadius2(e.comprises));
-        else
-            return d.map((e) => 3);
+        else return d.map((e) => 3);
     }
     toRankChartData() {
         return this.data;
@@ -349,7 +348,7 @@ class Application {
         }
         this.ctx = document.getElementById("incredible-elo-chart");
 
-        const tens = application.getItem("tension-value", '0.2');
+        const tens = application.getItem("tension-value", "0.2");
         document.getElementById("tension-value").value = tens;
 
         document.getElementById("bg-col-value").value = this.getItem(
@@ -376,14 +375,14 @@ class Application {
                     hoverRadius: undefined,
                     yAxisID: "ELO",
                     tension: this.getTension(tens) || 0.2,
-                    pointBackgroundColor: function(c) {
+                    pointBackgroundColor: function (c) {
                         let idx = c.dataIndex;
                         let p = c.dataset.data[idx];
                         if (p == null) return;
                         if (p.comprises > 1) {
                             // return 'rgba(255, 0, 0, 0.3)';
                         }
-                        return 'rgba(0, 0, 0, 0.1)';
+                        return "rgba(0, 0, 0, 0.1)";
                     },
                 } /*{
                 label: 'MCSR Rank',
@@ -403,6 +402,18 @@ class Application {
                     point: {
                         radius: 1,
                     },
+                },
+                onClick: (event, elements, chart) => {
+                    if (elements[0]) {
+                        // ok this is harder than I thought
+                        application.zoomChart(elements);
+                        const i = elements[0].index;
+                        alert(
+                            chart.data.labels[i] +
+                                ": " +
+                                chart.data.datasets[0].data[i]
+                        );
+                    }
                 },
                 plugins: {
                     title: {
@@ -536,8 +547,7 @@ class Application {
             this.graph.data.datasets[0].pointRadius = undefined;
             this.graph.data.datasets[0].hoverRadius = undefined;
             this.graph.options.elements.point.radius = 1;
-        }
-        else {
+        } else {
             this.graph.options.elements.point.radius = 3;
         }
 
@@ -565,8 +575,13 @@ class Application {
         // This enables our delayed callback system.
         if (eloChartData.length > 0) {
             this.graph.data.datasets[0].data = eloChartData;
-            if (!this.enabled("clean-graph")) this.graph.data.datasets[0].pointRadius = this.activePlayer.toPointRadiusData(eloChartData);
-            if (!this.enabled("clean-graph")) this.graph.data.datasets[0].hoverRadius = this.activePlayer.toPointRadiusData(eloChartData).map((c) => c + 2);
+            if (!this.enabled("clean-graph"))
+                this.graph.data.datasets[0].pointRadius =
+                    this.activePlayer.toPointRadiusData(eloChartData);
+            if (!this.enabled("clean-graph"))
+                this.graph.data.datasets[0].hoverRadius = this.activePlayer
+                    .toPointRadiusData(eloChartData)
+                    .map((c) => c + 2);
             let loadingtext =
                 this.activePlayer.loading == null
                     ? ""
