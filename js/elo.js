@@ -237,6 +237,7 @@ class Player {
                 // otherwise, increment last allowed count
                 else {
                     last_allowed.comprises += 1;
+                    last_allowed.first_x = d.x;
                 }
 
                 if (d.won) won += 1;
@@ -250,6 +251,12 @@ class Player {
 
         return data;
         //return this.data.map(o => ({x: o[0] * 1000, y: o[2]}));
+    }
+
+    dateFiltered(min, max) {
+        const fd = this.data.filter((d) => d.x >= min && d.x <= max); 
+        console.log(`Filtered by ${min}-${max} to get ${fd.length} points.`);
+        return fd;
     }
 
     toPointRadiusData(d) {
@@ -280,6 +287,7 @@ class Player {
             // first set the data, then make the change
             this.data.push({
                 x: d.match_date * 1000,
+                first_x: d.match_date * 1000,
                 y: this.base_elo,
                 enemy: this.enemyFrom(d).nickname,
                 comprises: 1,
@@ -405,14 +413,20 @@ class Application {
                 },
                 onClick: (event, elements, chart) => {
                     if (elements[0]) {
-                        // ok this is harder than I thought
-                        application.zoomChart(elements);
-                        const i = elements[0].index;
-                        alert(
-                            chart.data.labels[i] +
-                                ": " +
-                                chart.data.datasets[0].data[i]
-                        );
+                        let min = Number.MAX_VALUE;
+                        let max = 0;
+                        for (const e of elements) {
+                            const dsi = e.datasetIndex;
+                            const di = e.index;
+                            const de = application.graph.data.datasets[dsi].data[di];
+                            min = Math.min(min, de.first_x);
+                            max = Math.max(max, de.x);
+                        }
+                        application.prevData = application.graph.data.datasets[0].data;
+                        application.graph.data.datasets[0].data = application.activePlayer.dateFiltered(min, max);
+                        application.graph.data.datasets[0].pointRadius = 4;
+                        application.graph.data.datasets[0].hoverRadius = 6;
+                        application.graph.update();
                     }
                 },
                 plugins: {
@@ -424,13 +438,19 @@ class Application {
                         enabled: true,
                         callbacks: {
                             label: function (context) {
-                                const c = context.raw.change;
+                                let dobj = context.raw;
+                                if (dobj == undefined) {
+                                    // HACKS SO MANY HACKS
+                                    const di = context.dataIndex;
+                                    dobj = application.prevData[di];
+                                }
+                                const c = dobj.change;
                                 let cval = c > 0 ? "+" + String(c) : String(c);
                                 const enemies =
-                                    context.raw.comprises > 1
-                                        ? `${context.raw.comprises} players, ${context.raw.wr}% winrate`
-                                        : context.raw.enemy;
-                                return `${context.raw.y} (${cval} vs ${enemies})`;
+                                    dobj.comprises > 1
+                                        ? `${dobj.comprises} players, ${dobj.wr}% winrate`
+                                        : dobj.enemy;
+                                return `${dobj.y} (${cval} vs ${enemies})`;
                             },
                         },
                     },

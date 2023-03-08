@@ -237,6 +237,7 @@ class Player {
                 // otherwise, increment last allowed count
                 else {
                     last_allowed.comprises += 1;
+                    last_allowed.first_x = d.x;
                 }
 
                 if (d.won) won += 1;
@@ -252,6 +253,12 @@ class Player {
         //return this.data.map(o => ({x: o[0] * 1000, y: o[2]}));
     }
 
+    dateFiltered(min, max) {
+        const fd = this.data.filter((d) => d.x >= min && d.x <= max); 
+        console.log(`Filtered by ${min}-${max} to get ${fd.length} points.`);
+        return fd;
+    }
+
     toPointRadiusData(d) {
         const comprisesToRadius1 = (c) => {
             if (c <= 6) return c + 2;
@@ -262,8 +269,7 @@ class Player {
         };
         if (application.enabled("smart-points"))
             return d.map((e) => comprisesToRadius2(e.comprises));
-        else
-            return d.map((e) => 3);
+        else return d.map((e) => 3);
     }
     toRankChartData() {
         return this.data;
@@ -281,6 +287,7 @@ class Player {
             // first set the data, then make the change
             this.data.push({
                 x: d.match_date * 1000,
+                first_x: d.match_date * 1000,
                 y: this.base_elo,
                 enemy: this.enemyFrom(d).nickname,
                 comprises: 1,
@@ -349,7 +356,7 @@ class Application {
         }
         this.ctx = document.getElementById("incredible-elo-chart");
 
-        const tens = application.getItem("tension-value", '0.2');
+        const tens = application.getItem("tension-value", "0.2");
         document.getElementById("tension-value").value = tens;
 
         document.getElementById("bg-col-value").value = this.getItem(
@@ -376,14 +383,14 @@ class Application {
                     hoverRadius: undefined,
                     yAxisID: "ELO",
                     tension: this.getTension(tens) || 0.2,
-                    pointBackgroundColor: function(c) {
+                    pointBackgroundColor: function (c) {
                         let idx = c.dataIndex;
                         let p = c.dataset.data[idx];
                         if (p == null) return;
                         if (p.comprises > 1) {
                             // return 'rgba(255, 0, 0, 0.3)';
                         }
-                        return 'rgba(0, 0, 0, 0.1)';
+                        return "rgba(0, 0, 0, 0.1)";
                     },
                 } /*{
                 label: 'MCSR Rank',
@@ -404,6 +411,24 @@ class Application {
                         radius: 1,
                     },
                 },
+                onClick: (event, elements, chart) => {
+                    if (elements[0]) {
+                        let min = Number.MAX_VALUE;
+                        let max = 0;
+                        for (const e of elements) {
+                            const dsi = e.datasetIndex;
+                            const di = e.index;
+                            const de = application.graph.data.datasets[dsi].data[di];
+                            min = Math.min(min, de.first_x);
+                            max = Math.max(max, de.x);
+                        }
+                        application.prevData = application.graph.data.datasets[0].data;
+                        application.graph.data.datasets[0].data = application.activePlayer.dateFiltered(min, max);
+                        application.graph.data.datasets[0].pointRadius = 4;
+                        application.graph.data.datasets[0].hoverRadius = 6;
+                        application.graph.update();
+                    }
+                },
                 plugins: {
                     title: {
                         text: "Elo Graph",
@@ -413,13 +438,19 @@ class Application {
                         enabled: true,
                         callbacks: {
                             label: function (context) {
-                                const c = context.raw.change;
+                                let dobj = context.raw;
+                                if (dobj == undefined) {
+                                    // HACKS SO MANY HACKS
+                                    const di = context.dataIndex;
+                                    dobj = application.prevData[di];
+                                }
+                                const c = dobj.change;
                                 let cval = c > 0 ? "+" + String(c) : String(c);
                                 const enemies =
-                                    context.raw.comprises > 1
-                                        ? `${context.raw.comprises} players, ${context.raw.wr}% winrate`
-                                        : context.raw.enemy;
-                                return `${context.raw.y} (${cval} vs ${enemies})`;
+                                    dobj.comprises > 1
+                                        ? `${dobj.comprises} players, ${dobj.wr}% winrate`
+                                        : dobj.enemy;
+                                return `${dobj.y} (${cval} vs ${enemies})`;
                             },
                         },
                     },
@@ -536,8 +567,7 @@ class Application {
             this.graph.data.datasets[0].pointRadius = undefined;
             this.graph.data.datasets[0].hoverRadius = undefined;
             this.graph.options.elements.point.radius = 1;
-        }
-        else {
+        } else {
             this.graph.options.elements.point.radius = 3;
         }
 
@@ -565,8 +595,13 @@ class Application {
         // This enables our delayed callback system.
         if (eloChartData.length > 0) {
             this.graph.data.datasets[0].data = eloChartData;
-            if (!this.enabled("clean-graph")) this.graph.data.datasets[0].pointRadius = this.activePlayer.toPointRadiusData(eloChartData);
-            if (!this.enabled("clean-graph")) this.graph.data.datasets[0].hoverRadius = this.activePlayer.toPointRadiusData(eloChartData).map((c) => c + 2);
+            if (!this.enabled("clean-graph"))
+                this.graph.data.datasets[0].pointRadius =
+                    this.activePlayer.toPointRadiusData(eloChartData);
+            if (!this.enabled("clean-graph"))
+                this.graph.data.datasets[0].hoverRadius = this.activePlayer
+                    .toPointRadiusData(eloChartData)
+                    .map((c) => c + 2);
             let loadingtext =
                 this.activePlayer.loading == null
                     ? ""
