@@ -453,6 +453,15 @@ class Application {
         const tens = application.getItem("tension-value", "0.2");
         document.getElementById("tension-value").value = tens;
 
+        /*
+        const sg = application.getItem("group-sessions", "false");
+        document.getElementById("group-sessions").checked = sg == "true";
+        const sp = application.getItem("smart-points", "false");
+        document.getElementById("smart-points").checked = sp == "true";
+        const cg = application.getItem("clean-graph", "false");
+        document.getElementById("clean-graph").checked = cg == "true";
+        */
+
         document.getElementById("bg-col-value").value = this.getItem(
             "bg-colour",
             Application.#DEFAULT_BG
@@ -466,13 +475,60 @@ class Application {
             labels: [],
             datasets: [
                 {
-                    label: "Elo Value",
+                    label: "HI" /*this.graphTitle()*/,
                     backgroundColor:
                         document.getElementById("bg-col-value").value,
                     borderColor:
                         document.getElementById("line-col-value").value,
                     fill: true,
                     data: [],
+                    pointRadius: undefined,
+                    hoverRadius: undefined,
+                    yAxisID: "ELO",
+                    tension: this.getTension(tens) || 0.2,
+                    pointBackgroundColor: function (c) {
+                        let idx = c.dataIndex;
+                        let p = c.dataset.data[idx];
+                        if (p == null) return;
+                        if (p.comprises > 1) {
+                            // return 'rgba(255, 0, 0, 0.3)';
+                        }
+                        return "rgba(0, 0, 0, 0.1)";
+                    },
+                },
+                /*
+                {
+                    label: "Win Duration",
+                    backgroundColor:
+                        document.getElementById("bg-col-value").value,
+                    borderColor:
+                        document.getElementById("line-col-value").value,
+                    fill: true,
+                    data: [],
+                    hidden: true,
+                    pointRadius: undefined,
+                    hoverRadius: undefined,
+                    yAxisID: "ELO",
+                    tension: this.getTension(tens) || 0.2,
+                    pointBackgroundColor: function (c) {
+                        let idx = c.dataIndex;
+                        let p = c.dataset.data[idx];
+                        if (p == null) return;
+                        if (p.comprises > 1) {
+                            // return 'rgba(255, 0, 0, 0.3)';
+                        }
+                        return "rgba(0, 0, 0, 0.1)";
+                    },
+                },
+                {
+                    label: "Loss Duration",
+                    backgroundColor:
+                        document.getElementById("bg-col-value").value,
+                    borderColor:
+                        document.getElementById("line-col-value").value,
+                    fill: true,
+                    data: [],
+                    hidden: true,
                     pointRadius: undefined,
                     hoverRadius: undefined,
                     yAxisID: "ELO",
@@ -512,12 +568,15 @@ class Application {
                         for (const e of elements) {
                             const dsi = e.datasetIndex;
                             const di = e.index;
-                            const de = application.graph.data.datasets[dsi].data[di];
+                            const de =
+                                application.graph.data.datasets[dsi].data[di];
                             min = Math.min(min, de.first_x);
                             max = Math.max(max, de.x);
                         }
-                        application.prevData = application.graph.data.datasets[0].data;
-                        application.graph.data.datasets[0].data = application.activePlayer.dateFiltered(min, max);
+                        application.prevData =
+                            application.graph.data.datasets[0].data;
+                        application.graph.data.datasets[0].data =
+                            application.activePlayer.dateFiltered(min, max);
                         application.graph.data.datasets[0].pointRadius = 4;
                         application.graph.data.datasets[0].hoverRadius = 6;
                         application.graph.update();
@@ -544,7 +603,12 @@ class Application {
                                     dobj.comprises > 1
                                         ? `${dobj.comprises} players, ${dobj.wr}% winrate`
                                         : dobj.enemy;
-                                return `${dobj.y} (${cval} vs ${enemies})`;
+                                /*
+                                let y = dobj.y;
+                                if (graphType().includes("duration")) y = asSRTime(y);
+                                return `${y} (${cval} vs ${enemies})`;
+                                */
+                                return "hi!";
                             },
                         },
                     },
@@ -562,6 +626,9 @@ class Application {
                     },
                     ELO: {
                         type: "linear",
+                        /*
+                        display: () => graphType() == "player-elo",
+                        */
                         position: "left",
                         id: "ELO",
                         title: {
@@ -569,6 +636,50 @@ class Application {
                             text: "Elo",
                         },
                     },
+                    /*
+                    WINRATE: {
+                        type: "linear",
+                        display: () => graphType() == "player-winrate",
+                        position: "left",
+                        id: "WINRATE",
+                        title: {
+                            display: true,
+                            text: "Winrate"
+                        },
+                    },
+                    RDURATION: {
+                        type: "linear",
+                        display: () => graphType() == "match-rduration",
+                        position: "left",
+                        id: "RDURATION",
+                        title: {
+                            display: true,
+                            text: "Duration",
+                        },
+                        ticks: {
+                            callback: function(v) {
+                                if (graphType() != "match-rduration") return;
+                                return asSRTime(v);
+                            },
+                        },
+                    },
+                    DURATION: {
+                        type: "linear",
+                        display: () => graphType() == "match-duration",
+                        position: "left",
+                        id: "DURATION",
+                        title: {
+                            display: true,
+                            text: "Average Duration",
+                        },
+                        ticks: {
+                            callback: function(v) {
+                                if (graphType() != "match-duration") return;
+                                return asSRTime(v);
+                            },
+                        },
+                    },
+                    */
                     /*RANK: {
                         type: 'linear',
                         position: 'right',
@@ -671,7 +782,14 @@ class Application {
             return;
         }
 
-        let eloChartData = this.activePlayer.toEloChartData();
+        /*
+        if (gt == "match-duration") {
+            this.graph.options.scales.DURATION = this.DURATIONCFG;
+        }
+        else {
+            this.graph.options.scales.DURATION = undefined;
+        }*/
+        let eloChartData = this.activePlayer.toChartData();
         // This is where all of our rendering code should stem from.
 
         if (this.enabled("allow-eggs")) {
