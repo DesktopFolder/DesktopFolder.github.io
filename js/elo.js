@@ -573,7 +573,7 @@ class Application {
                 fill: false,
                 data: [],
                 yAxisID: 'RANK',
-            }*/,
+            }*/
             ],
         };
         this.graph = new Chart(this.ctx, {
