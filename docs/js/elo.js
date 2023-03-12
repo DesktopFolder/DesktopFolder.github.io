@@ -540,7 +540,9 @@ class Application {
                         }
                         return "rgba(0, 0, 0, 0.1)";
                     },
-                } /*{
+                },
+                */
+                /*{
                 label: 'MCSR Rank',
                 backgroundColor: Application.#DEFAULT_BG,
                 borderColor: Application.#DEFAULT_FG_LINE, 
@@ -759,7 +761,9 @@ class Application {
     rerender() {
         if (this.enabled("allow-zoom")) this.enableZoom();
         else this.disableZoom();
+        const gt = graphType();
         if (this.enabled("clean-graph")) {
+            this.log("Doing clean graphing.");
             this.graph.data.datasets[0].pointRadius = undefined;
             this.graph.data.datasets[0].hoverRadius = undefined;
             this.graph.options.elements.point.radius = 1;
@@ -773,7 +777,6 @@ class Application {
             return;
         }
 
-        const gt = graphType();
         if (gt == "match-duration") {
             this.graph.options.scales.DURATION = this.DURATIONCFG;
         }
@@ -797,14 +800,15 @@ class Application {
         // Don't update the graph unless we have actual data.
         // This enables our delayed callback system.
         if (eloChartData.length > 0) {
+            this.graph.data.datasets[0].yAxisID = this.axisID();
             this.graph.data.datasets[0].data = eloChartData;
-            if (!this.enabled("clean-graph"))
+            if (!this.enabled("clean-graph")) {
                 this.graph.data.datasets[0].pointRadius =
                     this.activePlayer.toPointRadiusData(eloChartData);
-            if (!this.enabled("clean-graph"))
                 this.graph.data.datasets[0].hoverRadius = this.activePlayer
                     .toPointRadiusData(eloChartData)
                     .map((c) => c + 2);
+            }
             let loadingtext =
                 this.activePlayer.loading == null
                     ? ""
@@ -818,6 +822,8 @@ class Application {
                 `Did not rerender for ${this.activePlayer.username} as data was 0.`
             );
         }
+        this.log(this.graph.data.datasets);
+        this.log("Calling graph.update()");
         // Always call update graph, we just don't update the data necessarily.
         this.graph.update();
     }
@@ -861,6 +867,8 @@ class Application {
             this.graph.data.datasets[0].borderColor = "rgba(81,55,130,1)";
         } else if (username == "hamazonau") {
             player.overrideNick = "Hamazon (Top 50 AU)";
+            this.graph.data.datasets[0].backgroundColor = "rgba(205,0,1,0.5)";
+            this.graph.data.datasets[0].borderColor = "rgba(0,0,102,1)";
         } else if (username == "redlime") {
             // I don't know Oliver's ingame name lol
             player.overrideNick = "RedLime (MCSR Developer)";
@@ -958,6 +966,10 @@ function onDomLoaded() {
         appChanger.addEventListener("change", function () {
             application.log(
                 "Attempting application rerender through app-rerender class."
+            );
+            application.setItem(
+                appChanger.id,
+                String(application.enabled(appChanger.id))
             );
 
             application.rerender();
