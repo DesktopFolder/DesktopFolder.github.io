@@ -474,8 +474,9 @@ class Application {
         this.data = {
             labels: [],
             datasets: [
+                /*
                 {
-                    label: "HI" /*this.graphTitle()*/,
+                    label: this.graphTitle(),
                     backgroundColor:
                         document.getElementById("bg-col-value").value,
                     borderColor:
@@ -495,7 +496,30 @@ class Application {
                         }
                         return "rgba(0, 0, 0, 0.1)";
                     },
-                },
+                }
+                */
+                {
+                    label: this.graphTitle(),
+                    backgroundColor:
+                        document.getElementById("bg-col-value").value,
+                    borderColor:
+                        document.getElementById("line-col-value").value,
+                    fill: true,
+                    data: [],
+                    pointRadius: undefined,
+                    hoverRadius: undefined,
+                    yAxisID: "ELO",
+                    tension: this.getTension(tens) || 0.2,
+                    pointBackgroundColor: function (c) {
+                        let idx = c.dataIndex;
+                        let p = c.dataset.data[idx];
+                        if (p == null) return;
+                        if (p.comprises > 1) {
+                            // return 'rgba(255, 0, 0, 0.3)';
+                        }
+                        return "rgba(0, 0, 0, 0.1)";
+                    },
+                }
                 /*
                 {
                     label: "Win Duration",
