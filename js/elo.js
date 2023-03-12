@@ -261,7 +261,6 @@ class Player {
                 o.y = o.elo;
                 return o;
             });
-        console.log(data);
 
         if (application.enabled("group-sessions")) {
             const tval =
@@ -641,6 +640,19 @@ class Application {
                             text: "Winrate"
                         },
                     },
+                    DURATION: {
+                        type: "linear",
+                        display: () => graphType() == "match-duration",
+                        position: "left",
+                        id: "DURATION",
+                        title: {
+                            display: true,
+                            text: "AverageDuration",
+                        },
+                        ticks: {
+                            callback: asSRTime,
+                        },
+                    },
                     RDURATION: {
                         type: "linear",
                         display: () => graphType() == "match-rduration",
@@ -651,26 +663,7 @@ class Application {
                             text: "Duration",
                         },
                         ticks: {
-                            callback: function(v) {
-                                if (graphType() != "match-rduration") return;
-                                return asSRTime(v);
-                            },
-                        },
-                    },
-                    DURATION: {
-                        type: "linear",
-                        display: () => graphType() == "match-duration",
-                        position: "left",
-                        id: "DURATION",
-                        title: {
-                            display: true,
-                            text: "Average Duration",
-                        },
-                        ticks: {
-                            callback: function(v) {
-                                if (graphType() != "match-duration") return;
-                                return asSRTime(v);
-                            },
+                            callback: asSRTime,
                         },
                     },
                     /*RANK: {
@@ -777,12 +770,6 @@ class Application {
             return;
         }
 
-        if (gt == "match-duration") {
-            this.graph.options.scales.DURATION = this.DURATIONCFG;
-        }
-        else {
-            this.graph.options.scales.DURATION = undefined;
-        }
         let eloChartData = this.activePlayer.toChartData();
         // This is where all of our rendering code should stem from.
 
