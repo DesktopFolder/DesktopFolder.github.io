@@ -453,14 +453,12 @@ class Application {
         const tens = application.getItem("tension-value", "0.2");
         document.getElementById("tension-value").value = tens;
 
-        /*
         const sg = application.getItem("group-sessions", "false");
         document.getElementById("group-sessions").checked = sg == "true";
         const sp = application.getItem("smart-points", "false");
         document.getElementById("smart-points").checked = sp == "true";
         const cg = application.getItem("clean-graph", "false");
         document.getElementById("clean-graph").checked = cg == "true";
-        */
 
         document.getElementById("bg-col-value").value = this.getItem(
             "bg-colour",
@@ -474,30 +472,6 @@ class Application {
         this.data = {
             labels: [],
             datasets: [
-                /*
-                {
-                    label: this.graphTitle(),
-                    backgroundColor:
-                        document.getElementById("bg-col-value").value,
-                    borderColor:
-                        document.getElementById("line-col-value").value,
-                    fill: true,
-                    data: [],
-                    pointRadius: undefined,
-                    hoverRadius: undefined,
-                    yAxisID: "ELO",
-                    tension: this.getTension(tens) || 0.2,
-                    pointBackgroundColor: function (c) {
-                        let idx = c.dataIndex;
-                        let p = c.dataset.data[idx];
-                        if (p == null) return;
-                        if (p.comprises > 1) {
-                            // return 'rgba(255, 0, 0, 0.3)';
-                        }
-                        return "rgba(0, 0, 0, 0.1)";
-                    },
-                }
-                */
                 {
                     label: this.graphTitle(),
                     backgroundColor:
@@ -627,12 +601,9 @@ class Application {
                                     dobj.comprises > 1
                                         ? `${dobj.comprises} players, ${dobj.wr}% winrate`
                                         : dobj.enemy;
-                                /*
                                 let y = dobj.y;
                                 if (graphType().includes("duration")) y = asSRTime(y);
                                 return `${y} (${cval} vs ${enemies})`;
-                                */
-                                return "hi!";
                             },
                         },
                     },
@@ -650,9 +621,7 @@ class Application {
                     },
                     ELO: {
                         type: "linear",
-                        /*
                         display: () => graphType() == "player-elo",
-                        */
                         position: "left",
                         id: "ELO",
                         title: {
@@ -660,7 +629,6 @@ class Application {
                             text: "Elo",
                         },
                     },
-                    /*
                     WINRATE: {
                         type: "linear",
                         display: () => graphType() == "player-winrate",
@@ -703,7 +671,6 @@ class Application {
                             },
                         },
                     },
-                    */
                     /*RANK: {
                         type: 'linear',
                         position: 'right',
@@ -806,13 +773,13 @@ class Application {
             return;
         }
 
-        /*
+        const gt = graphType();
         if (gt == "match-duration") {
             this.graph.options.scales.DURATION = this.DURATIONCFG;
         }
         else {
             this.graph.options.scales.DURATION = undefined;
-        }*/
+        }
         let eloChartData = this.activePlayer.toChartData();
         // This is where all of our rendering code should stem from.
 
