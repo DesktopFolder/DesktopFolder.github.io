@@ -19,6 +19,18 @@ function doGrouping() {
     return document.getElementById("group-sessions").checked;
 }
 
+function graphType() {
+    return document.getElementById("graph-type").value;
+}
+
+function asSRTime(v) {
+    const s = (v / 1000).toFixed(0) % 60;
+    const m = (v / (1000 * 60)).toFixed(0);
+    const sstr = (s < 10 ? "0" : "") + String(s);
+    const mstr = (m < 10 ? "0" : "") + String(m);
+    return `${mstr}:${sstr}`;
+}
+
 class Player {
     constructor(username) {
         this.lastPolled = null;
@@ -179,15 +191,14 @@ class Player {
                 console.log(
                     `Player ${this.username}: Fetches interrupted by: ${e}`
                 );
+                document.getElementById("error-message").style.display = "";
             });
     }
 
     //asData() {
     //    return JSON.stringify(this.data.filter((e, i, a) => (i == 0 || a[i - 1][1] != e[1] || a[i - 1][2] != e[2])));
     //}
-
-    toEloChartData() {
-        if (this.data.length == 0) return [];
+    genericFilteredData() {
         let data = this.data.map((o) => {
             o.comprises = 1;
             return o;
@@ -205,7 +216,52 @@ class Player {
             data = data.filter((d) => d.x < ts);
             application.log(`Filtered with end ${end}`);
         }
+        return data;
+    }
+
+    asWinrate(d) {
+        let wr = 0;
+        let matches = 0;
+        let wins = 0;
+        return d
+            .reverse()
+            .map(function getWinrate(o) {
+                matches += 1;
+                if (o.won) wins += 1;
+                o.y = Math.round((100 * wins) / matches, 2);
+                return o;
+            })
+            .splice(5)
+            .reverse();
+    }
+
+    asDuration(d) {
+        let total = 0;
+        let num = 0;
+        return d
+            .reverse()
+            .map(function getAvgDuration(o) {
+                num += 1;
+                total += o.duration;
+                o.y = Math.round(total / num, 0);
+                return o;
+            })
+            .reverse();
+    }
+
+    toChartData() {
+        let data = this.genericFilteredData();
         if (data.length == 0) return [];
+
+        const gt = graphType();
+        if (gt == "player-winrate") data = this.asWinrate(data);
+        else if (gt == "match-duration") data = this.asDuration(data);
+        else
+            data = data.map(function fixY(o) {
+                o.y = o.elo;
+                return o;
+            });
+        console.log(data);
 
         if (application.enabled("group-sessions")) {
             const tval =
@@ -217,6 +273,7 @@ class Player {
             let last_allowed = data[0];
             let won = 0;
             let lost = 0;
+            let total_time = 0;
             const first_elo = data[data.length - 1].y;
             data = data.filter((d) => {
                 const prev = last_time;
@@ -226,13 +283,18 @@ class Player {
                 // if we allow it, we are now last allowed
                 if (allow) {
                     last_allowed.change = last_allowed.y - d.y;
+                    const total_games = won + lost;
                     last_allowed.wr = Math.round(
-                        (won * 100.0) / (won + lost),
+                        (won * 100.0) / total_games,
                         2
                     );
+                    last_allowed.avduration = (
+                        total_time / total_games
+                    ).toFixed(0);
                     last_allowed = d;
                     won = 0;
                     lost = 0;
+                    total_time = 0;
                 }
                 // otherwise, increment last allowed count
                 else {
@@ -242,19 +304,29 @@ class Player {
 
                 if (d.won) won += 1;
                 else lost += 1; // TODO - draw accounting? I don't really care so
+                total_time += d.duration;
                 return allow;
             });
             let first_post_filter = data[data.length - 1];
             first_post_filter.wr = Math.round((won * 100.0) / (won + lost), 2);
+            first_post_filter.avduration = (total_time / (won + lost)).toFixed(
+                0
+            );
             first_post_filter.change = first_post_filter.y - first_elo;
         }
+
+        if (gt == "match-rduration")
+            data = data.map(function asDur(o) {
+                o.y = o.avduration || o.duration;
+                return o;
+            });
 
         return data;
         //return this.data.map(o => ({x: o[0] * 1000, y: o[2]}));
     }
 
     dateFiltered(min, max) {
-        const fd = this.data.filter((d) => d.x >= min && d.x <= max); 
+        const fd = this.data.filter((d) => d.x >= min && d.x <= max);
         console.log(`Filtered by ${min}-${max} to get ${fd.length} points.`);
         return fd;
     }
@@ -288,7 +360,11 @@ class Player {
             this.data.push({
                 x: d.match_date * 1000,
                 first_x: d.match_date * 1000,
+                // Elo value is stored in y.
                 y: this.base_elo,
+                elo: this.base_elo,
+                duration: d.final_time,
+                avduration: null,
                 enemy: this.enemyFrom(d).nickname,
                 comprises: 1,
                 wr: null,
@@ -348,6 +424,24 @@ class Application {
         this.activePlayer = null;
         // atm just enable this via console.
         this.doLogging = this.getItem("do-logging") != null;
+    }
+
+    axisID() {
+        const gt = graphType();
+        if (gt == "player-elo") return "ELO";
+        if (gt == "player-winrate") return "WINRATE";
+        if (gt == "match-duration") return "DURATION";
+        if (gt == "match-rduration") return "RDURATION";
+        return "Stop messing around...";
+    }
+
+    graphTitle() {
+        const gt = graphType();
+        if (gt == "player-elo") return "Elo Value";
+        if (gt == "player-winrate") return "Winrate";
+        if (gt == "match-duration") return "Average Match Duration";
+        if (gt == "match-rduration") return "Match Duration";
+        return "Stop messing around...";
     }
 
     init() {
