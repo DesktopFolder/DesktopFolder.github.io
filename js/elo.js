@@ -201,6 +201,7 @@ class Player {
     genericFilteredData() {
         let data = this.data.map((o) => {
             o.comprises = 1;
+            o.change = o.raw_change;
             return o;
         });
 
@@ -216,6 +217,9 @@ class Player {
             data = data.filter((d) => d.x < ts);
             application.log(`Filtered with end ${end}`);
         }
+
+        if (application.enabled("no-ffs")) data = data.filter((o) => !o.ff);
+        if (application.enabled("wins-only")) data = data.filter((o) => o.won);
         return data;
     }
 
@@ -249,7 +253,7 @@ class Player {
             .reverse();
     }
 
-    toChartData() {
+    toChartData(groupable = true) {
         let data = this.genericFilteredData();
         if (data.length == 0) return [];
 
@@ -262,7 +266,7 @@ class Player {
                 return o;
             });
 
-        if (application.enabled("group-sessions")) {
+        if (application.enabled("group-sessions") && groupable) {
             const tval =
                 parseInt(document.getElementById("group-thresh-val").value) ||
                 30;
@@ -325,8 +329,21 @@ class Player {
     }
 
     dateFiltered(min, max) {
-        const fd = this.data.filter((d) => d.x >= min && d.x <= max);
+        const fd = this.toChartData(false).filter((d) => d.x >= min && d.x <= max);
         console.log(`Filtered by ${min}-${max} to get ${fd.length} points.`);
+        const gt = graphType();
+        if (gt == "match-rduration") {
+            return fd.map(function (o) {
+                o.y = o.duration;
+                return o;
+            });
+        }
+        if (gt == "match-duration") {
+            return fd.map(function (o) {
+                o.y = o.duration;
+                return o;
+            });
+        }
         return fd;
     }
 
@@ -368,7 +385,9 @@ class Player {
                 comprises: 1,
                 wr: null,
                 change: c,
+                raw_change: c,
                 won: ourData.uuid == d.winner,
+                ff: d.forfeit,
             });
 
             this.rawData.push({
@@ -599,7 +618,7 @@ class Application {
                                 const c = dobj.change;
                                 let cval = c > 0 ? "+" + String(c) : String(c);
                                 const enemies =
-                                    dobj.comprises > 1
+                                    (dobj.comprises > 1)
                                         ? `${dobj.comprises} players, ${dobj.wr}% winrate`
                                         : dobj.enemy;
                                 let y = dobj.y;
