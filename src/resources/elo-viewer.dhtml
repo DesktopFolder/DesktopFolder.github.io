@@ -56,6 +56,7 @@ Easter Eggs:
         <option value="player-winrate">Winrate Graph</option>
         <option value="match-duration">Average Match Duration</option>
         <option value="match-rduration">Match Duration</option>
+        <option value="stats-view">Other Stats</option>
     </select>
 
     Remove Forfeits: 
@@ -66,6 +67,22 @@ Easter Eggs:
 </p>
 
 <canvas id="incredible-elo-chart"></canvas>
+
+<div style="display:none">
+    <!--
+    What do we want to display in here?
+    This is essentially a test bed for stats that may be shown on the main page.
+
+    - Highest ELO
+    - Average game duration
+    - Highest game duration
+    - Lowest game duration (no FF, won)
+    - Total time played
+    - Average time played per session?
+    - Total games played
+    - Total win/loss, winrate, etc.
+    -->
+</div>
 
 <div style="text-align: center;width:100%;">
     <b>Filters: </b>
