@@ -94,7 +94,7 @@ def gen_file(w: dhtml.Website, p: dhtml.Page, verbose=noop):
         file.write(output_data)
 
     if p.fdest is not None:
-        fdo = Path(dhtml.normpath(Path('docs/' + p.fdest + '/' + 'index.html')))
+        fdo = Path(dhtml.normpath(Path('docs/' + p.fdest + '/' + 'current.html')))
         fdo.parent.mkdir(exist_ok=True, parents=True)
         open(fdo, 'w').write(output_data)
 

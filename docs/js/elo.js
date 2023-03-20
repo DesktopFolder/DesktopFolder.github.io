@@ -446,7 +446,7 @@ class Application {
 
     axisID() {
         const gt = graphType();
-        if (gt == "player-elo") return "ELO";
+        if (gt == "player-elo" || gt == "stats-view") return "ELO";
         if (gt == "player-winrate") return "WINRATE";
         if (gt == "match-duration") return "DURATION";
         if (gt == "match-rduration") return "RDURATION";
@@ -455,7 +455,7 @@ class Application {
 
     graphTitle() {
         const gt = graphType();
-        if (gt == "player-elo") return "Elo Value";
+        if (gt == "player-elo" || gt == "stats-view") return "Elo Value";
         if (gt == "player-winrate") return "Winrate";
         if (gt == "match-duration") return "Average Match Duration";
         if (gt == "match-rduration") return "Match Duration";
@@ -641,7 +641,7 @@ class Application {
                     },
                     ELO: {
                         type: "linear",
-                        display: () => graphType() == "player-elo",
+                        display: () => graphType() == "player-elo" || graphType() == "stats-view",
                         position: "left",
                         id: "ELO",
                         title: {
@@ -875,9 +875,11 @@ class Application {
             player.overrideNick = "Hamazon (Top 50 AU)";
             this.graph.data.datasets[0].backgroundColor = "rgba(205,0,1,0.5)";
             this.graph.data.datasets[0].borderColor = "rgba(0,0,102,1)";
-        } else if (username == "redlime") {
+        } else if (username == "red_lime") {
             // I don't know Oliver's ingame name lol
             player.overrideNick = "RedLime (MCSR Developer)";
+            this.graph.data.datasets[0].backgroundColor = "rgba(255,99,99,0.4)";
+            this.graph.data.datasets[0].borderColor = "rgba(102,31,31,1)";
         } else if (username == "desktopfolder") {
             player.overrideNick =
                 "DesktopFolder (NOT A WEB DEVELOPER, PLEASE BELIEVE ME)";
@@ -981,6 +983,20 @@ function onDomLoaded() {
             application.rerender();
         });
     }
+
+    document
+        .getElementById("stats-view")
+        .addEventListener("change", function (e) {
+            const val = document.getElementById("graph-type").value;
+            if (val == "stats-view") {
+                document.getElementById("incredible-elo-chart").style.display = "none";
+                document.getElementById("stats-view").style.display = "";
+            }
+            else {
+                document.getElementById("stats-view").style.display = "none";
+                document.getElementById("incredible-elo-chart").style.display = "";
+            }
+        });
 
     document
         .getElementById("tension-value")
