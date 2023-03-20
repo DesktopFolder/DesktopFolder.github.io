@@ -984,6 +984,7 @@ function onDomLoaded() {
         });
     }
 
+    /*
     document
         .getElementById("stats-view")
         .addEventListener("change", function (e) {
@@ -997,6 +998,7 @@ function onDomLoaded() {
                 document.getElementById("incredible-elo-chart").style.display = "";
             }
         });
+        */
 
     document
         .getElementById("tension-value")
