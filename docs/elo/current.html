@@ -29,7 +29,7 @@
 <!--Basic configuration provided by the user.-->
 <div id="username-header" style="text-align: center; width: 100%;">
     Username: 
-    <input id="username-value" class="big-query" placeholder="Minecraft username..." class="enter-update" /> 
+    <input id="username-value" class="big-query" placeholder="Minecraft username..." /> 
 </div>
 
 <div id="error-message" style="display: none; text-align: center; width: 100%;">
@@ -109,7 +109,19 @@ Easter Eggs:
 
     <label for="end-date">Latest Date:</label>
     <input class="app-rerender" type="date" id="end-date" name="latest-date" value="">
-</span>
+
+<p>
+    <label for="begin-date">Against Player:</label>
+    <input class="enter-update" placeholder="Minecraft username..." id="opponent" value="">
+</p>
+</div>
+
+<div style="text-align: center; width: 100%;">
+    <b>Stats:</b> Winrate: <b class="stat" id="stat-winrate"></b> Matches Played: <b class="stat" id="stat-matches"></b> ELO differential: <b class="stat" id="stat-elo"></b>
+    <p>
+    Wins: <b class="stat" id="stat-wins"></b> Losses: <b class="stat" id="stat-losses"></b> <i>Note: Draws are currently counted as losses.</i>
+    </p>
+</div>
 
 <!--Crossposting & sharing-->
 <p id="current-url-p" style="text-align: center;">Share this graph: <a id="current-url" href=""></a></p>

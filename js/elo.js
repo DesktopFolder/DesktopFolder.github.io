@@ -15,6 +15,10 @@ function isValidColour(s) {
     return e.style.borderColor.length != 0;
 }
 
+function isValidUsername(u) {
+    return /^([a-z0-9_]{2,17})$/.test(u);
+}
+
 function doGrouping() {
     return document.getElementById("group-sessions").checked;
 }
@@ -29,6 +33,28 @@ function asSRTime(v) {
     const sstr = (s < 10 ? "0" : "") + String(s);
     const mstr = (m < 10 ? "0" : "") + String(m);
     return `${mstr}:${sstr}`;
+}
+
+function winrateFromData(d) {
+    const wins = d.reduce((acc, val) => acc + (val.won ? 1 : 0), 0);
+    return (100 * wins / d.length).toFixed(2);
+}
+
+function updateStats(d) {
+    application.log(`Updating stats from ${d.length} games.`);
+    if (d.length == 0) return;
+
+    const winrate = winrateFromData(d);
+    document.getElementById("stat-winrate").innerHTML = winrate;
+
+    document.getElementById("stat-matches").innerHTML = d.length;
+
+    const eloChange = d.reduce((acc, val) => acc + val.change, 0);
+    document.getElementById("stat-elo").innerHTML = eloChange;
+
+    const wins = d.reduce((acc, val) => acc + (val.won ? 1 : 0), 0);
+    document.getElementById("stat-wins").innerHTML = wins;
+    document.getElementById("stat-losses").innerHTML = d.length - wins;
 }
 
 class Player {
@@ -199,6 +225,7 @@ class Player {
     //    return JSON.stringify(this.data.filter((e, i, a) => (i == 0 || a[i - 1][1] != e[1] || a[i - 1][2] != e[2])));
     //}
     genericFilteredData() {
+        application.log(`Generating filtered data from ${this.data.length} games.`);
         let data = this.data.map((o) => {
             o.comprises = 1;
             o.change = o.raw_change;
@@ -218,8 +245,15 @@ class Player {
             application.log(`Filtered with end ${end}`);
         }
 
+        const opponent = document.getElementById("opponent").value.toLowerCase();
+        if (isValidUsername(opponent)) {
+            data = data.filter((d) => d.enemy.toLowerCase() == opponent);
+            application.log(`Filtered with opponent ${opponent}`);
+        }
+
         if (application.enabled("no-ffs")) data = data.filter((o) => !o.ff);
         if (application.enabled("wins-only")) data = data.filter((o) => o.won);
+
         return data;
     }
 
@@ -255,6 +289,7 @@ class Player {
 
     toChartData(groupable = true) {
         let data = this.genericFilteredData();
+        updateStats(data);
         if (data.length == 0) return [];
 
         const gt = graphType();
@@ -593,8 +628,8 @@ class Application {
                         }
                         application.prevData =
                             application.graph.data.datasets[0].data;
-                        application.graph.data.datasets[0].data =
-                            application.activePlayer.dateFiltered(min, max);
+                        const newData = application.activePlayer.dateFiltered(min, max);
+                        application.graph.data.datasets[0].data = newData;
                         application.graph.data.datasets[0].pointRadius = 4;
                         application.graph.data.datasets[0].hoverRadius = 6;
                         application.graph.update();
@@ -911,7 +946,7 @@ class Application {
     loadUsername(inputUsername) {
         let username = inputUsername.toLowerCase();
 
-        if (/^([a-z0-9_]{2,17})$/.test(username)) {
+        if (isValidUsername(username)) {
             if (this.activePlayer != null) this.activePlayer.setInactive();
             this.activePlayer = this.getPlayer(username);
             this.activePlayer.setActive();
@@ -967,6 +1002,27 @@ function onDomLoaded() {
                 updateUrls(username);
             }
         });
+
+    for (const appChanger of Array.from(
+        document.getElementsByClassName("enter-update")
+    )) {
+        appChanger.addEventListener("keypress", function (e) {
+            if (e.key == "Enter") {
+                application.log(
+                    "Attempting application rerender through enter-update class."
+                );
+                /*
+                application.setItem(
+                    appChanger.id,
+                    String(application.enabled(appChanger.id))
+                );
+                */
+
+                application.rerender();
+            }
+        });
+    }
+
 
     for (const appChanger of Array.from(
         document.getElementsByClassName("app-rerender")

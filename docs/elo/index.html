@@ -29,7 +29,7 @@
 <!--Basic configuration provided by the user.-->
 <div id="username-header" style="text-align: center; width: 100%;">
     Username: 
-    <input id="username-value" class="big-query" placeholder="Minecraft username..." class="enter-update" /> 
+    <input id="username-value" class="big-query" placeholder="Minecraft username..." /> 
 </div>
 
 <div id="error-message" style="display: none; text-align: center; width: 100%;">
@@ -74,6 +74,7 @@ Easter Eggs:
         <option value="player-winrate">Winrate Graph</option>
         <option value="match-duration">Average Match Duration</option>
         <option value="match-rduration">Match Duration</option>
+        <option value="stats-view">Other Stats</option>
     </select>
 
     Remove Forfeits: 
@@ -85,6 +86,22 @@ Easter Eggs:
 
 <canvas id="incredible-elo-chart"></canvas>
 
+<div style="display:none">
+    <!--
+    What do we want to display in here?
+    This is essentially a test bed for stats that may be shown on the main page.
+
+    - Highest ELO
+    - Average game duration
+    - Highest game duration
+    - Lowest game duration (no FF, won)
+    - Total time played
+    - Average time played per session?
+    - Total games played
+    - Total win/loss, winrate, etc.
+    -->
+</div>
+
 <div style="text-align: center;width:100%;">
     <b>Filters: </b>
     <label for="begin-date">Earliest Date:</label>
@@ -92,7 +109,19 @@ Easter Eggs:
 
     <label for="end-date">Latest Date:</label>
     <input class="app-rerender" type="date" id="end-date" name="latest-date" value="">
-</span>
+
+<p>
+    <label for="begin-date">Against Player:</label>
+    <input class="enter-update" placeholder="Minecraft username..." id="opponent" value="">
+</p>
+</div>
+
+<div style="text-align: center; width: 100%;">
+    <b>Stats:</b> Winrate: <b class="stat" id="stat-winrate"></b> Matches Played: <b class="stat" id="stat-matches"></b> ELO differential: <b class="stat" id="stat-elo"></b>
+    <p>
+    Wins: <b class="stat" id="stat-wins"></b> Losses: <b class="stat" id="stat-losses"></b> <i>Note: Draws are currently counted as losses.</i>
+    </p>
+</div>
 
 <!--Crossposting & sharing-->
 <p id="current-url-p" style="text-align: center;">Share this graph: <a id="current-url" href=""></a></p>
