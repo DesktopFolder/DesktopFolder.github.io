@@ -83,7 +83,7 @@ class Player {
         const uuid = matchData.members.find(
             (item) => item.nickname.toLowerCase() == this.username
         ).uuid;
-        return matchData.score_changes.find((item) => item.uuid == uuid).score;
+        return matchData.score_changes.find((item) => item.uuid == uuid).change;
     }
 
     enemyFrom(matchData) {
