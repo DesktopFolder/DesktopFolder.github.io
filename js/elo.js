@@ -2,6 +2,20 @@
 // I have no knowledge whatsoever of best practice within JS.
 // This is just me going based off of some very basic assumptions.
 // This may not be good code. (And most likely isn't.)
+function doShowables() {
+    for (const showable of Array.from(
+        document.getElementsByClassName("notice-banner")
+    )) {
+        if (application.getItem(showable.id) == null) {
+            document.getElementById(showable.id).style.display = "";
+        }
+    }
+}
+
+function bannerClick(id) {
+    document.getElementById(id).style.display = "none";
+    application.setItem(id, 'noshow');
+}
 
 // Helpers
 function timestamp() {
@@ -988,6 +1002,8 @@ function updateUrls(username) {
 }
 
 function onDomLoaded() {
+    // show warnings/etc
+    doShowables();
     // Config & initialization of graph.
     application.init();
 

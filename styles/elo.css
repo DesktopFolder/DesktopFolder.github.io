@@ -38,3 +38,8 @@
 .stat {
     margin-right: 1em;
 }
+
+.notice-banner {
+    width: auto;
+    background-color: #eeeeee;
+}
