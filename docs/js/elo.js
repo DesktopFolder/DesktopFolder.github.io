@@ -22,6 +22,8 @@ function timestamp() {
     return Math.floor(Date.now() / 1000);
 }
 
+const TS_FINAL_S0 = 1679875100;
+
 function isValidColour(s) {
     let e = document.getElementById("validColour");
     e.style.borderColor = "";
@@ -85,6 +87,35 @@ class Player {
         this.isActive = false;
         this.timer = null;
         this.loading = "Inactive";
+        this.playerData = null;
+        this.hasS0Elo = false;
+
+        // Get player's last elo / other info
+        fetch(`https://mcsrranked.com/api/users/${this.username}`, { mode: "cors" })
+            .then((response) => response.json())
+            .then((data) => {
+                application.log(`Got player data for ${this.username}`);
+
+                // Player is invalid in some way.
+                if (data.status == "error") {
+                    console.log(`Player ${this.username}: Got bad player data.`);
+                    return;
+                }
+
+                this.playerData = data.data;
+
+                application.rerender();
+            })
+            .catch((e) => {
+                console.log(
+                    `Player ${this.username}: Data fetch interrupted by: ${e}`
+                );
+                // wip lol
+                document.getElementById("error-message").style.display = "";
+            })
+            .finally(() => {
+                if (this.playerData == null) { this.playerData = 0; }
+            });
     }
 
     setInactive() {
@@ -419,6 +450,25 @@ class Player {
             if (d.score_changes == null) continue;
             const ourData = this.dataFrom(d);
             let c = this.scoreChangeFrom(d);
+
+            if (!this.hasS0Elo && d.match_date < TS_FINAL_S0)
+            {
+                // we go from MOST to LEAST recent match
+                // therefore, this is the player's MOST recent match
+                // that was BEFORE the final TS of S0
+                // therefore, we must reset our base_elo to prev elo
+                if (this.playerData == 0) {
+                    // legit no idea how to fix this error
+                    console.log("Failed to get player data. S0 is corrupted.");
+                }
+                else if (this.playerData == null) {
+                    console.log("Was still getting player data... :(");
+                }
+                else {
+                    this.base_elo = this.playerData.prev_elo_rate;
+                    this.hasS0Elo = true;
+                }
+            }
 
             // we go most recent to least recent
             // first set the data, then make the change
@@ -1006,6 +1056,9 @@ function onDomLoaded() {
     doShowables();
     // Config & initialization of graph.
     application.init();
+
+    // remove legacy info
+    application.removeItem("banner-no-history");
 
     document
         .getElementById("username-value")
