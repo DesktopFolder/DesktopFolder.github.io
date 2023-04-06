@@ -175,7 +175,7 @@ class Player {
         );
     }
 
-    fetchingPoll(i = 0) {
+    fetchingPoll(i = 0, season = 1 /* MUST BE CURRENT SEASON */) {
         if (!this.shouldPoll() && i == 0) {
             application.log(
                 `Player: Did not poll for ${this.username} due to internal ratelimit. (Page 0 request)`
@@ -185,7 +185,7 @@ class Player {
         this.polled();
         application.log(`Player: Submitting fetch for ${this.username}`);
         fetch(
-            `https://mcsrranked.com/api/users/${this.username}/matches?filter=2&count=${application.config.pageCount}&page=${i}`,
+            `https://mcsrranked.com/api/users/${this.username}/matches?season=${season}&filter=2&count=${application.config.pageCount}&page=${i}`,
             { mode: "cors" }
         )
             .then((response) => response.json())
@@ -237,16 +237,29 @@ class Player {
                 // Maybe launch another fetch.
                 if (data.data.length >= application.config.pageCount) {
                     application.log(
-                        `Queued another read for page ${i + 1} for ${
+                        `Queued another read for season ${season} & page ${i + 1} for ${
                             this.username
                         }`
                     );
                     setTimeout(() => {
                         if (this.isActive) {
-                            this.fetchingPoll(i + 1);
+                            this.fetchingPoll(i + 1, season);
                         }
                     }, 2000);
-                } else {
+                } 
+                else if (season > 0) {
+                    application.log(
+                        `Queued read for older season ${season + 1} & page 0 for ${
+                            this.username
+                        }`
+                    );
+                    setTimeout(() => {
+                        if (this.isActive) {
+                            this.fetchingPoll(0, season - 1);
+                        }
+                    }, 2000);
+                }
+                else {
                     this.loading = `Fetched all ${this.data.length} values.`;
                     setTimeout(() => {
                         if (this.isActive) {
