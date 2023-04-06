@@ -177,7 +177,7 @@ class Player {
     }
 
     fetchingPoll(i = 0, season = CURRENT_SEASON /* MUST BE CURRENT SEASON */) {
-        if (!this.shouldPoll() && i == 0 && season = CURRENT_SEASON) {
+        if (!this.shouldPoll() && i == 0 && season == CURRENT_SEASON) {
             application.log(
                 `Player: Did not poll for ${this.username} due to internal ratelimit. (Page 0 request)`
             );
