@@ -208,7 +208,7 @@ class Player {
                 }
 
                 // Player is valid from here.
-                if (data.data.length > 0 && i == 0) {
+                if (data.data.length > 0 && i == 0 && season == CURRENT_SEASON) {
                     // Let's get some data from this.
                     let ourData = this.dataFrom(data.data[0]);
                     this.base_elo = ourData.elo_rate;
