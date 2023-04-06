@@ -23,6 +23,7 @@ function timestamp() {
 }
 
 const TS_FINAL_S0 = 1679875100;
+const CURRENT_SEASON = 1;
 
 function isValidColour(s) {
     let e = document.getElementById("validColour");
@@ -175,8 +176,8 @@ class Player {
         );
     }
 
-    fetchingPoll(i = 0, season = 1 /* MUST BE CURRENT SEASON */) {
-        if (!this.shouldPoll() && i == 0) {
+    fetchingPoll(i = 0, season = CURRENT_SEASON /* MUST BE CURRENT SEASON */) {
+        if (!this.shouldPoll() && i == 0 && season = CURRENT_SEASON) {
             application.log(
                 `Player: Did not poll for ${this.username} due to internal ratelimit. (Page 0 request)`
             );
@@ -249,7 +250,7 @@ class Player {
                 } 
                 else if (season > 0) {
                     application.log(
-                        `Queued read for older season ${season + 1} & page 0 for ${
+                        `Queued read for older season ${season - 1} & page 0 for ${
                             this.username
                         }`
                     );
