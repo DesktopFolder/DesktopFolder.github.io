@@ -1,20 +1,37 @@
-// I'm just going to quickly preface this.
-// I have no knowledge whatsoever of best practice within JS.
-// This is just me going based off of some very basic assumptions.
-// This may not be good code. (And most likely isn't.)
-function doShowables() {
-    for (const showable of Array.from(
-        document.getElementsByClassName("notice-banner")
-    )) {
-        if (application.getItem(showable.id) == null) {
-            document.getElementById(showable.id).style.display = "";
-        }
-    }
+import { doShowables } from "/js/showables.js";
+
+import { getItem, removeItem, setItem } from "/js/ls.js"
+
+import { BANNERS } from "/js/banners.js"
+
+import { hashCode } from "/js/util.js"
+
+function makeHidden(id) {
+    document.getElementById(id).style.display = "none";
 }
 
-function bannerClick(id) {
-    document.getElementById(id).style.display = "none";
-    application.setItem(id, 'noshow');
+function bannerSetup() {
+    for (const x of BANNERS) {
+        let k = `banner:${hashCode(x)}`;
+        if (getItem(k) === null)
+        {
+            application.log(`Adding banner: ${x}`);
+            document.getElementById("banners").innerHTML = 
+                document.getElementById("banners").innerHTML +
+                `
+                <div class="notice-banner" id="${k}" style="text-align:center;">
+                    <p>
+                    ${x} (click to hide)
+                    </p>
+                </div>
+                `;
+            document.getElementById(k).addEventListener("click", function () {
+                makeHidden(k);
+                setItem(k, 'hb');
+            }
+            );
+        }
+    }
 }
 
 // Helpers
@@ -534,27 +551,12 @@ class Application {
         return document.getElementById(id).checked;
     }
 
-    // LocalStorage accessors/modifiers
-    getItem(id, default_value = null) {
-        return (
-            localStorage.getItem("_elo:" + id.toLowerCase()) || default_value
-        );
-    }
-
-    setItem(id, val) {
-        return localStorage.setItem("_elo:" + id.toLowerCase(), val);
-    }
-
-    removeItem(id) {
-        return localStorage.removeItem("_elo:" + id.toLowerCase());
-    }
-
     // Setup - load our relevant data
     constructor() {
         this.players = new Map(); // These are lazy loaded.
         this.activePlayer = null;
         // atm just enable this via console.
-        this.doLogging = this.getItem("do-logging") != null;
+        this.doLogging = getItem("do-logging") != null;
     }
 
     axisID() {
@@ -576,26 +578,26 @@ class Application {
     }
 
     init() {
-        if (this.getItem("version", 0) < 1) {
+        if (getItem("version", 0) < 1) {
             // Version upgrade things?
         }
         this.ctx = document.getElementById("incredible-elo-chart");
 
-        const tens = application.getItem("tension-value", "0.2");
+        const tens = getItem("tension-value", "0.2");
         document.getElementById("tension-value").value = tens;
 
-        const sg = application.getItem("group-sessions", "false");
+        const sg = getItem("group-sessions", "false");
         document.getElementById("group-sessions").checked = sg == "true";
-        const sp = application.getItem("smart-points", "false");
+        const sp = getItem("smart-points", "false");
         document.getElementById("smart-points").checked = sp == "true";
-        const cg = application.getItem("clean-graph", "false");
+        const cg = getItem("clean-graph", "false");
         document.getElementById("clean-graph").checked = cg == "true";
 
-        document.getElementById("bg-col-value").value = this.getItem(
+        document.getElementById("bg-col-value").value = getItem(
             "bg-colour",
             Application.#DEFAULT_BG
         );
-        document.getElementById("line-col-value").value = this.getItem(
+        document.getElementById("line-col-value").value = getItem(
             "line-colour",
             Application.#DEFAULT_LINE
         );
@@ -855,7 +857,7 @@ class Application {
     }
 
     doTension(tsrc) {
-        application.setItem("tension-value", tsrc);
+        setItem("tension-value", tsrc);
         let t = this.getTension(tsrc);
         if (t == null) return;
         this.graph.data.datasets[0].tension = t;
@@ -867,18 +869,18 @@ class Application {
         let line = document.getElementById("line-col-value").value;
         if (bg != Application.#DEFAULT_BG) {
             if (isValidColour(bg)) {
-                this.setItem("bg-colour", bg);
+                setItem("bg-colour", bg);
                 this.graph.data.datasets[0].backgroundColor = bg;
             } else {
-                this.removeItem("bg-colour");
+                removeItem("bg-colour");
             }
         }
         if (line != Application.#DEFAULT_LINE) {
             if (isValidColour(line)) {
-                this.setItem("line-colour", line);
+                setItem("line-colour", line);
                 this.graph.data.datasets[0].borderColor = line;
             } else {
-                this.removeItem("line-colour");
+                removeItem("line-colour");
             }
         }
     }
@@ -1028,7 +1030,7 @@ class Application {
             if (this.activePlayer != null) this.activePlayer.setInactive();
             this.activePlayer = this.getPlayer(username);
             this.activePlayer.setActive();
-            this.setItem("last-player", username);
+            setItem("last-player", username);
         }
 
         // Just always rerender.
@@ -1067,12 +1069,12 @@ function updateUrls(username) {
 
 function onDomLoaded() {
     // show warnings/etc
-    doShowables();
+    bannerSetup();
     // Config & initialization of graph.
     application.init();
 
     // remove legacy info
-    application.removeItem("banner-no-history");
+    // removeItem("banner-no-history");
 
     document
         .getElementById("username-value")
@@ -1095,7 +1097,7 @@ function onDomLoaded() {
                     "Attempting application rerender through enter-update class."
                 );
                 /*
-                application.setItem(
+                setItem(
                     appChanger.id,
                     String(application.enabled(appChanger.id))
                 );
@@ -1114,7 +1116,7 @@ function onDomLoaded() {
             application.log(
                 "Attempting application rerender through app-rerender class."
             );
-            application.setItem(
+            setItem(
                 appChanger.id,
                 String(application.enabled(appChanger.id))
             );
@@ -1150,7 +1152,7 @@ function onDomLoaded() {
     const url = new URL(window.location.href);
     const username =
         url.searchParams.get("username") ||
-        application.getItem("last-player", "");
+        getItem("last-player", "");
     document.getElementById("username-value").value = username;
     application.loadUsername(username);
 
@@ -1160,8 +1162,8 @@ function onDomLoaded() {
     // ok this looks less simple now LOL
     if (!location.host.includes("localhost")) {
         application.log("User counting!");
-        if (application.getItem("unique-visitor") == null) {
-            application.setItem("unique-visitor", "visited");
+        if (getItem("unique-visitor") == null) {
+            setItem("unique-visitor", "visited");
             fetch(
                 "https://api.countapi.xyz/hit/disrespec.tech/unique-visits-elo"
             )

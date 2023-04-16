@@ -132,6 +132,7 @@ def main(log):
             else:
                 shutil.copy(p, dest_path)
 
+        # Just straight up copy our entire JS environment into js/
         shutil.copytree('./js', os.path.join(dest_path, 'js/'), dirs_exist_ok=True,
                         ignore=shutil.ignore_patterns('.gitignore'))
 
