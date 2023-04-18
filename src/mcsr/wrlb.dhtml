@@ -4,7 +4,9 @@ website.title=Desktop's Website
 page.description=A snapshot of MSCR Ranked winrates (season 1)
 src=templates/generic.html
 ---
-<body class="wider">
+<body>
+    <p><b>This page is a snapshot. It does not reflect the latest values. Last updated: April 18, 2023</b></p>
+    <p>This data was generated from the following filters: Minimum of 25 games played; minimum of 50% winrate. Only data from season 1 (current season) was used.</p>
 <table>
 <tr><th><b>Username</b></th><th><b>Winrate</b></th><th><b>Elo</b></th><th><b>Games</b></th></tr>
 <tr><td>DECTHEELITE: </td><td>83.33%</td><td>1643</td><td>42</td></tr>
@@ -606,3 +608,12 @@ src=templates/generic.html
 <tr><td>Gweldige_Gijs: </td><td>50.00%</td><td>1002</td><td>28</td></tr>
 </table>
 </body>
+
+<style>
+table {
+    border-collapse: collapse;
+    margin: 25px 0;
+    min-width: 400px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.15);
+}
+</style>
