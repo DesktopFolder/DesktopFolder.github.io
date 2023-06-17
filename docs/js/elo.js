@@ -40,7 +40,7 @@ function timestamp() {
 }
 
 const TS_FINAL_S0 = 1679875100;
-const CURRENT_SEASON = 1;
+const CURRENT_SEASON = 2;
 
 function isValidColour(s) {
     let e = document.getElementById("validColour");
@@ -1067,6 +1067,13 @@ function updateUrls(username) {
         "https://mcsr-ranked-stats-viewer.vercel.app/player/" + username;
 }
 
+function doBasicListeners() {
+    // reset zoom
+    de = document.getElementById;
+    de("reset-zoom").onclick = application.graph.resetZoom;
+    de("banner-history-fixed").onclick = () => bannerClick('banner-no-history');
+}
+
 function onDomLoaded() {
     // show warnings/etc
     bannerSetup();
@@ -1107,6 +1114,8 @@ function onDomLoaded() {
             }
         });
     }
+
+    doBasicListeners();
 
 
     for (const appChanger of Array.from(
