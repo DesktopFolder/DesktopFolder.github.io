@@ -1069,7 +1069,7 @@ function updateUrls(username) {
 
 function doBasicListeners() {
     // reset zoom
-    de = document.getElementById;
+    var de = document.getElementById;
     de("reset-zoom").onclick = application.graph.resetZoom;
     de("banner-history-fixed").onclick = () => bannerClick('banner-no-history');
 }
