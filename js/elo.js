@@ -1069,9 +1069,8 @@ function updateUrls(username) {
 
 function doBasicListeners() {
     // reset zoom
-    var de = function (s) { document.getElementById(s); };
-    de("reset-zoom").onclick = application.graph.resetZoom;
-    de("banner-history-fixed").onclick = () => bannerClick('banner-no-history');
+    document.getElementById("reset-zoom").onclick = application.graph.resetZoom;
+    document.getElementById("banner-history-fixed").onclick = () => bannerClick('banner-no-history');
 }
 
 function onDomLoaded() {
