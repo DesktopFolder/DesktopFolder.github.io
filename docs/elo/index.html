@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!--z elo-viewer-->
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -28,7 +27,7 @@
 <body class="wider">
 <div id="banners">
 </div>
-<div class="notice-banner" id="banner-history-fixed" style="text-align:center;display:none;">
+<div class="notice-banner" id="banner-history-fixed" style="text-align:center;display:none;" onclick="bannerClick('banner-no-history')">
     <p>
     <b>Update:</b> Historical elo values (from Season 0) should now be accurate. Please let me know if you encounter issues :) (click to hide)
     </p>
@@ -74,7 +73,7 @@ Easter Eggs:
 <input class="app-rerender" type="checkbox" placeholder="" id="allow-eggs" style="width:auto;" checked> 
 
 <p id="basic-buttons">
-    <button id="reset-zoom">Reset Zoom</button>
+    <button onclick="application.graph.resetZoom()">Reset Zoom</button>
 
     <label for="graph-type">Mode:</label>
     <select name="graph-type" id="graph-type" class="app-rerender">
