@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <title>FolderBot Documentation</title>
+
+    <script type="module">
+        // As suggested by:
+        // https://www.matuzo.at/blog/html-boilerplate/
+        document.documentElement.classList.remove('no-js');
+        document.documentElement.classList.add('js');
+    </script>
+
+    <link rel="stylesheet" href="../../styles.css">
+    <!--<link rel="stylesheet" href="path/to/print.css" media="print">-->
+    
+
+    <meta name="description" content="Documenting Folderbot's commands" />
+    <meta property="og:title" content="FolderBot Documentation" />
+    <meta property="og:site_name" content="Desktop's Website" />
+    <meta property="og:description" content="Documenting Folderbot's commands" />
+    <meta property="og:image" content="https://publicdomainvectors.org/photos/rodentia-icons_folder-black.png" />
+</head>
+<a href="/" id="home-button" style="position:absolute;left:7px;top:12px;margin:0;font-size:60%;line-height:0;">home</a>
+
+<body class="wider">
+<h1>Folderbot Documentation (AA Paceman Extension)</h1>
+<p>Metainformation:
+- All commands start with a ?
+- Any command that modifies the bot's per-channel status must be done by the broadcaster (e.g. <code>?setplayer</code>)</p>
+<p>General command format:</p>
+<p>All stats commands generally work the same. They all allow for player filtering, and generally have default splits, but in order to specify the player, you'll have to ensure you specify all arguments to the left. For example: <code>?latest</code> gets the latest nether (default split) for the current streamer (default player); <code>?latest bastion</code> gets the latest bastion, and <code>?latest bastion DesktopFolder</code> gets the latest bastion for DesktopFolder, but <code>?latest DesktopFolder</code> will try to get the latest DesktopFolder split (not a thing). This may be improved in the future.</p>
+<p>Because the 'empty player' is presumed to be the streamer, a different argument is required to run stats commands over the entire playerbase - this is <code>!total</code>. For example, <code>?count elytra !total</code> gets the total number of elytras.</p>
+</body>
+
+</html>

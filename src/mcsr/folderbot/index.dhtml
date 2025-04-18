@@ -1,0 +1,9 @@
+---
+page.title=FolderBot Documentation
+website.title=Desktop's Website
+page.description=Documenting Folderbot's commands
+src=templates/generic.html
+---
+<body class="wider">
+{{generators[md][src/mcsr/folderbot/index.md]}}
+</body>
