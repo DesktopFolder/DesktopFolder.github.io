@@ -6,5 +6,5 @@ src=templates/generic.html
 css.extras=/styles/draaft.css
 ---
 <body class="wider">
-<script src="/js/elo.js" type="module"></script><!--All of our actual logic resides here.-->
+<script src="/js/draaft.js" type="module"></script><!--All of our actual logic resides here.-->
 </body>
