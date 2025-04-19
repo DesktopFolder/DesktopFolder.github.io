@@ -1,4 +1,4 @@
-import { allItems } from "./options.js";
+import { allItems, DraftItem } from "./options.js";
 // @ts-ignore Import module
 import { downloadZip } from "https://cdn.jsdelivr.net/npm/client-zip/index.js";
 
@@ -6,7 +6,8 @@ export class Player {
     name = "";
 
     // Player objects represent all their information.
-    drafted: Array<number> = [1, 2];
+    drafted: Array<number> = [];
+    draftedPools: Set<string> = new Set();
     input: HTMLInputElement;
     container: HTMLDivElement;
     title: HTMLParagraphElement;
@@ -22,11 +23,20 @@ export class Player {
         }
     }
 
+    public tryDraft(di: DraftItem) {
+        if (this.draftedPools.has(di.pool)) {
+            return false;
+        }
+        this.draftedPools.add(di.pool);
+        this.updateDraft(di.id);
+        return true;
+    }
+
     public updateDraft(n: number) {
         if (n != 0) {
             this.drafted.push(n);
         }
-        this.draftedList.innerHTML = `Drafted: ${this.drafted.length}`;
+        this.draftedList.innerHTML = `Drafted: ${this.drafted.join(', ')}`;
     }
 
     public setName(val: string) {
@@ -129,6 +139,7 @@ export class Player {
         this.container.classList.add("flex-down", "player-container");
 
         this.draftedList = document.createElement("p");
+        this.draftedList.style.fontSize = "12";
         this.updateDraft(0);
 
         this.container.appendChild(this.title);

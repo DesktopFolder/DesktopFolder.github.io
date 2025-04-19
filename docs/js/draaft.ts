@@ -1,4 +1,4 @@
-import { pools } from "./draaft/options.js";
+import { DraftItem, DraftPool, pools } from "./draaft/options.js";
 import { Player } from "./draaft/players.js";
 
 let allPlayers: Array<Player> = [];
@@ -8,11 +8,14 @@ class StateMachine {
     titleContainer: HTMLDivElement;
 
     playerList: Array<Player> = [];
+    playerReset: Array<Player> = [];
+    actions = [];
 
     start() {
         if (this.checkPlayers() == 0) {
             return;
         }
+        console.log("Starting drafting...");
         this.title.innerHTML = "Drafting...";
 
         // Let's get our players!
@@ -21,8 +24,37 @@ class StateMachine {
                 this.playerList.push(player);
             }
         }
+        console.assert(this.playerList.length > 0, "Playerlist is small??");
 
-        this.title.innerHTML = `Draft pick: ${allPlayers[0].name}`;
+        this.title.innerHTML = `Draft pick: ${this.playerList[0].name}`;
+
+        for (const p of pools) {
+            for (const di of p.items) {
+                // do this into actions ig for undo...
+                di.poolItem.onclick = () => {
+                    let player = this.playerList[0];
+                    console.log(
+                        `Drafting ${di.prettyName} for player ${player.name}`
+                    );
+                    if (!player.tryDraft(di)) {
+                        console.log(
+                            "Did not draft: Invalid draft choice (from same pool as before)"
+                        );
+                        return;
+                    }
+                    p.getDiv().removeChild(di.poolItem);
+                    this.playerReset.push(this.playerList.shift());
+
+                    if (this.playerList.length == 0) {
+                        while (this.playerReset.length != 0) {
+                            this.playerList.push(this.playerReset.pop());
+                        }
+                    }
+
+                    this.title.innerHTML = `Draft pick: ${this.playerList[0].name}`;
+                };
+            }
+        }
     }
 
     setToPlayers(n: number) {

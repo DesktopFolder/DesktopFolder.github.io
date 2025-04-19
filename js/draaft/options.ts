@@ -35,7 +35,6 @@ export class DraftItem {
             this.poolItem.innerHTML = "";
             poolDefaultText.classList.remove("with-hover");
             this.poolItem.appendChild(poolDefaultText);
-            console.log("hi!!");
         });
 
         this.poolItem.appendChild(poolDefaultText);
@@ -51,6 +50,10 @@ export class DraftPool {
         public prettyName: string,
         public items: DraftItem[]
     ) {}
+
+    public getDiv() {
+        return document.getElementById(`pool-body-${this.name}`);
+    }
 
     public makeDiv() {
         let draftPool = document.createElement("div");
@@ -72,6 +75,7 @@ export class DraftPool {
         // Now create the pool body.
         let poolBody = document.createElement("div");
         poolBody.classList.add("draft-pool-inner", "flex-right");
+        poolBody.id = `pool-body-${this.name}`;
         for (const di of this.items) {
             poolBody.appendChild(di.makeDiv());
         }

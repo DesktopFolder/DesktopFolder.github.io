@@ -5,6 +5,8 @@ export class DraftItem {
     description;
     image;
     datapackModifier;
+    poolItem = document.createElement("div");
+    poolOuter = null;
     constructor(id, pool, prettyName, description, image, datapackModifier) {
         this.id = id;
         this.pool = pool;
@@ -14,9 +16,8 @@ export class DraftItem {
         this.datapackModifier = datapackModifier;
     }
     makeDiv() {
-        let poolItem = document.createElement("div");
-        poolItem.setAttribute("data-di-id", this.id.toString());
-        poolItem.classList.add("draft-item", "basic-box");
+        this.poolItem.setAttribute("data-di-id", this.id.toString());
+        this.poolItem.classList.add("draft-item", "basic-box");
         let poolDefaultText = document.createElement("p");
         poolDefaultText.innerHTML = this.prettyName;
         poolDefaultText.id = `di-${this.id}`;
@@ -24,24 +25,19 @@ export class DraftItem {
         let poolDescriptionText = document.createElement("p");
         poolDescriptionText.innerHTML = this.description;
         poolDescriptionText.classList.add("draft-item-desc");
-        poolItem.addEventListener("mouseenter", () => {
-            poolItem.innerHTML = "";
+        this.poolItem.addEventListener("mouseenter", () => {
+            this.poolItem.innerHTML = "";
             poolDefaultText.classList.add("with-hover");
-            poolItem.appendChild(poolDefaultText);
-            poolItem.appendChild(poolDescriptionText);
+            this.poolItem.appendChild(poolDefaultText);
+            this.poolItem.appendChild(poolDescriptionText);
         });
-        /*
-        poolItem.addEventListener(
-            "mouseleave",
-            () => {
-                poolItem.innerHTML = ''
-                poolDefaultText.classList.remove('with-hover');
-                poolItem.appendChild(poolDefaultText)
-            }
-        );
-        */
-        poolItem.appendChild(poolDefaultText);
-        return poolItem;
+        this.poolItem.addEventListener("mouseleave", () => {
+            this.poolItem.innerHTML = "";
+            poolDefaultText.classList.remove("with-hover");
+            this.poolItem.appendChild(poolDefaultText);
+        });
+        this.poolItem.appendChild(poolDefaultText);
+        return this.poolItem;
     }
 }
 export class DraftPool {
@@ -54,6 +50,9 @@ export class DraftPool {
         this.name = name;
         this.prettyName = prettyName;
         this.items = items;
+    }
+    getDiv() {
+        return document.getElementById(`pool-body-${this.name}`);
     }
     makeDiv() {
         let draftPool = document.createElement("div");
@@ -71,6 +70,7 @@ export class DraftPool {
         // Now create the pool body.
         let poolBody = document.createElement("div");
         poolBody.classList.add("draft-pool-inner", "flex-right");
+        poolBody.id = `pool-body-${this.name}`;
         for (const di of this.items) {
             poolBody.appendChild(di.makeDiv());
         }

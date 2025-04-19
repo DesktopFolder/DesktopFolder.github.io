@@ -4,10 +4,12 @@ import { downloadZip } from "https://cdn.jsdelivr.net/npm/client-zip/index.js";
 export class Player {
     name = "";
     // Player objects represent all their information.
-    drafted = [1, 2];
+    drafted = [];
+    draftedPools = new Set();
     input;
     container;
     title;
+    draftedList;
     reset() {
         if (this.drafted.length != 0) {
             console.error(`Could not reset ${this.name} -- there are ${this.drafted.length} draft already done.`);
@@ -15,6 +17,20 @@ export class Player {
         else {
             this.setName("");
         }
+    }
+    tryDraft(di) {
+        if (this.draftedPools.has(di.pool)) {
+            return false;
+        }
+        this.draftedPools.add(di.pool);
+        this.updateDraft(di.id);
+        return true;
+    }
+    updateDraft(n) {
+        if (n != 0) {
+            this.drafted.push(n);
+        }
+        this.draftedList.innerHTML = `Drafted: ${this.drafted.join(', ')}`;
     }
     setName(val) {
         this.name = val;
@@ -25,7 +41,7 @@ export class Player {
     }
     updateFile(file) {
         for (const d of this.drafted) {
-            file = allItems[d].datapackModifier(file);
+            file = allItems[d - 1].datapackModifier(file);
         }
         return file;
     }
@@ -105,8 +121,12 @@ export class Player {
         buttons.appendChild(downloadButton);
         this.container = document.createElement("div");
         this.container.classList.add("flex-down", "player-container");
+        this.draftedList = document.createElement("p");
+        this.draftedList.style.fontSize = "12";
+        this.updateDraft(0);
         this.container.appendChild(this.title);
         this.container.appendChild(this.input);
+        this.container.appendChild(this.draftedList);
         this.container.appendChild(buttons);
     }
 }

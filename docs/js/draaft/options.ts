@@ -1,4 +1,7 @@
 export class DraftItem {
+    public poolItem: HTMLDivElement = document.createElement("div");
+    public poolOuter: HTMLDivElement = null;
+
     public constructor(
         public id: number,
         public pool: string,
@@ -9,9 +12,8 @@ export class DraftItem {
     ) {}
 
     public makeDiv() {
-        let poolItem = document.createElement("div");
-        poolItem.setAttribute("data-di-id", this.id.toString());
-        poolItem.classList.add("draft-item", "basic-box");
+        this.poolItem.setAttribute("data-di-id", this.id.toString());
+        this.poolItem.classList.add("draft-item", "basic-box");
 
         let poolDefaultText = document.createElement("p");
         poolDefaultText.innerHTML = this.prettyName;
@@ -22,27 +24,22 @@ export class DraftItem {
         poolDescriptionText.innerHTML = this.description;
         poolDescriptionText.classList.add("draft-item-desc");
 
-        poolItem.addEventListener("mouseenter", () => {
-            poolItem.innerHTML = "";
+        this.poolItem.addEventListener("mouseenter", () => {
+            this.poolItem.innerHTML = "";
             poolDefaultText.classList.add("with-hover");
-            poolItem.appendChild(poolDefaultText);
-            poolItem.appendChild(poolDescriptionText);
+            this.poolItem.appendChild(poolDefaultText);
+            this.poolItem.appendChild(poolDescriptionText);
         });
 
-        /*
-        poolItem.addEventListener(
-            "mouseleave",
-            () => {
-                poolItem.innerHTML = ''
-                poolDefaultText.classList.remove('with-hover');
-                poolItem.appendChild(poolDefaultText)
-            }
-        );
-        */
+        this.poolItem.addEventListener("mouseleave", () => {
+            this.poolItem.innerHTML = "";
+            poolDefaultText.classList.remove("with-hover");
+            this.poolItem.appendChild(poolDefaultText);
+        });
 
-        poolItem.appendChild(poolDefaultText);
+        this.poolItem.appendChild(poolDefaultText);
 
-        return poolItem;
+        return this.poolItem;
     }
 }
 
@@ -53,6 +50,10 @@ export class DraftPool {
         public prettyName: string,
         public items: DraftItem[]
     ) {}
+
+    public getDiv() {
+        return document.getElementById(`pool-body-${this.name}`);
+    }
 
     public makeDiv() {
         let draftPool = document.createElement("div");
@@ -74,6 +75,7 @@ export class DraftPool {
         // Now create the pool body.
         let poolBody = document.createElement("div");
         poolBody.classList.add("draft-pool-inner", "flex-right");
+        poolBody.id = `pool-body-${this.name}`;
         for (const di of this.items) {
             poolBody.appendChild(di.makeDiv());
         }
