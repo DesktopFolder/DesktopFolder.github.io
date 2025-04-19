@@ -7,7 +7,7 @@ export class Player {
 
     // Player objects represent all their information.
     drafted: Array<number> = [];
-    draftedPools: Set<string> = new Set();
+    draftedPools: Map<string, number> = new Map();
     input: HTMLInputElement;
     container: HTMLDivElement;
     title: HTMLParagraphElement;
@@ -23,11 +23,18 @@ export class Player {
         }
     }
 
-    public tryDraft(di: DraftItem) {
-        if (this.draftedPools.has(di.pool)) {
+    public tryDraft(di: DraftItem, cap: number) {
+        // put the thing in
+        if (!this.draftedPools.has(di.pool)) {
+            this.draftedPools.set(di.pool, 0);
+        }
+
+        // get the value
+        let cur = this.draftedPools.get(di.pool);
+        if (cur >= cap) {
             return false;
         }
-        this.draftedPools.add(di.pool);
+        this.draftedPools.set(di.pool, cur + 1);
         this.updateDraft(di.id);
         return true;
     }
@@ -139,7 +146,7 @@ export class Player {
         this.container.classList.add("flex-down", "player-container");
 
         this.draftedList = document.createElement("p");
-        this.draftedList.style.fontSize = "12";
+        this.draftedList.classList.add("player-button");
         this.updateDraft(0);
 
         this.container.appendChild(this.title);

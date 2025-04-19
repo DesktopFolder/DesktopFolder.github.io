@@ -131,6 +131,15 @@ let dSnowy = new DraftItem(
     "Gives all snowy biomes and stray kill",
     "snowy.png",
     (file) => {
+        file += `
+advancement grant @a only minecraft:adventure/adventuring_time minecraft:snowy_tundra
+advancement grant @a only minecraft:adventure/adventuring_time minecraft:snowy_taiga
+advancement grant @a only minecraft:adventure/adventuring_time minecraft:snowy_taiga_hills
+advancement grant @a only minecraft:adventure/adventuring_time minecraft:snowy_mountains
+advancement grant @a only minecraft:adventure/adventuring_time minecraft:snowy_beach
+advancement grant @a only minecraft:adventure/adventuring_time minecraft:frozen_river
+advancement grant @a only minecraft:adventure/kill_all_mobs minecraft:stray
+        `;
         return file;
     }
 );
@@ -141,6 +150,10 @@ let dMegaTaiga = new DraftItem(
     "Gives all mega taiga biomes",
     "taiga.png",
     (file) => {
+        file += `
+advancement grant @a only minecraft:adventure/adventuring_time minecraft:giant_tree_taiga
+advancement grant @a only minecraft:adventure/adventuring_time minecraft:giant_tree_taiga_hills
+        `;
         return file;
     }
 );
@@ -151,6 +164,11 @@ let dMushroomIsland = new DraftItem(
     "Gives all mushroom biomes and mooshroom breed",
     "mooshroom.png",
     (file) => {
+        file += `
+advancement grant @a only minecraft:adventure/adventuring_time minecraft:mushroom_fields
+advancement grant @a only minecraft:adventure/adventuring_time minecraft:mushroom_field_shore
+advancement grant @a only minecraft:husbandry/bred_all_animals minecraft:mooshroom
+        `;
         return file;
     }
 );
@@ -171,6 +189,9 @@ let dHelmet = new DraftItem(
     "Gives fully enchanted netherite helmet",
     "helmet.png",
     (file) => {
+        file += `
+give @a minecraft:netherite_helmet{Enchantments:[{id:"minecraft:protection",lvl:5},{id:"minecraft:unbreaking",lvl:3},{id:"minecraft:respiration",lvl:3},{id:"minecraft:aqua_affinity",lvl:1}]}
+        `;
         return file;
     }
 );
@@ -181,6 +202,9 @@ let dChestplate = new DraftItem(
     "Gives fully enchanted netherite chestplate",
     "chestplate.png",
     (file) => {
+        file += `
+give @a minecraft:netherite_boots{Enchantments:[{id:"minecraft:protection",lvl:5},{id:"minecraft:unbreaking",lvl:3}]}
+        `;
         return file;
     }
 );
@@ -191,6 +215,9 @@ let dLeggings = new DraftItem(
     "Gives fully enchanted netherite leggings",
     "leggings.png",
     (file) => {
+        file += `
+give @a minecraft:netherite_leggings{Enchantments:[{id:"minecraft:protection",lvl:5},{id:"minecraft:unbreaking",lvl:3}]}
+        `;
         return file;
     }
 );
@@ -201,6 +228,9 @@ let dBoots = new DraftItem(
     "Gives fully enchanted netherite boots",
     "boots.png",
     (file) => {
+        file += `
+give @a minecraft:netherite_boots{Enchantments:[{id:"minecraft:protection",lvl:5},{id:"minecraft:unbreaking",lvl:3},{id:"minecraft:depth_strider",lvl:3}]}
+        `;
         return file;
     }
 );
@@ -211,6 +241,9 @@ let dBucket = new DraftItem(
     "Gives a fully enchanted, max-tier bucket",
     "bucket.png",
     (file) => {
+        file += `
+give @a minecraft:bucket{Enchantments:[{}]}
+        `;
         return file;
     }
 );
@@ -223,7 +256,282 @@ let pArmour = new DraftPool(1, "armour", "Armour", [
     dBucket,
 ]);
 
-export let pools: DraftPool[] = [pBiomes, pArmour];
+// Pool: Tools
+let dSword = new DraftItem(
+    11,
+    "tools",
+    "Sword",
+    "Gives fully enchanted netherite sword",
+    "sword.png",
+    (file) => {
+        file += `
+give @a minecraft:netherite_sword{Enchantments:[{id:"minecraft:smite",lvl:5},{id:"minecraft:looting",lvl:3},{id:"minecraft:unbreaking",lvl:3}]}
+        `;
+        return file;
+    }
+);
+let dPickaxe = new DraftItem(
+    12,
+    "tools",
+    "Pickaxe",
+    "Gives fully enchanted netherite pickaxe",
+    "pickaxe.png",
+    (file) => {
+        file += `
+give @a minecraft:netherite_pickaxe{Enchantments:[{id:"minecraft:efficiency",lvl:5},{id:"minecraft:fortune",lvl:3},{id:"minecraft:unbreaking",lvl:3}]}
+        `;
+        return file;
+    }
+);
+let dShovel = new DraftItem(
+    13,
+    "tools",
+    "Shovel",
+    "Gives fully enchanted netherite shovel",
+    "shovel.png",
+    (file) => {
+        file += `
+give @a minecraft:netherite_shovel{Enchantments:[{id:"minecraft:efficiency",lvl:5},{id:"minecraft:fortune",lvl:3},{id:"minecraft:unbreaking",lvl:3}]}
+        `;
+        return file;
+    }
+);
+let dHoe = new DraftItem(
+    14,
+    "tools",
+    "Hoe",
+    "Gives fully enchanted netherite hoe",
+    "hoe.png",
+    (file) => {
+        file += `
+give @a minecraft:netherite_hoe{Enchantments:[{id:"minecraft:efficiency",lvl:5},{id:"minecraft:silk_touch",lvl:1},{id:"minecraft:unbreaking",lvl:3}]}
+        `;
+        return file;
+    }
+);
+let dAxe = new DraftItem(
+    15,
+    "tools",
+    "Axe",
+    "Gives fully enchanted netherite axe",
+    "axe.png",
+    (file) => {
+        file += `
+give @a minecraft:netherite_axe{Enchantments:[{id:"minecraft:efficiency",lvl:5},{id:"minecraft:silk_touch",lvl:1},{id:"minecraft:unbreaking",lvl:3}]}
+        `;
+        return file;
+    }
+);
+let dTrident = new DraftItem(
+    16,
+    "tools",
+    "Trident",
+    "Gives fully enchanted netherite trident",
+    "trident.png",
+    (file) => {
+        file += `
+give @a minecraft:trident{Enchantments:[{id:"minecraft:channeling",lvl:1},{id:"minecraft:loyalty",lvl:3},{id:"minecraft:impaling",lvl:5}]}
+        `;
+        return file;
+    }
+);
+
+let pTools = new DraftPool(1, "tools", "Tools", [
+    dSword,
+    dPickaxe,
+    dShovel,
+    dHoe,
+    dAxe,
+    dTrident
+]);
+
+// Pool: Big
+let dACC = new DraftItem(
+    17,
+    "big",
+    "ACC",
+    "Gives a complete catalogue",
+    "acc.png",
+    (file) => {
+        file += `
+advancement grant @a only minecraft:husbandry/complete_catalogue
+        `;
+        return file;
+    }
+);
+let dAT = new DraftItem(
+    18,
+    "big",
+    "AT",
+    "Gives adventuring time",
+    "at.png",
+    (file) => {
+        file += `
+advancement grant @a only minecraft:adventure/adventuring_time
+        `;
+        return file;
+    }
+);
+let d2b2 = new DraftItem(
+    19,
+    "big",
+    "2b2",
+    "Gives two by two",
+    "2b2.png",
+    (file) => {
+        file += `
+advancement grant @a only minecraft:husbandry/bred_all_animals
+        `;
+        return file;
+    }
+);
+let dMH = new DraftItem(
+    20,
+    "big",
+    "MH",
+    "Gives monsters hunted",
+    "mh.png",
+    (file) => {
+        file += `
+advancement grant @a only minecraft:adventure/kill_all_mobs
+        `;
+        return file;
+    }
+);
+let dABD = new DraftItem(
+    21,
+    "big",
+    "ABD",
+    "Gives a balanced diet",
+    "abd.png",
+    (file) => {
+        file += `
+advancement grant @a only minecraft:husbandry/balanced_diet
+        `;
+        return file;
+    }
+);
+
+let pBig = new DraftPool(1, "big", "Big", [
+    dACC,
+    dAT,
+    d2b2,
+    dMH,
+    dABD
+]);
+
+// Pool: Misc
+let dNetherite = new DraftItem(
+    22,
+    "misc",
+    "Netherite",
+    "Gives 4 netherite ingots",
+    "netherite.png",
+    (file) => {
+        file += `
+give @a minecraft:netherite_ingot 4
+        `;
+        return file;
+    }
+);
+let dShells = new DraftItem(
+    23,
+    "misc",
+    "Shells",
+    "Gives 7 nautilus shells",
+    "shell.png",
+    (file) => {
+        file += `
+give @a minecraft:nautilus_shell 7
+        `;
+        return file;
+    }
+);
+let dSkulls = new DraftItem(
+    24,
+    "misc",
+    "Skulls",
+    "Gives 2 wither skeleton skulls",
+    "skull.png",
+    (file) => {
+        file += `
+give @a minecraft:wither_skeleton_skull 2
+        `;
+        return file;
+    }
+);
+let dBreeds = new DraftItem(
+    25,
+    "misc",
+    "Breeds",
+    "Gives breed credit for horse, donkey, mule, llama, wolf, fox, and turtle",
+    "breeds.png",
+    (file) => {
+        file += `
+advancement grant @a only minecraft:husbandry/bred_all_animals minecraft:horse
+advancement grant @a only minecraft:husbandry/bred_all_animals minecraft:donkey
+advancement grant @a only minecraft:husbandry/bred_all_animals minecraft:mule
+advancement grant @a only minecraft:husbandry/bred_all_animals minecraft:llama
+advancement grant @a only minecraft:husbandry/bred_all_animals minecraft:wolf
+advancement grant @a only minecraft:husbandry/bred_all_animals minecraft:fox
+advancement grant @a only minecraft:husbandry/bred_all_animals minecraft:turtle
+        `;
+        return file;
+    }
+);
+let dTotem = new DraftItem(
+    26,
+    "misc",
+    "Totem",
+    "Gives totem of undying and evoker & vex kill credit",
+    "skull.png",
+    (file) => {
+        file += `
+give @a minecraft:totem_of_undying
+advancement grant @a only minecraft:adventure/kill_all_mobs minecraft:evoker
+advancement grant @a only minecraft:adventure/kill_all_mobs minecraft:vex
+        `;
+        return file;
+    }
+);
+let dFireworks = new DraftItem(
+    27,
+    "misc",
+    "Fireworks",
+    "Gives 64 fireworks",
+    "firework.png",
+    (file) => {
+        file += `
+give @a minecraft:firework_rocket{Fireworks:{Flight:1}} 64
+        `;
+        return file;
+    }
+);
+let dShulker = new DraftItem(
+    28,
+    "misc",
+    "Shulker Box",
+    "Gives a shulker box",
+    "shulker.png",
+    (file) => {
+        file += `
+give @a minecraft:shulker_box
+        `;
+        return file;
+    }
+);
+
+let pMisc = new DraftPool(1, "misc", "Misc", [
+    dNetherite,
+    dShells,
+    dSkulls,
+    dBreeds,
+    dTotem,
+    dFireworks,
+    dShulker
+]);
+
+export let pools: DraftPool[] = [pBiomes, pArmour, pTools, pBig, pMisc];
 export let allItems: DraftItem[] = [];
 
 for (const p of pools) {

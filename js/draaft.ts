@@ -9,6 +9,8 @@ class StateMachine {
 
     playerList: Array<Player> = [];
     playerReset: Array<Player> = [];
+    playerCount: number = 0;
+    draftLimit: number = 0;
     actions = [];
 
     start() {
@@ -25,6 +27,14 @@ class StateMachine {
             }
         }
         console.assert(this.playerList.length > 0, "Playerlist is small??");
+        this.playerCount = this.playerList.length;
+        if (this.playerCount == 1) {
+            this.draftLimit = 1000;
+        } else if (this.playerCount == 2) {
+            this.draftLimit = 2;
+        } else {
+            this.draftLimit = 1;
+        }
 
         this.title.innerHTML = `Draft pick: ${this.playerList[0].name}`;
 
@@ -36,9 +46,10 @@ class StateMachine {
                     console.log(
                         `Drafting ${di.prettyName} for player ${player.name}`
                     );
-                    if (!player.tryDraft(di)) {
+                    if (!player.tryDraft(di, this.draftLimit)) {
                         console.log(
-                            "Did not draft: Invalid draft choice (from same pool as before)"
+                            "Did not draft: Invalid draft choice (from same pool as before)" +
+                            ` Note: Limit: ${this.draftLimit}, Player count: ${this.playerCount}`
                         );
                         return;
                     }
