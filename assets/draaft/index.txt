@@ -1,0 +1,13 @@
+draaftpack/data/draaftpack/functions/load.mcfunction
+draaftpack/data/draaftpack/functions/on_load.mcfunction
+draaftpack/data/draaftpack/functions/tick.mcfunction
+draaftpack/data/minecraft/loot_tables/chests/bastion_other.json
+draaftpack/data/minecraft/loot_tables/chests/bastion_treasure.json
+draaftpack/data/minecraft/loot_tables/chests/desert_pyramid.json
+draaftpack/data/minecraft/loot_tables/chests/end_city_treasure.json
+draaftpack/data/minecraft/loot_tables/chests/stronghold_library.json
+draaftpack/data/minecraft/loot_tables/entities/wither_skeleton.json
+draaftpack/data/minecraft/loot_tables/gameplay/piglin_bartering.json
+draaftpack/data/minecraft/tags/functions/load.json
+draaftpack/data/minecraft/tags/functions/tick.json
+draaftpack/pack.mcmeta

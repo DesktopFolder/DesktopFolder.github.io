@@ -1,0 +1,100 @@
+.basic-box {
+    outline: 2px green solid;
+    text-align: center;
+}
+
+p {
+    margin: 0;
+}
+
+.flex-down {
+    display: flex;
+    flex-direction: column;
+}
+
+.flex-right {
+    display: flex;
+    flex-direction: row;
+}
+
+div.draft-item {
+    width: 45%;
+    height: 2em;
+    margin: 0.2em;
+    text-align: center;
+}
+
+p.draft-item {
+    width: 100%;
+    height: 100%;
+    line-height: 2em;
+}
+
+body.maxerino {
+    width: 100%;
+    margin: 0;
+    max-width: 100%;
+    height: 100%;
+    max-height: 100%;
+
+    display: flex;
+    flex-direction: row;
+}
+
+.title-container {
+    width: 100%;
+    max-height: 1em;
+}
+
+div.draft-item:hover {
+    cursor: pointer;
+}
+
+p.draft-item.with-hover {
+    line-height:  0.9em;
+    height: 45%;
+    font-size: 14px;
+    font-style: bold;
+    padding-top: 5px;
+}
+
+p.draft-item-desc {
+    font-size: 10px;
+    line-height: 0.8em;
+}
+
+.draft-pool {
+    width: 38%;
+}
+
+.draft-pool-inner {
+    height: auto;
+    width: 100%;
+    flex-wrap: wrap;
+    text-align: center;
+    justify-content: space-around;
+    align-content: space-around;
+}
+
+#draft-body {
+    flex-wrap: wrap;
+    display: flex;
+    justify-content: space-around;
+    width: auto;
+}
+
+div.player-container {
+    margin: 3px;
+}
+
+.player-button {
+    font-size: 11px;
+    margin-right: 4px;
+}
+
+#left-gutter {
+    padding-top: 32px;
+    padding-left: 32px;
+    width: 18%;
+    height: 100%;
+}

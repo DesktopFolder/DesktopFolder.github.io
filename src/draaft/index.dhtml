@@ -5,7 +5,7 @@ page.description=A tool for doing AA drafts
 src=templates/generic.html
 css.extras=/styles/draaft.css
 ---
-<body class="wider">
+<body class="maxerino">
 <script>var exports = {"__esModule": true};</script>
 <script src="/js/draaft.js" type="module"></script><!--All of our actual logic resides here.-->
 </body>

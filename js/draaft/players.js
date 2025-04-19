@@ -1,0 +1,112 @@
+import { allItems } from "./options.js";
+// @ts-ignore Import module
+import { downloadZip } from "https://cdn.jsdelivr.net/npm/client-zip/index.js";
+export class Player {
+    name = "";
+    // Player objects represent all their information.
+    drafted = [1, 2];
+    input;
+    container;
+    title;
+    reset() {
+        if (this.drafted.length != 0) {
+            console.error(`Could not reset ${this.name} -- there are ${this.drafted.length} draft already done.`);
+        }
+        else {
+            this.setName("");
+        }
+    }
+    setName(val) {
+        this.name = val;
+        this.title.innerHTML = `Player: ${val}`;
+    }
+    exists() {
+        return this.name.length != 0;
+    }
+    updateFile(file) {
+        for (const d of this.drafted) {
+            file = allItems[d].datapackModifier(file);
+        }
+        return file;
+    }
+    download() {
+        fetch("/assets/draaft/index.txt")
+            .then((resp) => resp.text())
+            .then((text) => {
+            let all_urls = [];
+            for (const line of text.split("\n")) {
+                if (line.trim().length == 0)
+                    continue;
+                all_urls.push(fetch(`/assets/draaft/${line}`)
+                    .then((resp) => resp.blob())
+                    .then((blob) => [blob, line]));
+            }
+            Promise.all(all_urls).then(async (list) => {
+                let data = [];
+                // We need to append things to on_load.mcfunction
+                for (const i of list) {
+                    const name = i[1];
+                    let input = null;
+                    if (name.includes("on_load.mcfunction")) {
+                        const b = i[0];
+                        input = this.updateFile(await b.text());
+                    }
+                    else {
+                        input = i[0];
+                    }
+                    data.push({
+                        name: name,
+                        lastModified: new Date(),
+                        input: input,
+                    });
+                }
+                // get the ZIP stream in a Blob
+                downloadZip(data)
+                    .blob()
+                    .then((b) => {
+                    // make and click a temporary link to download the Blob
+                    const link = document.createElement("a");
+                    link.href = URL.createObjectURL(b);
+                    link.download = "draaftpack.zip";
+                    link.click();
+                    link.remove();
+                });
+            });
+        });
+    }
+    constructor() {
+        this.input = document.createElement("input");
+        this.input.classList.add("player-name");
+        this.input.placeholder = "Player name...";
+        this.input.addEventListener("input", () => {
+            this.setName(this.input.value.trim());
+        });
+        this.title = document.createElement("p");
+        this.title.innerHTML = "Player: ";
+        let buttons = document.createElement("div");
+        buttons.classList.add("flex-right");
+        let resetButton = document.createElement("a");
+        resetButton.classList.add("player-button");
+        resetButton.href = "#";
+        resetButton.innerHTML = "reset";
+        resetButton.onclick = () => {
+            this.reset();
+            return false;
+        };
+        buttons.appendChild(resetButton);
+        let downloadButton = document.createElement("a");
+        downloadButton.classList.add("player-button");
+        downloadButton.href = "#";
+        downloadButton.innerHTML = "download pack";
+        downloadButton.onclick = () => {
+            this.download();
+            return false;
+        };
+        buttons.appendChild(downloadButton);
+        this.container = document.createElement("div");
+        this.container.classList.add("flex-down", "player-container");
+        this.container.appendChild(this.title);
+        this.container.appendChild(this.input);
+        this.container.appendChild(buttons);
+    }
+}
