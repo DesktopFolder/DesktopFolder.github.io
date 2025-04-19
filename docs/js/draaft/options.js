@@ -7,6 +7,7 @@ export class DraftItem {
     datapackModifier;
     poolItem = document.createElement("div");
     poolOuter = null;
+    isDrafted = false;
     constructor(id, pool, prettyName, description, image, datapackModifier) {
         this.id = id;
         this.pool = pool;
@@ -145,7 +146,7 @@ give @a minecraft:netherite_helmet{Enchantments:[{id:"minecraft:protection",lvl:
 });
 let dChestplate = new DraftItem(7, "armour", "Chestplate", "Gives fully enchanted netherite chestplate", "chestplate.png", (file) => {
     file += `
-give @a minecraft:netherite_boots{Enchantments:[{id:"minecraft:protection",lvl:5},{id:"minecraft:unbreaking",lvl:3}]}
+give @a minecraft:netherite_chestplate{Enchantments:[{id:"minecraft:protection",lvl:5},{id:"minecraft:unbreaking",lvl:3}]}
         `;
     return file;
 });
@@ -220,31 +221,31 @@ let pTools = new DraftPool(1, "tools", "Tools", [
     dTrident
 ]);
 // Pool: Big
-let dACC = new DraftItem(17, "big", "ACC", "Gives a complete catalogue", "acc.png", (file) => {
+let dACC = new DraftItem(17, "big", "A Complete Catalogue", "Gives a complete catalogue", "acc.png", (file) => {
     file += `
 advancement grant @a only minecraft:husbandry/complete_catalogue
         `;
     return file;
 });
-let dAT = new DraftItem(18, "big", "AT", "Gives adventuring time", "at.png", (file) => {
+let dAT = new DraftItem(18, "big", "Adventuring Time", "Gives adventuring time", "at.png", (file) => {
     file += `
 advancement grant @a only minecraft:adventure/adventuring_time
         `;
     return file;
 });
-let d2b2 = new DraftItem(19, "big", "2b2", "Gives two by two", "2b2.png", (file) => {
+let d2b2 = new DraftItem(19, "big", "Two by Two", "Gives two by two", "2b2.png", (file) => {
     file += `
 advancement grant @a only minecraft:husbandry/bred_all_animals
         `;
     return file;
 });
-let dMH = new DraftItem(20, "big", "MH", "Gives monsters hunted", "mh.png", (file) => {
+let dMH = new DraftItem(20, "big", "Monsters Hunted", "Gives monsters hunted", "mh.png", (file) => {
     file += `
 advancement grant @a only minecraft:adventure/kill_all_mobs
         `;
     return file;
 });
-let dABD = new DraftItem(21, "big", "ABD", "Gives a balanced diet", "abd.png", (file) => {
+let dABD = new DraftItem(21, "big", "A Balanced Diet", "Gives a balanced diet", "abd.png", (file) => {
     file += `
 advancement grant @a only minecraft:husbandry/balanced_diet
         `;

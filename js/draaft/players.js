@@ -1,4 +1,4 @@
-import { allItems } from "./options.js";
+import { allItems, pools } from "./options.js";
 // @ts-ignore Import module
 import { downloadZip } from "https://cdn.jsdelivr.net/npm/client-zip/index.js";
 export class Player {
@@ -17,6 +17,17 @@ export class Player {
         else {
             this.setName("");
         }
+    }
+    completeDrafting(cap) {
+        if (this.draftedPools.size < pools.length) {
+            return false;
+        }
+        for (const v of this.draftedPools.values()) {
+            if (v < cap) {
+                return false;
+            }
+        }
+        return true;
     }
     tryDraft(di, cap) {
         // put the thing in
@@ -61,13 +72,18 @@ export class Player {
                     continue;
                 all_urls.push(fetch(`/assets/draaft/${line}`)
                     .then((resp) => resp.blob())
+                    // Kind of cursed, but this works to remove the folder name.
                     .then((blob) => [blob, line]));
             }
             Promise.all(all_urls).then(async (list) => {
                 let data = [];
                 // We need to append things to on_load.mcfunction
                 for (const i of list) {
-                    const name = i[1];
+                    // Okay, WTF? JavaScript split works like nothing I have seen
+                    // before in my life (and hopefully never will again). Just the
+                    // most useless splitn behaviour you could possibly imagine.
+                    const fullName = i[1];
+                    const name = fullName.slice(fullName.indexOf('/') + 1);
                     let input = null;
                     if (name.includes("on_load.mcfunction")) {
                         const b = i[0];
@@ -76,6 +92,7 @@ export class Player {
                     else {
                         input = i[0];
                     }
+                    console.log(`Adding a file: ${name}`);
                     data.push({
                         name: name,
                         lastModified: new Date(),

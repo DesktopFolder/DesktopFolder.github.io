@@ -13,6 +13,51 @@ class StateMachine {
     draftLimit: number = 0;
     actions = [];
 
+    isDraftComplete() {
+        // draft is complete if all players have completed drafting
+        // a truismer tautology has never been said
+        for (const p of allPlayers) {
+            if (!p.exists()) {
+                continue;
+            }
+            if (!p.completeDrafting(this.draftLimit)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    checkDraftComplete() {
+        if (!this.isDraftComplete()) {
+            // draft is incomplete :( try harder!! you can do it!!!
+            return;
+        }
+
+        console.log("Draft complete! Finalizing...");
+
+        // Wicked, the draft is now complete. Remove all onclick handlers
+        // and add communal values.
+
+        for (const p of pools) {
+            for (const di of p.items) {
+                // no more clicking. :/
+                di.poolItem.removeAttribute("onclick");
+                di.poolItem.onclick = undefined;
+                if (!di.isDrafted) {
+                    // these are global ones. give them to all the players.
+                    for (const player of allPlayers) {
+                        if (!player.exists()) {
+                            continue;
+                        }
+                        player.updateDraft(di.id);
+                    }
+                }
+            }
+        }
+
+        this.title.innerHTML = `Draft complete. Download datapacks from the sidebar.`;
+    }
+
     start() {
         if (this.checkPlayers() == 0) {
             return;
@@ -49,10 +94,13 @@ class StateMachine {
                     if (!player.tryDraft(di, this.draftLimit)) {
                         console.log(
                             "Did not draft: Invalid draft choice (from same pool as before)" +
-                            ` Note: Limit: ${this.draftLimit}, Player count: ${this.playerCount}`
+                                ` Note: Limit: ${this.draftLimit}, Player count: ${this.playerCount}`
                         );
                         return;
                     }
+
+                    // state management
+                    di.isDrafted = true;
                     p.getDiv().removeChild(di.poolItem);
                     this.playerReset.push(this.playerList.shift());
 
@@ -63,6 +111,8 @@ class StateMachine {
                     }
 
                     this.title.innerHTML = `Draft pick: ${this.playerList[0].name}`;
+
+                    this.checkDraftComplete();
                 };
             }
         }

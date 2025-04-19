@@ -1,4 +1,4 @@
-import { allItems, DraftItem } from "./options.js";
+import { allItems, DraftItem, pools } from "./options.js";
 // @ts-ignore Import module
 import { downloadZip } from "https://cdn.jsdelivr.net/npm/client-zip/index.js";
 
@@ -21,6 +21,18 @@ export class Player {
         } else {
             this.setName("");
         }
+    }
+
+    public completeDrafting(cap: number) {
+        if (this.draftedPools.size < pools.length) {
+            return false;
+        }
+        for (const v of this.draftedPools.values()) {
+            if (v < cap) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public tryDraft(di: DraftItem, cap: number) {
@@ -72,6 +84,7 @@ export class Player {
                     all_urls.push(
                         fetch(`/assets/draaft/${line}`)
                             .then((resp: Response) => resp.blob())
+                            // Kind of cursed, but this works to remove the folder name.
                             .then((blob: Blob) => [blob, line])
                     );
                 }
@@ -79,7 +92,12 @@ export class Player {
                     let data = [];
                     // We need to append things to on_load.mcfunction
                     for (const i of list) {
-                        const name: string = i[1];
+                        // Okay, WTF? JavaScript split works like nothing I have seen
+                        // before in my life (and hopefully never will again). Just the
+                        // most useless splitn behaviour you could possibly imagine.
+                        const fullName: string = i[1];
+                        const name: string = fullName.slice(fullName.indexOf('/')+1);
+
                         let input = null;
                         if (name.includes("on_load.mcfunction")) {
                             const b: Blob = i[0];
@@ -87,6 +105,7 @@ export class Player {
                         } else {
                             input = i[0];
                         }
+                        console.log(`Adding a file: ${name}`);
                         data.push({
                             name: name,
                             lastModified: new Date(),

@@ -1,6 +1,7 @@
 export class DraftItem {
     public poolItem: HTMLDivElement = document.createElement("div");
     public poolOuter: HTMLDivElement = null;
+    public isDrafted: boolean = false;
 
     public constructor(
         public id: number,
@@ -203,7 +204,7 @@ let dChestplate = new DraftItem(
     "chestplate.png",
     (file) => {
         file += `
-give @a minecraft:netherite_boots{Enchantments:[{id:"minecraft:protection",lvl:5},{id:"minecraft:unbreaking",lvl:3}]}
+give @a minecraft:netherite_chestplate{Enchantments:[{id:"minecraft:protection",lvl:5},{id:"minecraft:unbreaking",lvl:3}]}
         `;
         return file;
     }
@@ -349,7 +350,7 @@ let pTools = new DraftPool(1, "tools", "Tools", [
 let dACC = new DraftItem(
     17,
     "big",
-    "ACC",
+    "A Complete Catalogue",
     "Gives a complete catalogue",
     "acc.png",
     (file) => {
@@ -362,7 +363,7 @@ advancement grant @a only minecraft:husbandry/complete_catalogue
 let dAT = new DraftItem(
     18,
     "big",
-    "AT",
+    "Adventuring Time",
     "Gives adventuring time",
     "at.png",
     (file) => {
@@ -375,7 +376,7 @@ advancement grant @a only minecraft:adventure/adventuring_time
 let d2b2 = new DraftItem(
     19,
     "big",
-    "2b2",
+    "Two by Two",
     "Gives two by two",
     "2b2.png",
     (file) => {
@@ -388,7 +389,7 @@ advancement grant @a only minecraft:husbandry/bred_all_animals
 let dMH = new DraftItem(
     20,
     "big",
-    "MH",
+    "Monsters Hunted",
     "Gives monsters hunted",
     "mh.png",
     (file) => {
@@ -401,7 +402,7 @@ advancement grant @a only minecraft:adventure/kill_all_mobs
 let dABD = new DraftItem(
     21,
     "big",
-    "ABD",
+    "A Balanced Diet",
     "Gives a balanced diet",
     "abd.png",
     (file) => {

@@ -1,0 +1,40 @@
+---
+page.title=Ranked Query Language Documentation
+website.title=Desktop's Website
+page.description=Some documentation for RQL (Ranked Query Language)
+src=templates/generic.html
+---
+
+# Introduction
+
+Ranked Query Language (RQL) is a custom "query language" (i.e., a programming-style language that enables making queries of data) available through the RankedQueryBot Discord bot.
+
+Because the query language can be difficult to learn and use, the bot also has a few helper commands. These are listed after **Quickstart**, under **Helper Commands**.
+
+
+
+## Quickstart
+
+Custom queries must be provided to the bot through the `/query` Discord command. This command accepts one argument, which should be your entire query.
+
+Queries work with data from an "index". The `index` command can be used to select an index, but by default, all commands start with the "current season" index. This index contains all non-cheated,
+
+## Helper Commands
+
+Note: Unless otherwise specified, commands run on data from just the current season, and ranked games only.
+
+Current helper commands (Updated December 2024):
+
+`/average_completion` -> Gets you the average completion time of a player.
+
+## Background / Technical Context
+
+```
+
+```
+
+## Misc Technical Details
+
+### Cheated Runs
+
+I cannot 
