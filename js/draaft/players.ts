@@ -10,6 +10,7 @@ export class Player {
     input: HTMLInputElement;
     container: HTMLDivElement;
     title: HTMLParagraphElement;
+    draftedList: HTMLParagraphElement;
 
     public reset() {
         if (this.drafted.length != 0) {
@@ -19,6 +20,13 @@ export class Player {
         } else {
             this.setName("");
         }
+    }
+
+    public updateDraft(n: number) {
+        if (n != 0) {
+            this.drafted.push(n);
+        }
+        this.draftedList.innerHTML = `Drafted: ${this.drafted.length}`;
     }
 
     public setName(val: string) {
@@ -120,8 +128,12 @@ export class Player {
         this.container = document.createElement("div");
         this.container.classList.add("flex-down", "player-container");
 
+        this.draftedList = document.createElement("p");
+        this.updateDraft(0);
+
         this.container.appendChild(this.title);
         this.container.appendChild(this.input);
+        this.container.appendChild(this.draftedList);
         this.container.appendChild(buttons);
     }
 }
