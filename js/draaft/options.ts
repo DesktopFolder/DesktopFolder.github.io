@@ -1,6 +1,6 @@
 export class DraftItem {
-    public poolItem: HTMLDivElement = document.createElement("div")
-    public poolOuter: HTMLDivElement = null
+    public poolItem: HTMLDivElement = document.createElement("div");
+    public poolOuter: HTMLDivElement = null;
 
     public constructor(
         public id: number,
@@ -25,20 +25,18 @@ export class DraftItem {
         poolDescriptionText.classList.add("draft-item-desc");
 
         this.poolItem.addEventListener("mouseenter", () => {
-        this.poolItem.innerHTML = "";
+            this.poolItem.innerHTML = "";
             poolDefaultText.classList.add("with-hover");
             this.poolItem.appendChild(poolDefaultText);
-        this.poolItem.appendChild(poolDescriptionText);
+            this.poolItem.appendChild(poolDescriptionText);
         });
 
-        this.poolItem.addEventListener(
-            "mouseleave",
-            () => {
-                this.poolItem.innerHTML = ''
-                poolDefaultText.classList.remove('with-hover');
-                this.poolItem.appendChild(poolDefaultText)
-            }
-        );
+        this.poolItem.addEventListener("mouseleave", () => {
+            this.poolItem.innerHTML = "";
+            poolDefaultText.classList.remove("with-hover");
+            this.poolItem.appendChild(poolDefaultText);
+            console.log("hi!!");
+        });
 
         this.poolItem.appendChild(poolDefaultText);
 
