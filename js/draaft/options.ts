@@ -497,8 +497,8 @@ give @a minecraft:shulker_box
 let dBees = new DraftItem(
     27,
     "collectors",
-    "Shulker Box",
-    "Gives a shulker box",
+    "Bees",
+    "Gives all bee-related requirements",
     "shulker.png",
     (file) => {
         file += `
