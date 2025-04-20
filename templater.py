@@ -22,6 +22,14 @@ show_cards = """
 </head>
 """
 
+FAVICON = """
+    <!-- Favicon stuff :) -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+"""
+
 
 def css(l):
     if len(l) == 0:
@@ -65,6 +73,7 @@ def gen_file(w: dhtml.Website, p: dhtml.Page, verbose=noop):
         "generators": gens,
         # "page-image": "https://publicdomainvectors.org/photos/rodentia-icons_folder-black.png",
         "page-image": "/assets/logo.png",
+        "favicon": FAVICON,
         "show-card": "false",
         "css-extras": "",
     }
@@ -132,6 +141,11 @@ def main(log):
                                 ignore=shutil.ignore_patterns('.gitignore'))
             else:
                 shutil.copy(p, dest_path)
+
+
+        if os.path.isdir('root-assets'):
+            for p in os.listdir('root-assets'):
+                shutil.copy(f'root-assets/{p}', 'docs')
 
         # Just straight up copy our entire JS environment into js/
         shutil.copytree('./js', os.path.join(dest_path, 'js/'), dirs_exist_ok=True,
