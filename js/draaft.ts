@@ -170,7 +170,15 @@ function main() {
         sm.start();
         return false;
     };
+
+    let modDownload = document.createElement("a");
+    modDownload.classList.add("start-button");
+    modDownload.href = "https://github.com/memerson12/drAAft/releases";
+    modDownload.target = "_blank"
+    modDownload.innerHTML = "Mod Download"
+
     players.appendChild(starter);
+    players.appendChild(modDownload);
     document.body.appendChild(players);
 
     let container = document.createElement("div");
