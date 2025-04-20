@@ -497,8 +497,8 @@ give @a minecraft:shulker_box
 let dBees = new DraftItem(
     27,
     "collectors",
-    "Shulker Box",
-    "Gives a shulker box",
+    "Bees",
+    "Gives all bee-related requirements",
     "shulker.png",
     (file) => {
         file += `
@@ -551,10 +551,10 @@ give @a minecraft:firework_rocket{Fireworks:{Flight:1}} 64
     }
 );
 let dGrace = new DraftItem(
-    29,
+    30,
     "misc",
-    "Fireworks",
-    "Gives 64 fireworks",
+    "Dolphin's Grace",
+    "Gives dolphin's grace",
     "firework.png",
     (file) => {
         file += `
@@ -565,7 +565,7 @@ effect give @a minecraft:dolphins_grace 3600
 );
 dGrace.fileQuery = 'tick.mcfunction'
 let dLeads = new DraftItem(
-    29,
+    31,
     "misc",
     "Leads",
     "Gives 23 leads & slime kill",

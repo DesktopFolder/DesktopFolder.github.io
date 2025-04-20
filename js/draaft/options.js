@@ -296,7 +296,7 @@ give @a minecraft:shulker_box
         `;
     return file;
 });
-let dBees = new DraftItem(27, "collectors", "Shulker Box", "Gives a shulker box", "shulker.png", (file) => {
+let dBees = new DraftItem(27, "collectors", "Bees", "Gives all bee-related requirements", "shulker.png", (file) => {
     file += `
 advancement grant @a only minecraft:husbandry/safely_harvest_honey
 advancement grant @a only minecraft:husbandry/silk_touch_nest
@@ -329,14 +329,14 @@ give @a minecraft:firework_rocket{Fireworks:{Flight:1}} 64
         `;
     return file;
 });
-let dGrace = new DraftItem(29, "misc", "Fireworks", "Gives 64 fireworks", "firework.png", (file) => {
+let dGrace = new DraftItem(30, "misc", "Dolphin's Grace", "Gives dolphin's grace", "firework.png", (file) => {
     file += `
 effect give @a minecraft:dolphins_grace 3600
         `;
     return file;
 });
 dGrace.fileQuery = 'tick.mcfunction';
-let dLeads = new DraftItem(29, "misc", "Leads", "Gives 23 leads & slime kill", "leads.png", (file) => {
+let dLeads = new DraftItem(31, "misc", "Leads", "Gives 23 leads & slime kill", "leads.png", (file) => {
     file += `
 advancement grant @a only minecraft:adventure/kill_all_mobs minecraft:slime
 give @a minecraft:lead 23
