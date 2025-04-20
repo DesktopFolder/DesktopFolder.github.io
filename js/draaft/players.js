@@ -47,7 +47,7 @@ export class Player {
         if (n != 0) {
             this.drafted.push(n);
         }
-        this.draftedList.innerHTML = `Drafted: ${this.drafted.join(', ')}`;
+        this.draftedList.innerHTML = `Drafted: ${this.drafted.join(", ")}`;
     }
     setName(val) {
         this.name = val;
@@ -56,9 +56,18 @@ export class Player {
     exists() {
         return this.name.length != 0;
     }
-    updateFile(file) {
+    updateFile(file, filename) {
         for (const d of this.drafted) {
-            file = allItems[d - 1].datapackModifier(file);
+            let obj = allItems[d - 1];
+            if (filename.includes("on_load.mcfunction")) {
+                if (obj.fileQuery == null) {
+                    file = obj.datapackModifier(file);
+                }
+            }
+            else if (obj.fileQuery != null &&
+                filename.includes(obj.fileQuery)) {
+                file = obj.datapackModifier(file);
+            }
         }
         return file;
     }
@@ -83,11 +92,11 @@ export class Player {
                     // before in my life (and hopefully never will again). Just the
                     // most useless splitn behaviour you could possibly imagine.
                     const fullName = i[1];
-                    const name = fullName.slice(fullName.indexOf('/') + 1);
+                    const name = fullName.slice(fullName.indexOf("/") + 1);
                     let input = null;
-                    if (name.includes("on_load.mcfunction")) {
+                    if (name.includes("mcfunction")) {
                         const b = i[0];
-                        input = this.updateFile(await b.text());
+                        input = this.updateFile(await b.text(), name);
                     }
                     else {
                         input = i[0];

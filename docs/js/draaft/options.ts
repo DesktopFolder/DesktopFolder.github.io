@@ -2,6 +2,7 @@ export class DraftItem {
     public poolItem: HTMLDivElement = document.createElement("div");
     public poolOuter: HTMLDivElement = null;
     public isDrafted: boolean = false;
+    public fileQuery: string = null;
 
     public constructor(
         public id: number,
@@ -421,10 +422,10 @@ let pBig = new DraftPool(1, "big", "Big", [
     dABD
 ]);
 
-// Pool: Misc
+// Pool: Collectors
 let dNetherite = new DraftItem(
     22,
-    "misc",
+    "collectors",
     "Netherite",
     "Gives 4 netherite ingots",
     "netherite.png",
@@ -437,7 +438,7 @@ give @a minecraft:netherite_ingot 4
 );
 let dShells = new DraftItem(
     23,
-    "misc",
+    "collectors",
     "Shells",
     "Gives 7 nautilus shells",
     "shell.png",
@@ -450,7 +451,7 @@ give @a minecraft:nautilus_shell 7
 );
 let dSkulls = new DraftItem(
     24,
-    "misc",
+    "collectors",
     "Skulls",
     "Gives 2 wither skeleton skulls",
     "skull.png",
@@ -463,7 +464,7 @@ give @a minecraft:wither_skeleton_skull 2
 );
 let dBreeds = new DraftItem(
     25,
-    "misc",
+    "collectors",
     "Breeds",
     "Gives breed credit for horse, donkey, mule, llama, wolf, fox, and turtle",
     "breeds.png",
@@ -480,8 +481,49 @@ advancement grant @a only minecraft:husbandry/bred_all_animals minecraft:turtle
         return file;
     }
 );
-let dTotem = new DraftItem(
+let dShulker = new DraftItem(
     26,
+    "collectors",
+    "Shulker Box",
+    "Gives a shulker box",
+    "shulker.png",
+    (file) => {
+        file += `
+give @a minecraft:shulker_box
+        `;
+        return file;
+    }
+);
+let dBees = new DraftItem(
+    27,
+    "collectors",
+    "Shulker Box",
+    "Gives a shulker box",
+    "shulker.png",
+    (file) => {
+        file += `
+advancement grant @a only minecraft:husbandry/safely_harvest_honey
+advancement grant @a only minecraft:husbandry/silk_touch_nest
+advancement grant @a only minecraft:adventure/honey_block_slide
+advancement grant @a only minecraft:husbandry/bred_all_animals minecraft:bee
+advancement grant @a only minecraft:husbandry/balanced_diet honey_bottle
+        `;
+        return file;
+    }
+);
+
+let pCollectors = new DraftPool(1, "collectors", "Collectors", [
+    dNetherite,
+    dShells,
+    dSkulls,
+    dBreeds,
+    dShulker,
+    dBees
+]);
+
+// Pool: misc
+let dTotem = new DraftItem(
+    28,
     "misc",
     "Totem",
     "Gives totem of undying and evoker & vex kill credit",
@@ -496,7 +538,7 @@ advancement grant @a only minecraft:adventure/kill_all_mobs minecraft:vex
     }
 );
 let dFireworks = new DraftItem(
-    27,
+    29,
     "misc",
     "Fireworks",
     "Gives 64 fireworks",
@@ -508,31 +550,43 @@ give @a minecraft:firework_rocket{Fireworks:{Flight:1}} 64
         return file;
     }
 );
-let dShulker = new DraftItem(
-    28,
+let dGrace = new DraftItem(
+    29,
     "misc",
-    "Shulker Box",
-    "Gives a shulker box",
-    "shulker.png",
+    "Fireworks",
+    "Gives 64 fireworks",
+    "firework.png",
     (file) => {
         file += `
-give @a minecraft:shulker_box
+effect give @a minecraft:dolphins_grace 3600
+        `;
+        return file;
+    }
+);
+dGrace.fileQuery = 'tick.mcfunction'
+let dLeads = new DraftItem(
+    29,
+    "misc",
+    "Leads",
+    "Gives 23 leads & slime kill",
+    "leads.png",
+    (file) => {
+        file += `
+advancement grant @a only minecraft:adventure/kill_all_mobs minecraft:slime
+give @a minecraft:lead 23
         `;
         return file;
     }
 );
 
 let pMisc = new DraftPool(1, "misc", "Misc", [
-    dNetherite,
-    dShells,
-    dSkulls,
-    dBreeds,
     dTotem,
     dFireworks,
-    dShulker
+    dGrace,
+    dLeads,
 ]);
 
-export let pools: DraftPool[] = [pBiomes, pArmour, pTools, pBig, pMisc];
+export let pools: DraftPool[] = [pBiomes, pArmour, pTools, pBig, pCollectors, pMisc];
 export let allItems: DraftItem[] = [];
 
 for (const p of pools) {
