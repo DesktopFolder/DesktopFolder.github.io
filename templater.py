@@ -63,7 +63,8 @@ def gen_file(w: dhtml.Website, p: dhtml.Page, verbose=noop):
         "page-description": 'Another incredible webpage!',
         "path-css-common": (root_offset) + 'styles.css',
         "generators": gens,
-        "page-image": "https://publicdomainvectors.org/photos/rodentia-icons_folder-black.png",
+        # "page-image": "https://publicdomainvectors.org/photos/rodentia-icons_folder-black.png",
+        "page-image": "/assets/logo.png",
         "show-card": "false",
         "css-extras": "",
     }
