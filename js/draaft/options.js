@@ -266,6 +266,7 @@ advancement grant @a only minecraft:husbandry/balanced_diet
     return file;
 });
 dABD.boxName = "Balanced Diet";
+// also known as Multi-Part Advancements. Dunno if that fits?
 let pBig = new DraftPool("big", "Major Advancements", [
     dACC,
     dAT,
