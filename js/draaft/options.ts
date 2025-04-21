@@ -1,24 +1,35 @@
+let ID_COUNTER = 0;
+let DRAFT_COUNTER = 0;
+
 export class DraftItem {
     public poolItem: HTMLDivElement = document.createElement("div");
     public poolOuter: HTMLDivElement = null;
     public isDrafted: boolean = false;
     public fileQuery: string = null;
+    public id: number;
+    public simpleName: string;
+    public boxName: string;
 
     public constructor(
-        public id: number,
         public pool: string,
         public prettyName: string,
         public description: string,
         public image: string,
         public datapackModifier: (file: string) => string
-    ) {}
+    ) {
+        ID_COUNTER += 1;
+        this.id = ID_COUNTER;
+
+        this.simpleName = prettyName;
+        this.boxName = this.prettyName;
+    }
 
     public makeDiv() {
         this.poolItem.setAttribute("data-di-id", this.id.toString());
         this.poolItem.classList.add("draft-item", "basic-box");
 
         let poolDefaultText = document.createElement("p");
-        poolDefaultText.innerHTML = this.prettyName;
+        poolDefaultText.innerHTML = this.boxName;
         poolDefaultText.id = `di-${this.id}`;
         poolDefaultText.classList.add("draft-item");
 
@@ -46,12 +57,16 @@ export class DraftItem {
 }
 
 export class DraftPool {
+    public id: number;
+
     public constructor(
-        public id: number,
         public name: string,
         public prettyName: string,
         public items: DraftItem[]
-    ) {}
+    ) {
+        DRAFT_COUNTER += 1;
+        this.id = DRAFT_COUNTER;
+    }
 
     public getDiv() {
         return document.getElementById(`pool-body-${this.name}`);
@@ -69,7 +84,7 @@ export class DraftPool {
 
         let poolHeaderText = document.createElement("p");
         poolHeaderText.classList.add("pool-header");
-        poolHeaderText.innerHTML = `Pool: ${this.prettyName}`;
+        poolHeaderText.innerHTML = `${this.prettyName}`;
 
         poolHeader.appendChild(poolHeaderText);
         draftPool.appendChild(poolHeader);
@@ -90,7 +105,6 @@ export class DraftPool {
 
 // Pool: biomes
 let dMesa = new DraftItem(
-    1,
     "biomes",
     "Mesa",
     "Gives all mesa biomes and cave spider kill",
@@ -106,7 +120,6 @@ advancement grant @a only minecraft:adventure/kill_all_mobs minecraft:cave_spide
     }
 );
 let dJungle = new DraftItem(
-    2,
     "biomes",
     "Jungle",
     "Gives jungle biomes, cookie & melon eat, and panda & ocelot breeds.",
@@ -127,7 +140,6 @@ advancement grant @a only minecraft:husbandry/balanced_diet cookie
     }
 );
 let dSnowy = new DraftItem(
-    3,
     "biomes",
     "Snowy",
     "Gives all snowy biomes and stray kill",
@@ -146,7 +158,6 @@ advancement grant @a only minecraft:adventure/kill_all_mobs minecraft:stray
     }
 );
 let dMegaTaiga = new DraftItem(
-    4,
     "biomes",
     "Mega Taiga",
     "Gives all mega taiga biomes",
@@ -160,7 +171,6 @@ advancement grant @a only minecraft:adventure/adventuring_time minecraft:giant_t
     }
 );
 let dMushroomIsland = new DraftItem(
-    5,
     "biomes",
     "Mushroom Island",
     "Gives all mushroom biomes and mooshroom breed",
@@ -174,8 +184,10 @@ advancement grant @a only minecraft:husbandry/bred_all_animals minecraft:mooshro
         return file;
     }
 );
+dMushroomIsland.simpleName = "Mushroom";
+dMushroomIsland.boxName = "Mushroom";
 
-let pBiomes = new DraftPool(1, "biomes", "Biomes", [
+let pBiomes = new DraftPool("biomes", "Biomes", [
     dMesa,
     dJungle,
     dSnowy,
@@ -185,7 +197,6 @@ let pBiomes = new DraftPool(1, "biomes", "Biomes", [
 
 // Pool: Armour
 let dHelmet = new DraftItem(
-    6,
     "armour",
     "Helmet",
     "Gives fully enchanted netherite helmet",
@@ -198,7 +209,6 @@ give @a minecraft:netherite_helmet{Enchantments:[{id:"minecraft:protection",lvl:
     }
 );
 let dChestplate = new DraftItem(
-    7,
     "armour",
     "Chestplate",
     "Gives fully enchanted netherite chestplate",
@@ -211,7 +221,6 @@ give @a minecraft:netherite_chestplate{Enchantments:[{id:"minecraft:protection",
     }
 );
 let dLeggings = new DraftItem(
-    8,
     "armour",
     "Leggings",
     "Gives fully enchanted netherite leggings",
@@ -224,7 +233,6 @@ give @a minecraft:netherite_leggings{Enchantments:[{id:"minecraft:protection",lv
     }
 );
 let dBoots = new DraftItem(
-    9,
     "armour",
     "Boots",
     "Gives fully enchanted netherite boots",
@@ -237,7 +245,6 @@ give @a minecraft:netherite_boots{Enchantments:[{id:"minecraft:protection",lvl:5
     }
 );
 let dBucket = new DraftItem(
-    10,
     "armour",
     "Bucket",
     "Gives a fully enchanted, max-tier bucket",
@@ -250,7 +257,7 @@ give @a minecraft:bucket{Enchantments:[{}]}
     }
 );
 
-let pArmour = new DraftPool(1, "armour", "Armour", [
+let pArmour = new DraftPool("armour", "Armour", [
     dHelmet,
     dChestplate,
     dLeggings,
@@ -260,7 +267,6 @@ let pArmour = new DraftPool(1, "armour", "Armour", [
 
 // Pool: Tools
 let dSword = new DraftItem(
-    11,
     "tools",
     "Sword",
     "Gives fully enchanted netherite sword",
@@ -273,7 +279,6 @@ give @a minecraft:netherite_sword{Enchantments:[{id:"minecraft:smite",lvl:5},{id
     }
 );
 let dPickaxe = new DraftItem(
-    12,
     "tools",
     "Pickaxe",
     "Gives fully enchanted netherite pickaxe",
@@ -286,7 +291,6 @@ give @a minecraft:netherite_pickaxe{Enchantments:[{id:"minecraft:efficiency",lvl
     }
 );
 let dShovel = new DraftItem(
-    13,
     "tools",
     "Shovel",
     "Gives fully enchanted netherite shovel",
@@ -299,7 +303,6 @@ give @a minecraft:netherite_shovel{Enchantments:[{id:"minecraft:efficiency",lvl:
     }
 );
 let dHoe = new DraftItem(
-    14,
     "tools",
     "Hoe",
     "Gives fully enchanted netherite hoe",
@@ -312,7 +315,6 @@ give @a minecraft:netherite_hoe{Enchantments:[{id:"minecraft:efficiency",lvl:5},
     }
 );
 let dAxe = new DraftItem(
-    15,
     "tools",
     "Axe",
     "Gives fully enchanted netherite axe",
@@ -325,7 +327,6 @@ give @a minecraft:netherite_axe{Enchantments:[{id:"minecraft:efficiency",lvl:5},
     }
 );
 let dTrident = new DraftItem(
-    16,
     "tools",
     "Trident",
     "Gives fully enchanted netherite trident",
@@ -338,18 +339,17 @@ give @a minecraft:trident{Enchantments:[{id:"minecraft:channeling",lvl:1},{id:"m
     }
 );
 
-let pTools = new DraftPool(1, "tools", "Tools", [
+let pTools = new DraftPool("tools", "Tools", [
     dSword,
     dPickaxe,
     dShovel,
     dHoe,
     dAxe,
-    dTrident
+    dTrident,
 ]);
 
 // Pool: Big
 let dACC = new DraftItem(
-    17,
     "big",
     "A Complete Catalogue",
     "Gives a complete catalogue",
@@ -361,8 +361,8 @@ advancement grant @a only minecraft:husbandry/complete_catalogue
         return file;
     }
 );
+dACC.boxName = "Catalogue";
 let dAT = new DraftItem(
-    18,
     "big",
     "Adventuring Time",
     "Gives adventuring time",
@@ -374,8 +374,8 @@ advancement grant @a only minecraft:adventure/adventuring_time
         return file;
     }
 );
+dAT.boxName = "Adventuring";
 let d2b2 = new DraftItem(
-    19,
     "big",
     "Two by Two",
     "Gives two by two",
@@ -388,7 +388,6 @@ advancement grant @a only minecraft:husbandry/bred_all_animals
     }
 );
 let dMH = new DraftItem(
-    20,
     "big",
     "Monsters Hunted",
     "Gives monsters hunted",
@@ -400,8 +399,8 @@ advancement grant @a only minecraft:adventure/kill_all_mobs
         return file;
     }
 );
+dMH.boxName = "Monsters";
 let dABD = new DraftItem(
-    21,
     "big",
     "A Balanced Diet",
     "Gives a balanced diet",
@@ -413,18 +412,18 @@ advancement grant @a only minecraft:husbandry/balanced_diet
         return file;
     }
 );
+dABD.boxName = "Balanced Diet";
 
-let pBig = new DraftPool(1, "big", "Big", [
+let pBig = new DraftPool("big", "Major Advancements", [
     dACC,
     dAT,
     d2b2,
     dMH,
-    dABD
+    dABD,
 ]);
 
 // Pool: Collectors
 let dNetherite = new DraftItem(
-    22,
     "collectors",
     "Netherite",
     "Gives 4 netherite ingots",
@@ -437,7 +436,6 @@ give @a minecraft:netherite_ingot 4
     }
 );
 let dShells = new DraftItem(
-    23,
     "collectors",
     "Shells",
     "Gives 7 nautilus shells",
@@ -450,7 +448,6 @@ give @a minecraft:nautilus_shell 7
     }
 );
 let dSkulls = new DraftItem(
-    24,
     "collectors",
     "Skulls",
     "Gives 2 wither skeleton skulls",
@@ -463,7 +460,6 @@ give @a minecraft:wither_skeleton_skull 2
     }
 );
 let dBreeds = new DraftItem(
-    25,
     "collectors",
     "Breeds",
     "Gives breed credit for horse, donkey, mule, llama, wolf, fox, and turtle",
@@ -482,7 +478,6 @@ advancement grant @a only minecraft:husbandry/bred_all_animals minecraft:turtle
     }
 );
 let dShulker = new DraftItem(
-    26,
     "collectors",
     "Shulker Box",
     "Gives a shulker box",
@@ -495,7 +490,6 @@ give @a minecraft:shulker_box
     }
 );
 let dBees = new DraftItem(
-    27,
     "collectors",
     "Bees",
     "Gives all bee-related requirements",
@@ -512,18 +506,17 @@ advancement grant @a only minecraft:husbandry/balanced_diet honey_bottle
     }
 );
 
-let pCollectors = new DraftPool(1, "collectors", "Collectors", [
+let pCollectors = new DraftPool("collectors", "Collectors", [
     dNetherite,
     dShells,
     dSkulls,
     dBreeds,
     dShulker,
-    dBees
+    dBees,
 ]);
 
 // Pool: misc
 let dTotem = new DraftItem(
-    28,
     "misc",
     "Totem",
     "Gives totem of undying and evoker & vex kill credit",
@@ -538,7 +531,6 @@ advancement grant @a only minecraft:adventure/kill_all_mobs minecraft:vex
     }
 );
 let dFireworks = new DraftItem(
-    29,
     "misc",
     "Fireworks",
     "Gives 64 fireworks",
@@ -551,7 +543,6 @@ give @a minecraft:firework_rocket{Fireworks:{Flight:1}} 64
     }
 );
 let dGrace = new DraftItem(
-    30,
     "misc",
     "Dolphin's Grace",
     "Gives dolphin's grace",
@@ -563,9 +554,10 @@ effect give @a minecraft:dolphins_grace 3600
         return file;
     }
 );
-dGrace.fileQuery = 'tick.mcfunction'
+dGrace.simpleName = "Grace";
+dGrace.boxName = "Grace";
+dGrace.fileQuery = "tick.mcfunction";
 let dLeads = new DraftItem(
-    31,
     "misc",
     "Leads",
     "Gives 23 leads & slime kill",
@@ -579,14 +571,16 @@ give @a minecraft:lead 23
     }
 );
 
-let pMisc = new DraftPool(1, "misc", "Misc", [
-    dTotem,
-    dFireworks,
-    dGrace,
-    dLeads,
-]);
+let pMisc = new DraftPool("misc", "Misc", [dTotem, dFireworks, dGrace, dLeads]);
 
-export let pools: DraftPool[] = [pBiomes, pArmour, pTools, pBig, pCollectors, pMisc];
+export let pools: DraftPool[] = [
+    pBiomes,
+    pArmour,
+    pTools,
+    pBig,
+    pCollectors,
+    pMisc,
+];
 export let allItems: DraftItem[] = [];
 
 for (const p of pools) {
@@ -594,4 +588,9 @@ for (const p of pools) {
         allItems.push(i);
         console.assert(allItems.length == i.id, "Oh no, not equal!!");
     }
+}
+
+// Use a function for this so that we can fix this horrible implementation later.
+export function getDraftItem(id: number) {
+    return allItems[id - 1];
 }

@@ -1,4 +1,4 @@
-import { allItems, DraftItem, pools } from "./options.js";
+import { allItems, DraftItem, getDraftItem, pools } from "./options.js";
 // @ts-ignore Import module
 import { downloadZip } from "https://cdn.jsdelivr.net/npm/client-zip/index.js";
 
@@ -55,7 +55,11 @@ export class Player {
         if (n != 0) {
             this.drafted.push(n);
         }
-        this.draftedList.innerHTML = `Drafted: ${this.drafted.join(", ")}`;
+        let dinames: Array<string> = [];
+        for (const i of this.drafted) {
+            dinames.push(getDraftItem(i).simpleName);
+        }
+        this.draftedList.innerHTML = `Drafted: ${dinames.join(", ")}`;
     }
 
     public setName(val: string) {
@@ -177,7 +181,7 @@ export class Player {
         this.container.classList.add("flex-down", "player-container");
 
         this.draftedList = document.createElement("p");
-        this.draftedList.classList.add("player-button");
+        this.draftedList.classList.add("player-button", "draft-list");
         this.updateDraft(0);
 
         this.container.appendChild(this.title);

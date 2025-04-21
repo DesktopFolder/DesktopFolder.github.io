@@ -76,6 +76,7 @@ def gen_file(w: dhtml.Website, p: dhtml.Page, verbose=noop):
         "favicon": FAVICON,
         "show-card": "false",
         "css-extras": "",
+        "meta": "",
     }
     after = {
         "css-extras": css,
