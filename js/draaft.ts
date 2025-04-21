@@ -3,9 +3,13 @@ import { Player } from "./draaft/players.js";
 
 let allPlayers: Array<Player> = [];
 
+// https://stackoverflow.com/questions/2719668/an-html5-canvas-element-in-the-background-of-my-page/2723376
+// https://coolors.co/edffec-61e786-5a5766-48435c-9792e3
+
 class StateMachine {
     title: HTMLParagraphElement;
     titleContainer: HTMLDivElement;
+    starter: HTMLAnchorElement;
 
     playerList: Array<Player> = [];
     playerReset: Array<Player> = [];
@@ -121,17 +125,30 @@ class StateMachine {
     setToPlayers(n: number) {
         if (n == 0) {
             this.title.innerHTML = "Waiting for players...";
+            this.starter.style.display = "none";
+            return;
         } else if (n == 1) {
             this.title.innerHTML =
-                "1 player entered, press start to begin draft...";
+                "1 player entered. ";
         } else {
-            this.title.innerHTML = `${n} players entered, press start to begin draft...`;
+            this.title.innerHTML = `${n} players entered. `;
         }
+        this.starter.style.display = "inline";
+        this.title.appendChild(this.starter);
     }
 
     constructor() {
         this.title = document.createElement("p");
         this.titleContainer = document.createElement("div");
+        this.starter = document.createElement("a");
+        this.starter.classList.add("start-button");
+        this.starter.href = "#";
+        this.starter.innerHTML = "Click to start draft.";
+        this.starter.onclick = () => {
+            this.start();
+            return false;
+        };
+        this.title.appendChild(this.starter);
         this.titleContainer.appendChild(this.title);
         this.titleContainer.classList.add("title-container");
         this.checkPlayers();
@@ -162,22 +179,13 @@ function main() {
             sm.checkPlayers();
         });
     }
-    let starter = document.createElement("a");
-    starter.classList.add("start-button");
-    starter.href = "#";
-    starter.innerHTML = "Start";
-    starter.onclick = () => {
-        sm.start();
-        return false;
-    };
 
     let modDownload = document.createElement("a");
     modDownload.classList.add("start-button");
     modDownload.href = "https://github.com/memerson12/drAAft/releases";
-    modDownload.target = "_blank"
-    modDownload.innerHTML = "Mod Download"
+    modDownload.target = "_blank";
+    modDownload.innerHTML = "Mod Download";
 
-    players.appendChild(starter);
     players.appendChild(modDownload);
     document.body.appendChild(players);
 
