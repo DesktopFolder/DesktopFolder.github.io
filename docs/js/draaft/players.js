@@ -1,6 +1,10 @@
 import { allItems, getDraftItem, pools } from "./options.js";
 // @ts-ignore Import module
 import { downloadZip } from "https://cdn.jsdelivr.net/npm/client-zip/index.js";
+export function isValidPlayerName(pn) {
+    return /^[a-zA-Z_0-9]{3,24}$/.test(pn);
+}
+const STEVE = "/assets/steve.png";
 export class Player {
     name = "";
     // Player objects represent all their information.
@@ -8,8 +12,10 @@ export class Player {
     draftedPools = new Map();
     input;
     container;
+    titleBox;
     title;
     draftedList;
+    playerFace;
     reset() {
         if (this.drafted.length != 0) {
             console.error(`Could not reset ${this.name} -- there are ${this.drafted.length} draft already done.`);
@@ -55,7 +61,7 @@ export class Player {
     }
     setName(val) {
         this.name = val;
-        this.title.innerHTML = `Player: ${val}`;
+        this.title.innerHTML = `${val}`;
     }
     exists() {
         return this.name.length != 0;
@@ -119,12 +125,20 @@ export class Player {
                     // make and click a temporary link to download the Blob
                     const link = document.createElement("a");
                     link.href = URL.createObjectURL(b);
-                    link.download = "draaftpack.zip";
+                    link.download = `draaft_${this.name}.zip`;
                     link.click();
                     link.remove();
                 });
             });
         });
+    }
+    updateFace() {
+        if (isValidPlayerName(this.name)) {
+            this.playerFace.src = `https://mineskin.eu/helm/${this.name}/100`;
+        }
+        else {
+            this.playerFace.src = STEVE;
+        }
     }
     constructor() {
         this.input = document.createElement("input");
@@ -133,10 +147,14 @@ export class Player {
         this.input.addEventListener("input", () => {
             this.setName(this.input.value.trim());
         });
+        this.titleBox = document.createElement("div");
+        this.titleBox.classList.add("flex-right", "player-title-box");
         this.title = document.createElement("p");
-        this.title.innerHTML = "Player: ";
+        this.title.classList.add("player-name");
+        this.title.innerHTML = "";
         let buttons = document.createElement("div");
         buttons.classList.add("flex-right");
+        /*
         let resetButton = document.createElement("a");
         resetButton.classList.add("player-button");
         resetButton.href = "#";
@@ -146,6 +164,7 @@ export class Player {
             return false;
         };
         buttons.appendChild(resetButton);
+        */
         let downloadButton = document.createElement("a");
         downloadButton.classList.add("player-button");
         downloadButton.href = "#";
@@ -160,7 +179,13 @@ export class Player {
         this.draftedList = document.createElement("p");
         this.draftedList.classList.add("player-button", "draft-list");
         this.updateDraft(0);
-        this.container.appendChild(this.title);
+        this.playerFace = document.createElement("img");
+        this.playerFace.classList.add("player-face");
+        this.playerFace.src = STEVE;
+        this.playerFace.onerror = () => this.playerFace.src = STEVE;
+        this.titleBox.appendChild(this.playerFace);
+        this.titleBox.appendChild(this.title);
+        this.container.appendChild(this.titleBox);
         this.container.appendChild(this.input);
         this.container.appendChild(this.draftedList);
         this.container.appendChild(buttons);

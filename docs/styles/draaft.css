@@ -114,11 +114,26 @@ div.player-container {
 /* Left Side Styling : Player gutter. */
 #left-gutter {
     padding: 16px;
-    padding-top: 24px;
+    padding-top: 32px;
     width: 19%;
     height: 100%;
     background-color: #EDFFEC;
     border-right: #48435c 2px solid;
+}
+
+.player-face {
+    height: 24px;
+    width: 24px;
+    display: inline-block;
+    box-shadow: 0px 0px 5px #111;
+    margin-right: 5px;
+}
+.player-name {
+    display: inline-block;
+}
+.player-title-box {
+    align-items: center;
+    height: 1.6em;
 }
 
 .start-button {

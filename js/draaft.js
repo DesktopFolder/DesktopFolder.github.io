@@ -154,6 +154,7 @@ function main() {
         allPlayers.push(p);
         p.input.addEventListener("change", () => {
             sm.checkPlayers();
+            p.updateFace();
         });
     }
     let modDownload = document.createElement("a");
