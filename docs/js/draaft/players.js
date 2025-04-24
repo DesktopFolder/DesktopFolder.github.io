@@ -49,6 +49,12 @@ export class Player {
         this.updateDraft(di.id);
         return true;
     }
+    getCount(poolName) {
+        if (this.draftedPools.has(poolName)) {
+            return this.draftedPools.get(poolName);
+        }
+        return 0;
+    }
     updateDraft(n) {
         if (n != 0) {
             this.drafted.push(n);
@@ -182,7 +188,7 @@ export class Player {
         this.playerFace = document.createElement("img");
         this.playerFace.classList.add("player-face");
         this.playerFace.src = STEVE;
-        this.playerFace.onerror = () => this.playerFace.src = STEVE;
+        this.playerFace.onerror = () => (this.playerFace.src = STEVE);
         this.titleBox.appendChild(this.playerFace);
         this.titleBox.appendChild(this.title);
         this.container.appendChild(this.titleBox);

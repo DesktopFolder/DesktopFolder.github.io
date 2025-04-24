@@ -34,7 +34,7 @@ class StateMachine {
     checkDraftComplete() {
         if (!this.isDraftComplete()) {
             // draft is incomplete :( try harder!! you can do it!!!
-            return;
+            return false;
         }
 
         console.log("Draft complete! Finalizing...");
@@ -60,6 +60,7 @@ class StateMachine {
         }
 
         this.title.innerHTML = `Draft complete. Download datapacks from the sidebar.`;
+        return true;
     }
 
     start() {
@@ -114,9 +115,24 @@ class StateMachine {
                         }
                     }
 
-                    this.title.innerHTML = `Draft pick: ${this.playerList[0].name}`;
+                    let draftPlayer = this.playerList[0];
 
-                    this.checkDraftComplete();
+                    this.title.innerHTML = `Draft pick: ${draftPlayer.name}`;
+
+                    // reset highlights
+                    for (const pool of pools) {
+                        pool.getDiv().style.backgroundColor = "#FFF";
+                    }
+
+                    if (this.checkDraftComplete()) return;
+
+                    for (const pool of pools) {
+                        let st = pool.getDiv().style;
+                        let pc = draftPlayer.getCount(pool.name);
+                        if (pc == 0) continue;
+                        if (pc == this.draftLimit) st.backgroundColor = "#AAA";
+                        else if (pc == this.draftLimit - 1) st.backgroundColor = "#DDD";
+                    }
                 };
             }
         }

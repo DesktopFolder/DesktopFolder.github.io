@@ -95,8 +95,8 @@ export class DraftPool {
         }
     }
 
-    public getDiv() {
-        return document.getElementById(`pool-body-${this.name}`);
+    public getDiv(): HTMLDivElement {
+        return <HTMLDivElement>document.getElementById(`pool-body-${this.name}`);
     }
 
     public makeDiv() {

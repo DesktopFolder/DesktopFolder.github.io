@@ -124,7 +124,7 @@ class StateMachine {
                         pool.getDiv().style.backgroundColor = "#FFF";
                     }
 
-                    this.checkDraftComplete();
+                    if (this.checkDraftComplete()) return;
 
                     for (const pool of pools) {
                         let st = pool.getDiv().style;
