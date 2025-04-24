@@ -59,6 +59,13 @@ export class Player {
         return true;
     }
 
+    public getCount(poolName: string) {
+        if (this.draftedPools.has(poolName)) {
+            return this.draftedPools.get(poolName);
+        }
+        return 0;
+    }
+
     public updateDraft(n: number) {
         if (n != 0) {
             this.drafted.push(n);
@@ -168,9 +175,9 @@ export class Player {
             this.setName(this.input.value.trim());
         });
 
-        this.titleBox = document.createElement("div")
+        this.titleBox = document.createElement("div");
         this.titleBox.classList.add("flex-right", "player-title-box");
-        
+
         this.title = document.createElement("p");
         this.title.classList.add("player-name");
         this.title.innerHTML = "";
@@ -209,7 +216,7 @@ export class Player {
         this.playerFace = document.createElement("img");
         this.playerFace.classList.add("player-face");
         this.playerFace.src = STEVE;
-        this.playerFace.onerror = () => this.playerFace.src = STEVE;
+        this.playerFace.onerror = () => (this.playerFace.src = STEVE);
 
         this.titleBox.appendChild(this.playerFace);
         this.titleBox.appendChild(this.title);
