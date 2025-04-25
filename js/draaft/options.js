@@ -1,11 +1,22 @@
 export let allItems = [];
 let ID_COUNTER = 0;
 let DRAFT_COUNTER = 0;
-function itemGiver(item, count) {
+function itemGiver(...args) {
     return (file) => {
-        file += `
-give @a minecraft:${item} ${count}
-        `;
+        for (let i = 0; i < args.length; i++) {
+            if (typeof args[i] === 'string') {
+                if (i + 1 < args.length && typeof args[i + 1] === 'number') {
+                    file += `
+give @a minecraft:${args[i]} ${args[i + 1]}
+`;
+                }
+                else {
+                    file += `
+give @a minecraft:${args[i]}
+`;
+                }
+            }
+        }
         return file;
     };
 }
@@ -131,7 +142,7 @@ advancement grant @a only minecraft:husbandry/balanced_diet cookie
         `;
     return file;
 });
-let dSnowy = new DraftItem("Snowy", "Gives all snowy biomes and stray kill", "snowy.png", (file) => {
+let dSnowy = new DraftItem("Snowy", "Gives all snowy biomes, stray kill, & zd", "snowy.png", (file) => {
     file += `
 advancement grant @a only minecraft:adventure/adventuring_time minecraft:snowy_tundra
 advancement grant @a only minecraft:adventure/adventuring_time minecraft:snowy_taiga
@@ -140,6 +151,7 @@ advancement grant @a only minecraft:adventure/adventuring_time minecraft:snowy_m
 advancement grant @a only minecraft:adventure/adventuring_time minecraft:snowy_beach
 advancement grant @a only minecraft:adventure/adventuring_time minecraft:frozen_river
 advancement grant @a only minecraft:adventure/kill_all_mobs minecraft:stray
+advancement grant @a only minecraft:story/cure_zombie_villager
         `;
     return file;
 });
@@ -319,7 +331,7 @@ advancement grant @a only minecraft:adventure/kill_all_mobs minecraft:vex
         `;
     return file;
 });
-let dFireworks = new DraftItem("Fireworks", "Gives 64 fireworks", "firework.png", itemGiver("firework_rocket{Fireworks:{Flight:1}}", 64));
+let dFireworks = new DraftItem("Fireworks", "Gives 64 fireworks", "firework.png", itemGiver("gunpowder", 23, "paper", 23));
 let dGrace = new DraftItem("Dolphin's Grace", "Gives dolphin's grace", "firework.png", (file) => {
     file += `
 effect give @a minecraft:dolphins_grace 3600
@@ -347,7 +359,8 @@ dFireRes.boxName = "Fire Res";
 dFireRes.simpleName = "Fire Res";
 let dObi = new DraftItem("Obsidian", "Gives 10 obsidian.", "obi.png", itemGiver("obsidian", 10));
 let dLogs = new DraftItem("Logs", "Gives 16 oak logs.", "logs.png", itemGiver("oak_log", 16));
-let dEyes = new DraftItem("Eyes", "Gives 2 eyes of ender.", "eyes.png", itemGiver("eye_of_ender", 2));
+let dEyes = new DraftItem("Eyes", "Gives 2 eyes of ender.", "eyes.png", itemGiver("ender_eye", 2));
+let dCrossbow = new DraftItem("Crossbow", "Gives a Piercing IV crossbow.", "crossbow.png", itemGiver('crossbow{Enchantments:[{id:"minecraft:piercing",lvl:4s}]}', 2));
 let pArmour = new DraftPool("armour", "Armour", [
     dHelmet,
     dChestplate,
@@ -386,7 +399,7 @@ let pBig = new DraftPool("big", "Multi-Part Advancements", [
     dABD,
 ]);
 let pMiscOld = new DraftPool("misc", "Misc", [dTotem, dFireworks, dGrace, dLeads]);
-let pMisc = new DraftPool("misc", "Misc", [dGrace, dFireRes, dBreeds, dBees]);
+let pMisc = new DraftPool("misc", "Misc", [dLeads, dFireRes, dBreeds, dBees, dCrossbow]);
 let pEarly = new DraftPool("early", "Early Game", [dFireworks, dShulker, dObi, dLogs, dEyes]);
 export let pools = [
     pBiomes,
