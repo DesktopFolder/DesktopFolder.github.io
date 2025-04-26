@@ -1,3 +1,7 @@
+#home-button {
+    z-index: 10;
+}
+
 body, html
 {
     margin:0px;
