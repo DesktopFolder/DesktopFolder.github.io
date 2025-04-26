@@ -92,6 +92,12 @@ export class DraftPool {
         }
     }
     getDiv() {
+        return document.getElementById(`pool-${this.name}`);
+    }
+    getHeaderDiv() {
+        return document.getElementById(`pool-header-${this.name}`);
+    }
+    getBodyDiv() {
         return document.getElementById(`pool-body-${this.name}`);
     }
     makeDiv() {
@@ -360,7 +366,7 @@ dFireRes.simpleName = "Fire Res";
 let dObi = new DraftItem("Obsidian", "Gives 10 obsidian.", "obi.png", itemGiver("obsidian", 10));
 let dLogs = new DraftItem("Logs", "Gives 16 oak logs.", "logs.png", itemGiver("oak_log", 16));
 let dEyes = new DraftItem("Eyes", "Gives 2 eyes of ender.", "eyes.png", itemGiver("ender_eye", 2));
-let dCrossbow = new DraftItem("Crossbow", "Gives a Piercing IV crossbow.", "crossbow.png", itemGiver('crossbow{Enchantments:[{id:"minecraft:piercing",lvl:4s}]}', 2));
+let dCrossbow = new DraftItem("Crossbow", "Gives a Piercing IV crossbow.", "crossbow.png", itemGiver('crossbow{Enchantments:[{id:"minecraft:piercing",lvl:4s}]}', 1));
 let pArmour = new DraftPool("armour", "Armour", [
     dHelmet,
     dChestplate,

@@ -1,11 +1,18 @@
+body, html
+{
+    margin:0px;
+    padding:0px;
+    width:100%;
+
+    min-height: 100vh;
+    min-width: 100vw;
+}
+
 body.maxerino {
     font-family: 'Minecraftia';
 
-    width: 100%;
     margin: 0;
-    max-width: 100%;
-    height: 100%;
-    max-height: 100%;
+    height: auto;
 
     display: flex;
     flex-direction: row;
@@ -57,8 +64,15 @@ html {
 
 .title-container {
     width: 100%;
-    max-height: 24px;
+    height: auto;
     padding-left: 24px;
+    box-sizing: border-box;
+    margin-top: 7px;
+    margin-bottom: 7px;
+}
+
+.title-container p {
+    width: 100%;
 }
 
 div.draft-item:hover {
@@ -100,12 +114,25 @@ p.draft-item-desc {
 #draft-body {
     flex-wrap: wrap;
     display: flex;
-    justify-content: space-around;
-    width: auto;
+    justify-content: flex-start;
+    width: 77vw;
+    margin-left: 23vw;
+    height: auto;
+    align-content: flex-start;
+}
+
+#draft-pool-container {
+    flex-wrap: wrap;
+    display: flex;
+    height: auto;
+
+    justify-content: flex-start;
+    align-content: flex-start;
 }
 
 div.player-container {
     margin: 3px;
+    text-align: left;
 }
 
 .player-button {
@@ -117,12 +144,22 @@ div.player-container {
 #left-gutter {
     padding: 16px;
     padding-top: 32px;
-    width: 19%;
-    height: 100%;
+    width: 23vw; /* this is related to main pool */
+    height: 100vh;
+    box-sizing: border-box;
     background-color: #EDFFEC;
     border-right: #48435c 2px solid;
+    position: fixed;
+    text-align: center;
 }
 
+.player-title-face {
+    height: 24px;
+    width: 24px;
+    display: inline-block;
+    box-shadow: 0px 0px 5px #111;
+    margin-right: 5px;
+}
 .player-face {
     height: 24px;
     width: 24px;

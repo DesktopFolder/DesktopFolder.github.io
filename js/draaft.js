@@ -1,5 +1,5 @@
 import { pools } from "./draaft/options.js";
-import { Player } from "./draaft/players.js";
+import { Player, playerFaceLink, STEVE } from "./draaft/players.js";
 let allPlayers = [];
 // https://stackoverflow.com/questions/2719668/an-html5-canvas-element-in-the-background-of-my-page/2723376
 // https://coolors.co/edffec-61e786-5a5766-48435c-9792e3
@@ -52,6 +52,11 @@ class StateMachine {
         this.title.innerHTML = `Draft complete. Download datapacks from the sidebar.`;
         return true;
     }
+    setTitleFrom(pn) {
+        let plink = playerFaceLink(pn);
+        let pimg = `<img src="${plink}" class="player-title-face" onerror="this.onerror=null;this.src='${STEVE}';">`;
+        this.title.innerHTML = `Draft pick: ${pimg} ${pn}`;
+    }
     start() {
         if (this.checkPlayers() == 0) {
             return;
@@ -75,7 +80,7 @@ class StateMachine {
         else {
             this.draftLimit = 1;
         }
-        this.title.innerHTML = `Draft pick: ${this.playerList[0].name}`;
+        this.setTitleFrom(this.playerList[0].name);
         for (const p of pools) {
             for (const di of p.items) {
                 // do this into actions ig for undo...
@@ -89,7 +94,7 @@ class StateMachine {
                     }
                     // state management
                     di.isDrafted = true;
-                    p.getDiv().removeChild(di.poolItem);
+                    p.getBodyDiv().removeChild(di.poolItem);
                     this.playerReset.push(this.playerList.shift());
                     if (this.playerList.length == 0) {
                         while (this.playerReset.length != 0) {
@@ -97,22 +102,32 @@ class StateMachine {
                         }
                     }
                     let draftPlayer = this.playerList[0];
-                    this.title.innerHTML = `Draft pick: ${draftPlayer.name}`;
+                    this.setTitleFrom(draftPlayer.name);
                     // reset highlights
                     for (const pool of pools) {
+                        pool.getBodyDiv().style.backgroundColor = "#FFF";
+                        pool.getHeaderDiv().style.backgroundColor = "#FFF";
                         pool.getDiv().style.backgroundColor = "#FFF";
                     }
                     if (this.checkDraftComplete())
                         return;
                     for (const pool of pools) {
-                        let st = pool.getDiv().style;
+                        let st = pool.getBodyDiv().style;
+                        let hst = pool.getHeaderDiv().style;
+                        let dst = pool.getDiv().style;
                         let pc = draftPlayer.getCount(pool.name);
                         if (pc == 0)
                             continue;
-                        if (pc == this.draftLimit)
+                        if (pc == this.draftLimit) {
                             st.backgroundColor = "#AAA";
-                        else if (pc == this.draftLimit - 1)
+                            hst.backgroundColor = "#AAA";
+                            dst.backgroundColor = "#AAA";
+                        }
+                        else if (pc == this.draftLimit - 1) {
                             st.backgroundColor = "#DDD";
+                            hst.backgroundColor = "#DDD";
+                            dst.backgroundColor = "#DDD";
+                        }
                     }
                 };
             }
@@ -125,8 +140,7 @@ class StateMachine {
             return;
         }
         else if (n == 1) {
-            this.title.innerHTML =
-                "1 player entered. ";
+            this.title.innerHTML = "1 player entered. ";
         }
         else {
             this.title.innerHTML = `${n} players entered. `;
@@ -183,11 +197,15 @@ function main() {
     document.body.appendChild(players);
     let container = document.createElement("div");
     container.id = "draft-body";
-    container.classList.add("flex-right");
+    container.classList.add("flex-down");
+    let poolContainer = document.createElement("div");
+    poolContainer.id = "draft-pool-container";
+    poolContainer.classList.add("flex-right");
     container.appendChild(sm.titleContainer);
+    container.appendChild(poolContainer);
     for (const pool of pools) {
         console.log(`Adding pool: ${pool.prettyName}`);
-        container.appendChild(pool.makeDiv());
+        poolContainer.appendChild(pool.makeDiv());
     }
     document.body.appendChild(container);
 }

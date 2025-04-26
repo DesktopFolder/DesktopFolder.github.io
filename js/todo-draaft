@@ -1,8 +1,17 @@
-- draft completion + gutter
+* add player head to current player
 * use full names for big pool
 * nesting of datapack zip files
-- prettify???
-- naming things when picked in sidebar
-- fix weirdness
-- SHOW WHICH ONES YOU HAVE AND CAN PICK
-- link repo
+* prettify???
+* draft completion + gutter
+* fix weirdness
+* link repo
+
+- Minor Fixes:
+    - Prevent changing players once draft starts
+
+- Minor Usability Fixes:
+    - Display number of allowed picks remaining for pools (0..2/2)
+    - Display player name image on their picks instead of removing them?
+
+- Prettification:
+    - Add images to draaft pool

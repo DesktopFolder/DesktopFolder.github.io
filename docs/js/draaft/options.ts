@@ -109,6 +109,14 @@ export class DraftPool {
     }
 
     public getDiv(): HTMLDivElement {
+        return <HTMLDivElement>document.getElementById(`pool-${this.name}`);
+    }
+
+    public getHeaderDiv(): HTMLDivElement {
+        return <HTMLDivElement>document.getElementById(`pool-header-${this.name}`);
+    }
+
+    public getBodyDiv(): HTMLDivElement {
         return <HTMLDivElement>document.getElementById(`pool-body-${this.name}`);
     }
 
@@ -570,7 +578,7 @@ let dCrossbow = new DraftItem(
     "Crossbow",
     "Gives a Piercing IV crossbow.",
     "crossbow.png",
-    itemGiver('crossbow{Enchantments:[{id:"minecraft:piercing",lvl:4s}]}', 2),
+    itemGiver('crossbow{Enchantments:[{id:"minecraft:piercing",lvl:4s}]}', 1),
 );
 
 let pArmour = new DraftPool("armour", "Armour", [
