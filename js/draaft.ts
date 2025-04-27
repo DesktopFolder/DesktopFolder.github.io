@@ -1,5 +1,6 @@
 import { DraftItem, DraftPool, pools } from "./draaft/options.js";
 import { Player, playerFaceLink, STEVE } from "./draaft/players.js";
+import {SEEDLIST} from "./draaft/seedlist.js";
 
 let allPlayers: Array<Player> = [];
 
@@ -59,7 +60,8 @@ class StateMachine {
             }
         }
 
-        this.title.innerHTML = `Draft complete. Download datapacks from the sidebar.`;
+        let rs = SEEDLIST[Math.floor(Math.random() * SEEDLIST.length)];
+        this.title.innerHTML = `Completed! Download datapacks from the sidebar. Your seed is: ${rs}`;
         return true;
     }
 

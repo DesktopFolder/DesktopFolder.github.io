@@ -1,5 +1,6 @@
 import { pools } from "./draaft/options.js";
 import { Player, playerFaceLink, STEVE } from "./draaft/players.js";
+import { SEEDLIST } from "./draaft/seedlist.js";
 let allPlayers = [];
 // https://stackoverflow.com/questions/2719668/an-html5-canvas-element-in-the-background-of-my-page/2723376
 // https://coolors.co/edffec-61e786-5a5766-48435c-9792e3
@@ -49,7 +50,8 @@ class StateMachine {
                 }
             }
         }
-        this.title.innerHTML = `Draft complete. Download datapacks from the sidebar.`;
+        let rs = SEEDLIST[Math.floor(Math.random() * SEEDLIST.length)];
+        this.title.innerHTML = `Completed! Download datapacks from the sidebar. Your seed is: ${rs}`;
         return true;
     }
     setTitleFrom(pn) {
