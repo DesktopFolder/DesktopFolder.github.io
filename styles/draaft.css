@@ -151,7 +151,8 @@ div.player-container {
     width: 23vw; /* this is related to main pool */
     height: 100vh;
     box-sizing: border-box;
-    background-color: #EDFFEC;
+    /* background-color: #EDFFEC; */
+    background-color: #55ffff;
     border-right: #48435c 2px solid;
     position: fixed;
     text-align: center;
