@@ -134,7 +134,7 @@ advancement grant @a only minecraft:adventure/kill_all_mobs minecraft:cave_spide
         `;
     return file;
 });
-let dJungle = new DraftItem("Jungle", "Gives jungle biomes, cookie & melon eat, and panda & ocelot breeds.", "jungle.png", (file) => {
+let dJungle = new DraftItem("Jungle", "Gives jungle biomes, cookie, melon, panda, & ocelot", "jungle.png", (file) => {
     file += `
 advancement grant @a only minecraft:adventure/adventuring_time minecraft:bamboo_jungle
 advancement grant @a only minecraft:adventure/adventuring_time minecraft:bamboo_jungle_hills
@@ -300,7 +300,7 @@ give @a minecraft:wither_skeleton_skull 2
         `;
     return file;
 });
-let dBreeds = new DraftItem("Breeds", "Gives breed credit for horse, donkey, mule, llama, wolf, fox, and turtle", "breeds.png", (file) => {
+let dBreeds = new DraftItem("Breeds", "Gives breed for horse, donkey, mule, llama, wolf, fox, & turtle", "breeds.png", (file) => {
     file += `
 advancement grant @a only minecraft:husbandry/bred_all_animals minecraft:horse
 advancement grant @a only minecraft:husbandry/bred_all_animals minecraft:donkey

@@ -168,7 +168,7 @@ advancement grant @a only minecraft:adventure/kill_all_mobs minecraft:cave_spide
 );
 let dJungle = new DraftItem(
     "Jungle",
-    "Gives jungle biomes, cookie & melon eat, and panda & ocelot breeds.",
+    "Gives jungle biomes, cookie, melon, panda, & ocelot",
     "jungle.png",
     (file) => {
         file += `
@@ -453,7 +453,7 @@ give @a minecraft:wither_skeleton_skull 2
 );
 let dBreeds = new DraftItem(
     "Breeds",
-    "Gives breed credit for horse, donkey, mule, llama, wolf, fox, and turtle",
+    "Gives breed for horse, donkey, mule, llama, wolf, fox, & turtle",
     "breeds.png",
     (file) => {
         file += `

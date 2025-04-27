@@ -207,7 +207,7 @@ export class Player {
         let downloadButton = document.createElement("a");
         downloadButton.classList.add("player-button");
         downloadButton.href = "#";
-        downloadButton.innerHTML = "download pack";
+        downloadButton.innerHTML = "download datapack";
         downloadButton.onclick = () => {
             this.download();
             return false;
