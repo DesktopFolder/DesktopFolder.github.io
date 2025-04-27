@@ -1,6 +1,6 @@
 import { DraftItem, DraftPool, pools } from "./draaft/options.js";
 import { Player, playerFaceLink, STEVE } from "./draaft/players.js";
-import {SEEDLIST} from "./draaft/seedlist.js";
+import { SEEDLIST } from "./draaft/seedlist.js";
 
 let allPlayers: Array<Player> = [];
 
@@ -21,6 +21,17 @@ class StateMachine {
     isDraftComplete() {
         // draft is complete if all players have completed drafting
         // a truismer tautology has never been said
+        // also, if there's one player, it changes a bit.
+        if (this.playerCount == 1) {
+            for (const p of pools) {
+                for (const di of p.items) {
+                    if (!di.isDrafted) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
         for (const p of allPlayers) {
             if (!p.exists()) {
                 continue;
@@ -61,7 +72,7 @@ class StateMachine {
         }
 
         let rs = SEEDLIST[Math.floor(Math.random() * SEEDLIST.length)];
-        this.title.innerHTML = `Completed! Download datapacks from the sidebar. Your seed is: ${rs}`;
+        this.title.innerHTML = `Completed! Download datapacks from the sidebar. Your seed is: ${rs} (<a href="/draaft/seedlist.html" target="_blank">Seed filter info</a>)`;
         return true;
     }
 

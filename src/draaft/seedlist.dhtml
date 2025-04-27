@@ -1,0 +1,10 @@
+---
+page.title=Seed filter info
+website.title=Desktop's Website
+page.description=drAAft seed filter information
+src=templates/generic.html
+page.image=/draaft-logo.png
+---
+<body class="wider">
+{{generators[md][src/draaft/seedlist.md]}}
+</body>

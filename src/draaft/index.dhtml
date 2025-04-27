@@ -5,6 +5,7 @@ page.description=A tool for doing AA drafts
 src=templates/generic.html
 css.extras=/styles/draaft.css
 meta=<link href="https://fonts.cdnfonts.com/css/minecraftia" rel="stylesheet">
+page.image=/draaft-logo.png
 ---
 <body class="maxerino">
 <script>var exports = {"__esModule": true};</script>
