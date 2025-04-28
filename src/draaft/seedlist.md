@@ -10,7 +10,8 @@ drAAft seedfilter ensures the following:
   - fortress within 6 chunks of bastion
   - end city with ship and at least 1 loot room within 6 chunks of gateway
 - **Midgame**
-  - all biomes within -3k, 3k
+  - at least 5 temples exist within -3k, 3k
+  - all 5 rare biomes exist within -3k, 3k
   - fortress start, as well as points 4 chunks away in each cardinal direction, in SSV
 - **Endgame**
   - outpost and monument within -1k, 1k

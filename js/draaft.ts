@@ -1,11 +1,27 @@
-import { DraftItem, DraftPool, pools } from "./draaft/options.js";
+import { pools } from "./draaft/options.js";
 import { Player, playerFaceLink, STEVE } from "./draaft/players.js";
-import { SEEDLIST } from "./draaft/seedlist.js";
+
+// Populated in launchSeeds
+var SEEDLIST: Array<string> = [];
 
 let allPlayers: Array<Player> = [];
 
 // https://stackoverflow.com/questions/2719668/an-html5-canvas-element-in-the-background-of-my-page/2723376
 // https://coolors.co/edffec-61e786-5a5766-48435c-9792e3
+
+function launchSeeds() {
+    fetch("/assets/seedlist.txt")
+        .then((resp) => resp.text())
+        .then((text) => {
+            for (const line of text.split("\n")) {
+                if (line.trim().length == 0) continue;
+                SEEDLIST.push(line.trim());
+            }
+        })
+        .then(() => {
+            console.log(`Loaded ${SEEDLIST.length} seeds.`);
+        });
+}
 
 class StateMachine {
     title: HTMLParagraphElement;
@@ -212,6 +228,8 @@ class StateMachine {
 }
 
 function main() {
+    launchSeeds();
+
     let sm = new StateMachine();
 
     let players = document.createElement("div");
