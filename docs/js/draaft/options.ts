@@ -234,44 +234,44 @@ dMushroomIsland.boxName = "Mushroom";
 // Pool: Armour
 let dHelmet = new DraftItem(
     "Helmet",
-    "Gives fully enchanted netherite helmet",
+    "Gives fully enchanted diamond helmet",
     "helmet.png",
     (file) => {
         file += `
-give @a minecraft:netherite_helmet{Enchantments:[{id:"minecraft:protection",lvl:5},{id:"minecraft:unbreaking",lvl:3},{id:"minecraft:respiration",lvl:3},{id:"minecraft:aqua_affinity",lvl:1}]}
+give @a minecraft:diamond_helmet{Enchantments:[{id:"minecraft:protection",lvl:5},{id:"minecraft:unbreaking",lvl:3},{id:"minecraft:respiration",lvl:3},{id:"minecraft:aqua_affinity",lvl:1}]}
         `;
         return file;
     }
 );
 let dChestplate = new DraftItem(
     "Chestplate",
-    "Gives fully enchanted netherite chestplate",
+    "Gives fully enchanted diamond chestplate",
     "chestplate.png",
     (file) => {
         file += `
-give @a minecraft:netherite_chestplate{Enchantments:[{id:"minecraft:protection",lvl:5},{id:"minecraft:unbreaking",lvl:3}]}
+give @a minecraft:diamond_chestplate{Enchantments:[{id:"minecraft:protection",lvl:5},{id:"minecraft:unbreaking",lvl:3}]}
         `;
         return file;
     }
 );
 let dLeggings = new DraftItem(
     "Leggings",
-    "Gives fully enchanted netherite leggings",
+    "Gives fully enchanted diamond leggings",
     "leggings.png",
     (file) => {
         file += `
-give @a minecraft:netherite_leggings{Enchantments:[{id:"minecraft:protection",lvl:5},{id:"minecraft:unbreaking",lvl:3}]}
+give @a minecraft:diamond_leggings{Enchantments:[{id:"minecraft:protection",lvl:5},{id:"minecraft:unbreaking",lvl:3}]}
         `;
         return file;
     }
 );
 let dBoots = new DraftItem(
     "Boots",
-    "Gives fully enchanted netherite boots",
+    "Gives fully enchanted diamond boots",
     "boots.png",
     (file) => {
         file += `
-give @a minecraft:netherite_boots{Enchantments:[{id:"minecraft:protection",lvl:5},{id:"minecraft:unbreaking",lvl:3},{id:"minecraft:depth_strider",lvl:3}]}
+give @a minecraft:diamond_boots{Enchantments:[{id:"minecraft:protection",lvl:5},{id:"minecraft:unbreaking",lvl:3},{id:"minecraft:depth_strider",lvl:3}]}
         `;
         return file;
     }
@@ -291,33 +291,33 @@ give @a minecraft:bucket{Enchantments:[{}]}
 // Pool: Tools
 let dSword = new DraftItem(
     "Sword",
-    "Gives fully enchanted netherite sword",
+    "Gives fully enchanted diamond sword",
     "sword.png",
     (file) => {
         file += `
-give @a minecraft:netherite_sword{Enchantments:[{id:"minecraft:smite",lvl:5},{id:"minecraft:looting",lvl:3},{id:"minecraft:unbreaking",lvl:3}]}
+give @a minecraft:diamond_sword{Enchantments:[{id:"minecraft:smite",lvl:5},{id:"minecraft:looting",lvl:3},{id:"minecraft:unbreaking",lvl:3}]}
         `;
         return file;
     }
 );
 let dPickaxe = new DraftItem(
     "Pickaxe",
-    "Gives fully enchanted netherite pickaxe",
+    "Gives fully enchanted diamond pickaxe",
     "pickaxe.png",
     (file) => {
         file += `
-give @a minecraft:netherite_pickaxe{Enchantments:[{id:"minecraft:efficiency",lvl:5},{id:"minecraft:fortune",lvl:3},{id:"minecraft:unbreaking",lvl:3}]}
+give @a minecraft:diamond_pickaxe{Enchantments:[{id:"minecraft:efficiency",lvl:5},{id:"minecraft:fortune",lvl:3},{id:"minecraft:unbreaking",lvl:3}]}
         `;
         return file;
     }
 );
 let dShovel = new DraftItem(
     "Shovel",
-    "Gives fully enchanted netherite shovel",
+    "Gives fully enchanted diamond shovel",
     "shovel.png",
     (file) => {
         file += `
-give @a minecraft:netherite_shovel{Enchantments:[{id:"minecraft:efficiency",lvl:5},{id:"minecraft:fortune",lvl:3},{id:"minecraft:unbreaking",lvl:3}]}
+give @a minecraft:diamond_shovel{Enchantments:[{id:"minecraft:efficiency",lvl:5},{id:"minecraft:fortune",lvl:3},{id:"minecraft:unbreaking",lvl:3}]}
         `;
         return file;
     }
@@ -335,11 +335,11 @@ give @a minecraft:netherite_hoe{Enchantments:[{id:"minecraft:efficiency",lvl:5},
 );
 let dAxe = new DraftItem(
     "Axe",
-    "Gives fully enchanted netherite axe",
+    "Gives fully enchanted diamond axe",
     "axe.png",
     (file) => {
         file += `
-give @a minecraft:netherite_axe{Enchantments:[{id:"minecraft:efficiency",lvl:5},{id:"minecraft:silk_touch",lvl:1},{id:"minecraft:unbreaking",lvl:3}]}
+give @a minecraft:diamond_axe{Enchantments:[{id:"minecraft:efficiency",lvl:5},{id:"minecraft:silk_touch",lvl:1},{id:"minecraft:unbreaking",lvl:3}]}
         `;
         return file;
     }
