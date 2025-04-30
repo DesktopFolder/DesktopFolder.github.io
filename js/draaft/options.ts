@@ -205,12 +205,14 @@ advancement grant @a only minecraft:story/cure_zombie_villager
 );
 let dMegaTaiga = new DraftItem(
     "Mega Taiga",
-    "Gives all mega taiga biomes",
+    "Gives all mega taiga biomes, sweet berry eat, and fox breed",
     "taiga.png",
     (file) => {
         file += `
 advancement grant @a only minecraft:adventure/adventuring_time minecraft:giant_tree_taiga
 advancement grant @a only minecraft:adventure/adventuring_time minecraft:giant_tree_taiga_hills
+advancement grant @a only minecraft:husbandry/balanced_diet sweet_berries
+advancement grant @a only minecraft:husbandry/bred_all_animals minecraft:fox
         `;
         return file;
     }
@@ -517,7 +519,7 @@ advancement grant @a only minecraft:adventure/kill_all_mobs minecraft:vex
 );
 let dFireworks = new DraftItem(
     "Fireworks",
-    "Gives 64 fireworks",
+    "Gives 23 gunpowder / paper",
     "firework.png",
     itemGiver("gunpowder", 23, "paper", 23),
 );
