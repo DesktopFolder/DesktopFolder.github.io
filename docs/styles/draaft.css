@@ -160,6 +160,10 @@ div.player-container {
     text-align: center;
 }
 
+.gutter-big-button {
+    line-height: 2em;
+}
+
 .player-title-face {
     height: 24px;
     width: 24px;

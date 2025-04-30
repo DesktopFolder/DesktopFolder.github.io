@@ -218,11 +218,19 @@ function main() {
         });
     }
     let modDownload = document.createElement("a");
-    modDownload.classList.add("start-button");
+    modDownload.classList.add("start-button", "gutter-big-button");
     modDownload.href = "https://github.com/memerson12/drAAft/releases";
     modDownload.target = "_blank";
     modDownload.innerHTML = "Mod Download";
+    let filterContainer = document.createElement("p");
+    let filterInfo = document.createElement("a");
+    filterInfo.classList.add("start-button", "gutter-big-button");
+    filterInfo.href = "/draaft/seedlist.html";
+    filterInfo.target = "_blank";
+    filterInfo.innerHTML = "Seed Filter Info";
+    filterContainer.appendChild(filterInfo);
     players.appendChild(modDownload);
+    players.appendChild(filterContainer);
     document.body.appendChild(players);
     let container = document.createElement("div");
     container.id = "draft-body";
