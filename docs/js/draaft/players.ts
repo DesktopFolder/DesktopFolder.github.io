@@ -1,20 +1,7 @@
 import { allItems, DraftItem, getDraftItem, pools } from "./options.js";
 // @ts-ignore Import module
 import { downloadZip } from "https://cdn.jsdelivr.net/npm/client-zip/index.js";
-
-export const STEVE = "/assets/steve.png";
-
-export function isValidPlayerName(pn: string) {
-    return /^[a-zA-Z_0-9]{3,24}$/.test(pn);
-}
-
-export function playerFaceLink(pn: string) {
-    if (isValidPlayerName(pn)) {
-        return `https://mineskin.eu/helm/${pn}/100`;
-    } else {
-        return STEVE;
-    }
-}
+import {isValidPlayerName, STEVE} from "./utils.js";
 
 export class Player {
     name = "";

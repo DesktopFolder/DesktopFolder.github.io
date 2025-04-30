@@ -1,5 +1,6 @@
 import { pools } from "./draaft/options.js";
-import { Player, playerFaceLink, STEVE } from "./draaft/players.js";
+import { Player } from "./draaft/players.js";
+import { playerFaceLink, STEVE } from "./draaft/utils.js";
 // Populated in launchSeeds
 var SEEDLIST = [];
 let allPlayers = [];
@@ -123,7 +124,10 @@ class StateMachine {
                     }
                     // state management
                     di.isDrafted = true;
-                    p.getBodyDiv().removeChild(di.poolItem);
+                    // Old: Remove the item entirely.
+                    // p.getBodyDiv().removeChild(di.poolItem);
+                    // New: Reset innerHTML, still hoverable?
+                    di.finish(player.name);
                     this.playerReset.push(this.playerList.shift());
                     if (this.playerList.length == 0) {
                         while (this.playerReset.length != 0) {

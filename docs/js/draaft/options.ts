@@ -1,3 +1,5 @@
+import {playerFaceImageAsString} from "./utils.js";
+
 export let allItems: DraftItem[] = [];
 
 let ID_COUNTER = 0;
@@ -27,13 +29,17 @@ give @a minecraft:${args[i]}
 
 export class DraftItem {
     public poolItem: HTMLDivElement = document.createElement("div");
-    public poolOuter: HTMLDivElement = null;
+    public poolDefaultText: HTMLParagraphElement = document.createElement("p");
+    public poolDescriptionText: HTMLParagraphElement = document.createElement("p");
     public isDrafted: boolean = false;
+    public finished: boolean = false;
     public fileQuery: string = null;
     public id: number;
     public simpleName: string;
     public boxName: string;
+    public smallName: string;
     public pool: string;
+    public pickedBy: string = null;
 
     public constructor(
         public prettyName: string,
@@ -46,6 +52,7 @@ export class DraftItem {
 
         this.simpleName = prettyName;
         this.boxName = this.prettyName;
+        this.smallName = null;
 
         allItems.push(this);
         console.assert(this.id == allItems.length);
@@ -56,35 +63,55 @@ export class DraftItem {
         this.simpleName = it.simpleName;
         this.boxName = it.boxName;
         this.fileQuery = it.fileQuery;
+        this.smallName = it.smallName;
+    }
+
+    public finish(pn: string) {
+        this.poolItem.onclick = undefined; 
+        this.pickedBy = pn;
+        this.finished = true;
+        this.setDefaultText();
+    }
+
+    public setDefaultText() {
+        let pimg = playerFaceImageAsString(this.pickedBy, "clicked-player-face");
+        this.poolDefaultText.innerHTML = `${pimg} ${this.smallName || this.boxName} ${pimg}`;
+    }
+
+    public onMouseLeave() {
+        this.poolItem.innerHTML = "";
+        this.poolDefaultText.classList.remove("with-hover");
+        if (this.finished) {
+            this.setDefaultText();
+        }
+        this.poolItem.appendChild(this.poolDefaultText);
+    }
+
+    public onMouseEnter() {
+        this.poolItem.innerHTML = "";
+        this.poolDefaultText.classList.add("with-hover");
+        if (this.finished) {
+            this.poolDefaultText.innerHTML = this.boxName;
+        }
+        this.poolItem.appendChild(this.poolDefaultText);
+        this.poolItem.appendChild(this.poolDescriptionText);
     }
 
     public makeDiv() {
         this.poolItem.setAttribute("data-di-id", this.id.toString());
         this.poolItem.classList.add("draft-item", "basic-box");
 
-        let poolDefaultText = document.createElement("p");
-        poolDefaultText.innerHTML = this.boxName;
-        poolDefaultText.id = `di-${this.id}`;
-        poolDefaultText.classList.add("draft-item");
+        this.poolDefaultText.innerHTML = this.boxName;
+        this.poolItem.id = `di-${this.id}`;
+        this.poolDefaultText.classList.add("draft-item");
 
-        let poolDescriptionText = document.createElement("p");
-        poolDescriptionText.innerHTML = this.description;
-        poolDescriptionText.classList.add("draft-item-desc");
+        this.poolDescriptionText.innerHTML = this.description;
+        this.poolDescriptionText.classList.add("draft-item-desc");
 
-        this.poolItem.addEventListener("mouseenter", () => {
-            this.poolItem.innerHTML = "";
-            poolDefaultText.classList.add("with-hover");
-            this.poolItem.appendChild(poolDefaultText);
-            this.poolItem.appendChild(poolDescriptionText);
-        });
+        this.poolItem.addEventListener("mouseenter", this.onMouseEnter.bind(this));
+        this.poolItem.addEventListener("mouseleave", this.onMouseLeave.bind(this));
 
-        this.poolItem.addEventListener("mouseleave", () => {
-            this.poolItem.innerHTML = "";
-            poolDefaultText.classList.remove("with-hover");
-            this.poolItem.appendChild(poolDefaultText);
-        });
-
-        this.poolItem.appendChild(poolDefaultText);
+        this.poolItem.appendChild(this.poolDefaultText);
 
         return this.poolItem;
     }
@@ -383,6 +410,7 @@ advancement grant @a only minecraft:adventure/adventuring_time
     }
 );
 dAT.boxName = "Adventuring";
+dAT.smallName = "AT";
 let d2b2 = new DraftItem(
     "Two by Two",
     "Gives two by two",
@@ -418,6 +446,7 @@ advancement grant @a only minecraft:husbandry/balanced_diet
     }
 );
 dABD.boxName = "Balanced Diet";
+dABD.smallName = "Balanced";
 
 // Pool: Collectors
 let dNetherite = new DraftItem(
@@ -481,6 +510,7 @@ give @a minecraft:shulker_box
         return file;
     }
 );
+dShulker.smallName = "Box";
 let dBees = new DraftItem(
     "Bees",
     "Gives all bee-related requirements",

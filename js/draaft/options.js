@@ -1,3 +1,4 @@
+import { playerFaceImageAsString } from "./utils.js";
 export let allItems = [];
 let ID_COUNTER = 0;
 let DRAFT_COUNTER = 0;
@@ -26,13 +27,17 @@ export class DraftItem {
     image;
     datapackModifier;
     poolItem = document.createElement("div");
-    poolOuter = null;
+    poolDefaultText = document.createElement("p");
+    poolDescriptionText = document.createElement("p");
     isDrafted = false;
+    finished = false;
     fileQuery = null;
     id;
     simpleName;
     boxName;
+    smallName;
     pool;
+    pickedBy = null;
     constructor(prettyName, description, image, datapackModifier) {
         this.prettyName = prettyName;
         this.description = description;
@@ -42,6 +47,7 @@ export class DraftItem {
         this.id = ID_COUNTER;
         this.simpleName = prettyName;
         this.boxName = this.prettyName;
+        this.smallName = null;
         allItems.push(this);
         console.assert(this.id == allItems.length);
     }
@@ -50,29 +56,46 @@ export class DraftItem {
         this.simpleName = it.simpleName;
         this.boxName = it.boxName;
         this.fileQuery = it.fileQuery;
+        this.smallName = it.smallName;
+    }
+    finish(pn) {
+        this.poolItem.onclick = undefined;
+        this.pickedBy = pn;
+        this.finished = true;
+        this.setDefaultText();
+    }
+    setDefaultText() {
+        let pimg = playerFaceImageAsString(this.pickedBy, "clicked-player-face");
+        this.poolDefaultText.innerHTML = `${pimg} ${this.smallName || this.boxName} ${pimg}`;
+    }
+    onMouseLeave() {
+        this.poolItem.innerHTML = "";
+        this.poolDefaultText.classList.remove("with-hover");
+        if (this.finished) {
+            this.setDefaultText();
+        }
+        this.poolItem.appendChild(this.poolDefaultText);
+    }
+    onMouseEnter() {
+        this.poolItem.innerHTML = "";
+        this.poolDefaultText.classList.add("with-hover");
+        if (this.finished) {
+            this.poolDefaultText.innerHTML = this.boxName;
+        }
+        this.poolItem.appendChild(this.poolDefaultText);
+        this.poolItem.appendChild(this.poolDescriptionText);
     }
     makeDiv() {
         this.poolItem.setAttribute("data-di-id", this.id.toString());
         this.poolItem.classList.add("draft-item", "basic-box");
-        let poolDefaultText = document.createElement("p");
-        poolDefaultText.innerHTML = this.boxName;
-        poolDefaultText.id = `di-${this.id}`;
-        poolDefaultText.classList.add("draft-item");
-        let poolDescriptionText = document.createElement("p");
-        poolDescriptionText.innerHTML = this.description;
-        poolDescriptionText.classList.add("draft-item-desc");
-        this.poolItem.addEventListener("mouseenter", () => {
-            this.poolItem.innerHTML = "";
-            poolDefaultText.classList.add("with-hover");
-            this.poolItem.appendChild(poolDefaultText);
-            this.poolItem.appendChild(poolDescriptionText);
-        });
-        this.poolItem.addEventListener("mouseleave", () => {
-            this.poolItem.innerHTML = "";
-            poolDefaultText.classList.remove("with-hover");
-            this.poolItem.appendChild(poolDefaultText);
-        });
-        this.poolItem.appendChild(poolDefaultText);
+        this.poolDefaultText.innerHTML = this.boxName;
+        this.poolItem.id = `di-${this.id}`;
+        this.poolDefaultText.classList.add("draft-item");
+        this.poolDescriptionText.innerHTML = this.description;
+        this.poolDescriptionText.classList.add("draft-item-desc");
+        this.poolItem.addEventListener("mouseenter", this.onMouseEnter.bind(this));
+        this.poolItem.addEventListener("mouseleave", this.onMouseLeave.bind(this));
+        this.poolItem.appendChild(this.poolDefaultText);
         return this.poolItem;
     }
 }
@@ -263,6 +286,7 @@ advancement grant @a only minecraft:adventure/adventuring_time
     return file;
 });
 dAT.boxName = "Adventuring";
+dAT.smallName = "AT";
 let d2b2 = new DraftItem("Two by Two", "Gives two by two", "2b2.png", (file) => {
     file += `
 advancement grant @a only minecraft:husbandry/bred_all_animals
@@ -283,6 +307,7 @@ advancement grant @a only minecraft:husbandry/balanced_diet
     return file;
 });
 dABD.boxName = "Balanced Diet";
+dABD.smallName = "Balanced";
 // Pool: Collectors
 let dNetherite = new DraftItem("Netherite", "Gives 4 netherite ingots", "netherite.png", (file) => {
     file += `
@@ -320,6 +345,7 @@ give @a minecraft:shulker_box
         `;
     return file;
 });
+dShulker.smallName = "Box";
 let dBees = new DraftItem("Bees", "Gives all bee-related requirements", "bees.png", (file) => {
     file += `
 advancement grant @a only minecraft:husbandry/safely_harvest_honey
