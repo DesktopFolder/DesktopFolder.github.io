@@ -88,7 +88,8 @@ class StateMachine {
         }
 
         let rs = SEEDLIST[Math.floor(Math.random() * SEEDLIST.length)];
-        this.title.innerHTML = `Completed! Download datapacks from the sidebar. Your seed is: ${rs} (<a href="/draaft/seedlist.html" target="_blank">Seed filter info</a>)`;
+        let copier = `<a href="#" style="text-decoration:none;" onclick="navigator.clipboard.writeText('${rs}')">📋</a>`;
+        this.title.innerHTML = `Completed! Download datapacks from the sidebar. Your seed is: ${rs} ${copier} (<a href="/draaft/seedlist.html" target="_blank">Seed filter info</a>)`;
         return true;
     }
 
