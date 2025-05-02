@@ -265,8 +265,17 @@ function main() {
     filterInfo.innerHTML = "Seed Filter Info";
     filterContainer.appendChild(filterInfo);
 
+    let discordContainer = document.createElement("p");
+    let discordInfo = document.createElement("a");
+    discordInfo.classList.add("start-button", "gutter-big-button");
+    discordInfo.href = "https://discord.gg/37Q3KnbeQQ";
+    discordInfo.target = "_blank";
+    discordInfo.innerHTML = "Discord Link";
+    discordContainer.appendChild(discordInfo);
+
     players.appendChild(modDownload);
     players.appendChild(filterContainer);
+    players.appendChild(discordContainer);
     document.body.appendChild(players);
 
     let container = document.createElement("div");
