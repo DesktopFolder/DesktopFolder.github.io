@@ -145,8 +145,11 @@ export class Player {
                             obj.fileQuery != null &&
                             obj.fileQuery.startsWith("draaftpack/")
                         ) {
+                            const name: string = obj.fileQuery.slice(
+                                obj.fileQuery.indexOf("/") + 1
+                            );
                             data.push({
-                                name: obj.fileQuery,
+                                name: name,
                                 lastModified: new Date(),
                                 input: obj.datapackModifier(""),
                             });
