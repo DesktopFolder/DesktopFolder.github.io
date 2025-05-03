@@ -399,7 +399,7 @@ let dCrossbow = new DraftItem("Crossbow", "Gives a Piercing IV crossbow.", "cros
 let SHULKER_COLOUR = Math.floor(Math.random() * 17);
 let dShulkerBoat = new DraftItem("Shulker", "Grants a boated shulker at your spawn location.", "shulker.png", (file) => {
     file += `
-/execute at @a run summon minecraft:boat ~ ~2 ~ {Passengers:[{id:shulker,Color:${SHULKER_COLOUR}}]}
+execute at @a run summon minecraft:boat ~ ~2 ~ {Passengers:[{id:shulker,Color:${SHULKER_COLOUR}}]}
         `;
     return file;
 });
@@ -444,6 +444,7 @@ let dRods = new DraftItem("Rod Rates", "Blazes never drop 0 rods.", "blaze.png",
         `;
     return file;
 });
+dRods.smallName = "Rods";
 dRods.fileQuery = "draaftpack/data/minecraft/loot_tables/entities/blaze.json";
 let pArmour = new DraftPool("armour", "Armour", [
     dHelmet,

@@ -625,7 +625,7 @@ let dShulkerBoat = new DraftItem(
     "shulker.png",
     (file) => {
         file += `
-/execute at @a run summon minecraft:boat ~ ~2 ~ {Passengers:[{id:shulker,Color:${SHULKER_COLOUR}}]}
+execute at @a run summon minecraft:boat ~ ~2 ~ {Passengers:[{id:shulker,Color:${SHULKER_COLOUR}}]}
         `;
         return file;
     }
@@ -677,6 +677,7 @@ let dRods = new DraftItem(
         return file;
     }
 )
+dRods.smallName = "Rods";
 dRods.fileQuery = "draaftpack/data/minecraft/loot_tables/entities/blaze.json";
 
 let pArmour = new DraftPool("armour", "Armour", [
