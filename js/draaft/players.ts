@@ -1,7 +1,7 @@
 import { allItems, DraftItem, getDraftItem, pools } from "./options.js";
 // @ts-ignore Import module
 import { downloadZip } from "https://cdn.jsdelivr.net/npm/client-zip/index.js";
-import {isValidPlayerName, STEVE} from "./utils.js";
+import { isValidPlayerName, STEVE } from "./utils.js";
 
 export class Player {
     name = "";
@@ -137,6 +137,20 @@ export class Player {
                             lastModified: new Date(),
                             input: input,
                         });
+                    }
+
+                    for (const d of this.drafted) {
+                        let obj = allItems[d - 1];
+                        if (
+                            obj.fileQuery != null &&
+                            obj.fileQuery.startsWith("draaftpack/")
+                        ) {
+                            data.push({
+                                name: obj.fileQuery,
+                                lastModified: new Date(),
+                                input: obj.datapackModifier(""),
+                            });
+                        }
                     }
 
                     // get the ZIP stream in a Blob

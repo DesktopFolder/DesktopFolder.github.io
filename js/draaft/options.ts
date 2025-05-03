@@ -618,6 +618,66 @@ let dCrossbow = new DraftItem(
     "crossbow.png",
     itemGiver('crossbow{Enchantments:[{id:"minecraft:piercing",lvl:4s}]}', 1),
 );
+let SHULKER_COLOUR=Math.floor(Math.random() * 17)
+let dShulkerBoat = new DraftItem(
+    "Shulker",
+    "Grants a boated shulker at your spawn location.",
+    "shulker.png",
+    (file) => {
+        file += `
+/execute at @a run summon minecraft:boat ~ ~2 ~ {Passengers:[{id:shulker,Color:${SHULKER_COLOUR}}]}
+        `;
+        return file;
+    }
+)
+
+let dRods = new DraftItem(
+    "Rod Rates",
+    "Blazes never drop 0 rods.",
+    "blaze.png",
+    (file) => {
+        file += `
+{
+  "type": "minecraft:entity",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "min": 1.0,
+                "max": 1.0,
+                "type": "minecraft:uniform"
+              }
+            },
+            {
+              "function": "minecraft:looting_enchant",
+              "count": {
+                "min": 0.0,
+                "max": 1.0
+              }
+            }
+          ],
+          "name": "minecraft:blaze_rod"
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:killed_by_player"
+        }
+      ]
+    }
+  ]
+}
+        `;
+        return file;
+    }
+)
+dRods.fileQuery = "draaftpack/data/minecraft/loot_tables/entities/blaze.json";
 
 let pArmour = new DraftPool("armour", "Armour", [
     dHelmet,
@@ -662,9 +722,9 @@ let pBig = new DraftPool("big", "Multi-Part Advancements", [
 ]);
 
 let pMiscOld = new DraftPool("misc", "Misc", [dTotem, dFireworks, dGrace, dLeads]);
-let pMisc = new DraftPool("misc", "Misc", [dLeads, dFireRes, dBreeds, dHives, dCrossbow]);
+let pMisc = new DraftPool("misc", "Misc", [dLeads, dFireRes, dBreeds, dHives, dCrossbow, dShulkerBoat]);
 
-let pEarly = new DraftPool("early", "Early Game", [dFireworks, dShulker, dObi, dLogs, dEyes]);
+let pEarly = new DraftPool("early", "Early Game", [dFireworks, dShulker, dObi, dLogs, dEyes, dRods]);
 
 export let pools: DraftPool[] = [
     pBiomes,

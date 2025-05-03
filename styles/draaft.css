@@ -200,3 +200,39 @@ div.player-container {
 .draft-list {
     line-height: 1.2em;
 }
+
+/******** OPTIONS ********/
+.options-div {
+    width: min(50%, 800px);
+    height: min(60%, 800px);
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #f0f0f0; /* optional, for visibility */
+    padding: 10px;             /* optional */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* optional */
+}
+
+.hidden {
+    display: none;
+}
+
+#options-shower {
+    position: fixed;
+    bottom: 8px;
+    right: 8px;
+    font-size: 16px;
+}
+
+#options-div input {
+    margin-right: 24px;
+}
+
+.config-num {
+    width: 4em;
+}
+
+#notice {
+    font-size: 26px;
+}
