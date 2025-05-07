@@ -1,7 +1,7 @@
-import { pools } from "./draaft/options.js";
+import { pools, DraftItem } from "./draaft/options.js";
 import { Player } from "./draaft/players.js";
-import {playerFaceLink, STEVE} from "./draaft/utils.js";
-import {conf, initialize} from "./draaft/config.js";
+import { playerFaceLink, STEVE } from "./draaft/utils.js";
+import { conf, initialize } from "./draaft/config.js";
 
 // Populated in launchSeeds
 var SEEDLIST: Array<string> = [];
@@ -25,6 +25,67 @@ function launchSeeds() {
         });
 }
 
+function resetPoolHighlights() {
+    // reset highlights
+    for (const pool of pools) {
+        pool.getBodyDiv().style.backgroundColor = "#FFF";
+        pool.getHeaderDiv().style.backgroundColor = "#FFF";
+        pool.getDiv().style.backgroundColor = "#FFF";
+    }
+}
+
+function updatePoolColours(draftLimit: number, draftPlayer: Player) {
+    for (const pool of pools) {
+        let st = pool.getBodyDiv().style;
+        let hst = pool.getHeaderDiv().style;
+        let dst = pool.getDiv().style;
+        let pc = draftPlayer.getCount(pool.name);
+        if (pc == 0) continue;
+        if (pc == draftLimit) {
+            st.backgroundColor = "#AAA";
+            hst.backgroundColor = "#AAA";
+            dst.backgroundColor = "#AAA";
+        } else if (pc == draftLimit - 1) {
+            st.backgroundColor = "#DDD";
+            hst.backgroundColor = "#DDD";
+            dst.backgroundColor = "#DDD";
+        }
+    }
+}
+
+class Action {
+    public constructor(
+        public di: DraftItem,
+        public p: Player,
+        public dlimit: number
+    ) {}
+
+    public undo() {
+        // what a pain this will be
+        console.assert(
+            this.di.isDrafted,
+            "DraftItem to be undone was not drafted?!"
+        );
+        console.log(`Undoing ${this.di.prettyName} for player ${this.p.name}`);
+        this.p.undoDraft(this.di);
+        this.di.isDrafted = false;
+        this.di.unfinish();
+
+        // MUST TAKE CARE OF THIS IN PARENT
+        // this.playerReset.push(this.playerList.shift());
+        // if (this.playerList.length == 0) {
+        //     while (this.playerReset.length != 0) {
+        //         this.playerList.push(this.playerReset.pop());
+        //     }
+        // }
+        // let draftPlayer = this.playerList[0];
+        // this.setTitleFrom(draftPlayer.name);
+        resetPoolHighlights();
+
+        // updatePoolColours(this.draftLimit, draftPlayer);
+    }
+}
+
 class StateMachine {
     title: HTMLParagraphElement;
     titleContainer: HTMLDivElement;
@@ -34,7 +95,7 @@ class StateMachine {
     playerReset: Array<Player> = [];
     playerCount: number = 0;
     draftLimit: number = 0;
-    actions = [];
+    actions: Array<Action> = [];
 
     isDraftComplete() {
         // draft is complete if all players have completed drafting
@@ -91,7 +152,8 @@ class StateMachine {
 
         let rs = SEEDLIST[Math.floor(Math.random() * SEEDLIST.length)];
         let copier = `<a href="#" style="text-decoration:none;" onclick="navigator.clipboard.writeText('${rs}')">📋</a>`;
-        let seedAppearance = (conf("seedhider") == true) ? "Seed hidden, copy by clicking ->" : rs;
+        let seedAppearance =
+            conf("seedhider") == true ? "Seed hidden, copy by clicking ->" : rs;
         this.title.innerHTML = `Completed! Download datapacks from the sidebar. Your seed is: ${seedAppearance} ${copier} (<a href="/draaft/seedlist.html" target="_blank">Seed filter info</a>)`;
         return true;
     }
@@ -108,6 +170,37 @@ class StateMachine {
         }
         console.log("Starting drafting...");
         this.title.innerHTML = "Drafting...";
+
+        // UNDO FEATURE
+        let undoer = <HTMLAnchorElement>document.getElementById("undo-button");
+        undoer.onclick = () => {
+            let sm: StateMachine = this;
+            if (sm.actions.length == 0) {
+                console.log("Tried to undo when no actions have been taken.");
+                return;
+            }
+            let act = sm.actions.pop();
+            act.undo();
+
+            // okay, now we need to do our work.
+            // we need to shift everything back.
+            // if our playerReset is empty, and we have taken an action, that means
+            // that the last action reversed playerReset into playerList
+            console.assert(this.playerList.length > 0);
+            if (this.playerReset.length == 0) {
+                while (this.playerList.length > 0) {
+                    this.playerReset.push(this.playerList.pop());
+                }
+            }
+
+            console.assert(this.playerReset.length > 0);
+            this.playerList.unshift(this.playerReset.pop());
+
+            let draftPlayer = this.playerList[0];
+            this.setTitleFrom(draftPlayer.name);
+
+            updatePoolColours(this.draftLimit, draftPlayer);
+        };
 
         // Let's get our players!
         for (const player of allPlayers) {
@@ -131,6 +224,12 @@ class StateMachine {
             for (const di of p.items) {
                 // do this into actions ig for undo...
                 di.poolItem.onclick = () => {
+                    if (di.isDrafted) {
+                        console.log(
+                            `Did not draft ${di.boxName} : already drafted.`
+                        );
+                        return;
+                    }
                     let player = this.playerList[0];
                     console.log(
                         `Drafting ${di.prettyName} for player ${player.name}`
@@ -142,6 +241,8 @@ class StateMachine {
                         );
                         return;
                     }
+
+                    this.actions.push(new Action(di, player, this.draftLimit));
 
                     // state management
                     di.isDrafted = true;
@@ -163,31 +264,11 @@ class StateMachine {
 
                     this.setTitleFrom(draftPlayer.name);
 
-                    // reset highlights
-                    for (const pool of pools) {
-                        pool.getBodyDiv().style.backgroundColor = "#FFF";
-                        pool.getHeaderDiv().style.backgroundColor = "#FFF";
-                        pool.getDiv().style.backgroundColor = "#FFF";
-                    }
+                    resetPoolHighlights();
 
                     if (this.checkDraftComplete()) return;
 
-                    for (const pool of pools) {
-                        let st = pool.getBodyDiv().style;
-                        let hst = pool.getHeaderDiv().style;
-                        let dst = pool.getDiv().style;
-                        let pc = draftPlayer.getCount(pool.name);
-                        if (pc == 0) continue;
-                        if (pc == this.draftLimit) {
-                            st.backgroundColor = "#AAA";
-                            hst.backgroundColor = "#AAA";
-                            dst.backgroundColor = "#AAA";
-                        } else if (pc == this.draftLimit - 1) {
-                            st.backgroundColor = "#DDD";
-                            hst.backgroundColor = "#DDD";
-                            dst.backgroundColor = "#DDD";
-                        }
-                    }
+                    updatePoolColours(this.draftLimit, draftPlayer);
                 };
             }
         }

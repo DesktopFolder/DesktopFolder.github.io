@@ -67,15 +67,23 @@ export class DraftItem {
     }
 
     public finish(pn: string) {
-        this.poolItem.onclick = undefined; 
         this.pickedBy = pn;
         this.finished = true;
         this.setDefaultText();
     }
 
+    public unfinish() {
+        this.pickedBy = null;
+        this.finished = false;
+        this.unsetDefaultText();
+    }
+
     public setDefaultText() {
         let pimg = playerFaceImageAsString(this.pickedBy, "clicked-player-face");
         this.poolDefaultText.innerHTML = `${pimg} ${this.smallName || this.boxName} ${pimg}`;
+    }
+    public unsetDefaultText() {
+        this.poolDefaultText.innerHTML = this.boxName;
     }
 
     public onMouseLeave() {

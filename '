@@ -54,35 +54,48 @@ function updatePoolColours(draftLimit: number, draftPlayer: Player) {
 }
 
 class Action {
-    public constructor(
-        public di: DraftItem,
-        public p: Player,
-        public dlimit: number
-    ) {}
+    di: DraftItem;
+    p: Player;
+    dlimit: number;
 
-    public undo() {
+    undo() {
         // what a pain this will be
-        console.assert(
-            this.di.isDrafted,
-            "DraftItem to be undone was not drafted?!"
-        );
+        console.assert(this.di.isDrafted, "DraftItem to be undone was not drafted?!");
         console.log(`Undoing ${this.di.prettyName} for player ${this.p.name}`);
         this.p.undoDraft(this.di);
-        this.di.isDrafted = false;
-        this.di.unfinish();
+                    if (!player.tryDraft(di, this.draftLimit)) {
+                        console.log(
+                            "Did not draft: Invalid draft choice (from same pool as before)" +
+                                ` Note: Limit: ${this.draftLimit}, Player count: ${this.playerCount}`
+                        );
+                        return;
+                    }
 
-        // MUST TAKE CARE OF THIS IN PARENT
-        // this.playerReset.push(this.playerList.shift());
-        // if (this.playerList.length == 0) {
-        //     while (this.playerReset.length != 0) {
-        //         this.playerList.push(this.playerReset.pop());
-        //     }
-        // }
-        // let draftPlayer = this.playerList[0];
-        // this.setTitleFrom(draftPlayer.name);
-        resetPoolHighlights();
+                    // state management
+                    di.isDrafted = true;
 
-        // updatePoolColours(this.draftLimit, draftPlayer);
+                    // Old: Remove the item entirely.
+                    // p.getBodyDiv().removeChild(di.poolItem);
+                    // New: Reset innerHTML, still hoverable?
+                    di.finish(player.name);
+
+                    this.playerReset.push(this.playerList.shift());
+
+                    if (this.playerList.length == 0) {
+                        while (this.playerReset.length != 0) {
+                            this.playerList.push(this.playerReset.pop());
+                        }
+                    }
+
+                    let draftPlayer = this.playerList[0];
+
+                    this.setTitleFrom(draftPlayer.name);
+
+                    resetPoolHighlights();
+
+                    if (this.checkDraftComplete()) return;
+
+                    updatePoolColours(this.draftLimit, draftPlayer);
     }
 }
 
@@ -95,7 +108,7 @@ class StateMachine {
     playerReset: Array<Player> = [];
     playerCount: number = 0;
     draftLimit: number = 0;
-    actions: Array<Action> = [];
+    actions = [];
 
     isDraftComplete() {
         // draft is complete if all players have completed drafting
@@ -171,37 +184,6 @@ class StateMachine {
         console.log("Starting drafting...");
         this.title.innerHTML = "Drafting...";
 
-        // UNDO FEATURE
-        let undoer = <HTMLAnchorElement>document.getElementById("undo-button");
-        undoer.onclick = () => {
-            let sm: StateMachine = this;
-            if (sm.actions.length == 0) {
-                console.log("Tried to undo when no actions have been taken.");
-                return;
-            }
-            let act = sm.actions.pop();
-            act.undo();
-
-            // okay, now we need to do our work.
-            // we need to shift everything back.
-            // if our playerReset is empty, and we have taken an action, that means
-            // that the last action reversed playerReset into playerList
-            console.assert(this.playerList.length > 0);
-            if (this.playerReset.length == 0) {
-                while (this.playerList.length > 0) {
-                    this.playerReset.push(this.playerList.pop());
-                }
-            }
-
-            console.assert(this.playerReset.length > 0);
-            this.playerList.unshift(this.playerReset.pop());
-
-            let draftPlayer = this.playerList[0];
-            this.setTitleFrom(draftPlayer.name);
-
-            updatePoolColours(this.draftLimit, draftPlayer);
-        };
-
         // Let's get our players!
         for (const player of allPlayers) {
             if (player.exists()) {
@@ -241,8 +223,6 @@ class StateMachine {
                         );
                         return;
                     }
-
-                    this.actions.push(new Action(di, player, this.draftLimit));
 
                     // state management
                     di.isDrafted = true;

@@ -46,6 +46,14 @@ export class Player {
         this.updateDraft(di.id);
         return true;
     }
+    undoDraft(di) {
+        console.assert(this.draftedPools.has(di.pool));
+        let cur = this.draftedPools.get(di.pool);
+        console.assert(cur > 0);
+        this.draftedPools.set(di.pool, cur - 1);
+        console.assert(di.id == this.drafted.pop());
+        this.updateDraftHTML();
+    }
     getCount(poolName) {
         if (this.draftedPools.has(poolName)) {
             return this.draftedPools.get(poolName);
@@ -56,6 +64,9 @@ export class Player {
         if (n != 0) {
             this.drafted.push(n);
         }
+        this.updateDraftHTML();
+    }
+    updateDraftHTML() {
         let dinames = [];
         for (const i of this.drafted) {
             dinames.push(getDraftItem(i).simpleName);
