@@ -1,6 +1,7 @@
 import { pools } from "./draaft/options.js";
 import { Player } from "./draaft/players.js";
 import {playerFaceLink, STEVE} from "./draaft/utils.js";
+import {conf, initialize} from "./draaft/config.js";
 
 // Populated in launchSeeds
 var SEEDLIST: Array<string> = [];
@@ -90,7 +91,8 @@ class StateMachine {
 
         let rs = SEEDLIST[Math.floor(Math.random() * SEEDLIST.length)];
         let copier = `<a href="#" style="text-decoration:none;" onclick="navigator.clipboard.writeText('${rs}')">📋</a>`;
-        this.title.innerHTML = `Completed! Download datapacks from the sidebar. Your seed is: ${rs} ${copier} (<a href="/draaft/seedlist.html" target="_blank">Seed filter info</a>)`;
+        let seedAppearance = (conf("seedhider") == true) ? "Seed hidden, copy by clicking ->" : rs;
+        this.title.innerHTML = `Completed! Download datapacks from the sidebar. Your seed is: ${seedAppearance} ${copier} (<a href="/draaft/seedlist.html" target="_blank">Seed filter info</a>)`;
         return true;
     }
 
@@ -235,6 +237,8 @@ class StateMachine {
 }
 
 function main() {
+    initialize();
+
     launchSeeds();
 
     let sm = new StateMachine();

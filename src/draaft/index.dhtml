@@ -12,7 +12,8 @@ page.image=/draaft-logo.png
     <h3 id="notice">DOES NOTHING WIP :)</h3>
 <!--    <h3 id="notice">Reload page after configuring!</h3> -->
     <p><input id="poolrandomizer" class="config-cb ds-small configurer" type="checkbox">Randomize Pools</p>
-    <p><input id="timesetter" class="config-num ds-small configurer" type="value">Seconds per pick</p>
+    <p><input id="seedhider" class="config-cb ds-small configurer" type="checkbox">Hide Seeds</p>
+    <p><input id="timesetter" class="config-num ds-small configurer" type="text">Seconds per pick</p>
 </div>
 <a id="options-shower" href='#' onclick="document.getElementById('options-div').classList.toggle('hidden');">show / hide options</a>
 <script>var exports = {"__esModule": true};</script>
