@@ -62,17 +62,31 @@ p.draft-item {
     line-height: 2em;
 }
 
+#bg-video {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    z-index: -1;
+    min-width: 100%;
+    min-height: 100%;
+}
+
 html {
     height: 100%;
 }
 
 .title-container {
-    width: 100%;
+    width: calc(100% - 10px);
     height: auto;
     padding-left: 24px;
     box-sizing: border-box;
-    margin-top: 7px;
+    padding-top: 7px;
     margin-bottom: 7px;
+    padding-bottom: 7px;
+    outline: 1px #5a5766 solid;
+    margin-left: 10px;
+    box-shadow: 0px 0px 5px #111;
+    background-color: white;
 }
 
 .title-container p {
@@ -113,6 +127,11 @@ p.draft-item-desc {
     text-align: center;
     justify-content: space-around;
     align-content: space-around;
+    background-color: white;
+}
+
+.draft-header {
+    background-color: white;
 }
 
 #draft-body {

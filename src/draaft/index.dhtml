@@ -8,6 +8,9 @@ meta=<link href="https://fonts.cdnfonts.com/css/minecraftia" rel="stylesheet">
 page.image=/draaft-logo.png
 ---
 <body class="maxerino">
+<video autoplay muted loop id="bg-video">
+  <source src="/assets/draaft/bg.webm" type="video/webm">
+</video>
 <div class="options-div hidden" id="options-div">
     <h3 id="notice">DOES NOTHING WIP :)</h3>
 <!--    <h3 id="notice">Reload page after configuring!</h3> -->
