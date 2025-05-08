@@ -50,9 +50,9 @@ p {
 }
 
 div.draft-item {
-    width: 45%;
+    width: 215px;
     height: 2em;
-    margin: 0.2em;
+    margin: 10px;
     text-align: center;
 }
 
@@ -98,7 +98,7 @@ p.draft-item-desc {
 
 .draft-pool {
     /*width: 38%;*/
-    width: 475px;
+    width: 470px;
     height: auto;
     display: flex;
     /*line-height: 0;*/
@@ -108,7 +108,7 @@ p.draft-item-desc {
 
 .draft-pool-inner {
     height: auto;
-    width: 100%;
+    width: auto;
     flex-wrap: wrap;
     text-align: center;
     justify-content: space-around;
@@ -119,8 +119,8 @@ p.draft-item-desc {
     flex-wrap: wrap;
     display: flex;
     justify-content: flex-start;
-    width: 77vw;
-    margin-left: 23vw;
+    width: 80vw;
+    margin-left: 21vw;
     height: auto;
     align-content: flex-start;
 }
@@ -148,7 +148,7 @@ div.player-container {
 #left-gutter {
     padding: 16px;
     padding-top: 32px;
-    width: 23vw; /* this is related to main pool */
+    width: 20vw; /* this is related to main pool */
     height: 100vh;
     box-sizing: border-box;
     background-color: #EDFFEC;
