@@ -498,8 +498,8 @@ export let pools = [
     pArmour,
     pTools,
     pBig,
-    pEarly,
     pMisc,
+    pEarly,
 ];
 // Use a function for this so that we can fix this horrible implementation later.
 export function getDraftItem(id) {
