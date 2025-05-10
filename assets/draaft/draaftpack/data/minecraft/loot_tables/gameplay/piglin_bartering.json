@@ -6,7 +6,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "weight": 15,
+          "weight": 5,
           "functions": [
             {
               "function": "minecraft:set_nbt",
@@ -17,13 +17,24 @@
         },
         {
           "type": "minecraft:item",
+          "weight": 5,
+          "functions": [
+            {
+              "function": "minecraft:set_nbt",
+              "tag": "{Potion:\"minecraft:fire_resistance\"}"
+            }
+          ],
+          "name": "minecraft:splash_potion"
+        },
+        {
+          "type": "minecraft:item",
           "weight": 10,
           "functions": [
             {
               "function": "minecraft:set_count",
               "count": {
-                "min": 5.0,
-                "max": 20.0,
+                "min": 9.0,
+                "max": 18.0,
                 "type": "minecraft:uniform"
               }
             }
@@ -32,7 +43,7 @@
         },
         {
           "type": "minecraft:item",
-          "weight": 15,
+          "weight": 10,
           "functions": [
             {
               "function": "minecraft:set_count",
@@ -52,8 +63,8 @@
             {
               "function": "minecraft:set_count",
               "count": {
-                "min": 20.0,
-                "max": 32.0,
+                "min": 8.0,
+                "max": 24.0,
                 "type": "minecraft:uniform"
               }
             }
@@ -62,7 +73,7 @@
         },
         {
           "type": "minecraft:item",
-          "weight": 10,
+          "weight": 20,
           "name": "minecraft:obsidian"
         },
         {
@@ -117,8 +128,8 @@
             {
               "function": "minecraft:set_count",
               "count": {
-                "min": 4.0,
-                "max": 6.0,
+                "min": 1.0,
+                "max": 5.0,
                 "type": "minecraft:uniform"
               }
             }
@@ -148,7 +159,7 @@
               "function": "minecraft:set_count",
               "count": {
                 "min": 16.0,
-                "max": 32.0,
+                "max": 24.0,
                 "type": "minecraft:uniform"
               }
             }
