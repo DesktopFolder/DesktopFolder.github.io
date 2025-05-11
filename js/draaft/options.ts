@@ -610,9 +610,9 @@ let dObi = new DraftItem(
 );
 let dLogs = new DraftItem(
     "Logs",
-    "Gives 16 oak logs.",
+    "Gives 64 oak logs.",
     "logs.png",
-    itemGiver("oak_log", 16),
+    itemGiver("acacia_log", 64),
 );
 let dEyes = new DraftItem(
     "Eyes",

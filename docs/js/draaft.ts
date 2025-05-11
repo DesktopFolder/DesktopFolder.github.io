@@ -358,9 +358,27 @@ function main() {
     discordInfo.innerHTML = "Discord Link";
     discordContainer.appendChild(discordInfo);
 
+    let trailerContainer = document.createElement("p");
+    let trailer = document.createElement("a");
+    trailer.classList.add("start-button", "gutter-big-button");
+    trailer.href = "https://www.youtube.com/watch?v=1cJnTjbZEco";
+    trailer.target = "_blank";
+    trailer.innerHTML = "Event Trailer";
+    trailerContainer.appendChild(trailer);
+
+    let tutorialContainer = document.createElement("p");
+    let tutorial = document.createElement("a");
+    tutorial.classList.add("start-button", "gutter-big-button");
+    tutorial.href = "https://www.youtube.com/watch?v=bCOTGwBlEbA";
+    tutorial.target = "_blank";
+    tutorial.innerHTML = "Setup Tutorial";
+    tutorialContainer.appendChild(tutorial);
+
     players.appendChild(modDownload);
     players.appendChild(filterContainer);
     players.appendChild(discordContainer);
+    players.appendChild(trailerContainer);
+    players.appendChild(tutorialContainer);
     document.body.appendChild(players);
 
     let container = document.createElement("div");
