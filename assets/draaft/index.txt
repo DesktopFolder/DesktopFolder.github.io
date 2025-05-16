@@ -1,7 +1,7 @@
-draaftpack/data/advancements/adventure/disc.json
-draaftpack/data/advancements/adventure/kill_trader.json
-draaftpack/data/advancements/adventure/riptide.json
-draaftpack/data/advancements/husbandry/kill_turtle.json
+draaftpack/data/draaftpack/advancements/adventure/disc.json
+draaftpack/data/draaftpack/advancements/adventure/kill_trader.json
+draaftpack/data/draaftpack/advancements/adventure/riptide.json
+draaftpack/data/draaftpack/advancements/husbandry/kill_turtle.json
 draaftpack/data/draaftpack/functions/load.mcfunction
 draaftpack/data/draaftpack/functions/on_load.mcfunction
 draaftpack/data/draaftpack/functions/tick.mcfunction
