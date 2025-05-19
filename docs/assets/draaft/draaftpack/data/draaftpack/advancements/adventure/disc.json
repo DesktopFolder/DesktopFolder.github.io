@@ -6,7 +6,7 @@
         },
         "title": {"translate":"A CD Plays"},
         "description": {"translate":"Insert a Music Disc into a Jukebox"},
-        "frame": "task",
+        "frame": "challenge",
         "show_toast": true,
         "announce_to_chat": true,
         "hidden": true

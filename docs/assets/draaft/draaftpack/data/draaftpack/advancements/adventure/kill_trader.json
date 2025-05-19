@@ -6,7 +6,7 @@
         },
         "title": {"translate":"Wandering Traitor"},
         "description": {"translate":"Kill a Wandering Trader"},
-        "frame": "goal",
+        "frame": "challenge",
         "show_toast": true,
         "announce_to_chat": true,
         "hidden": true
