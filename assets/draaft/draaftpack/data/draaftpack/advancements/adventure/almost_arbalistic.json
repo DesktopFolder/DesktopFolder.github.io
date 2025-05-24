@@ -1,0 +1,51 @@
+{
+  "parent": "minecraft:adventure/ol_betsy",
+  "display": {
+    "icon": {
+      "item": "minecraft:crossbow",
+      "nbt": "{Enchantments:[{id:\"minecraft:piercing\",lvl:3}]}"
+    },
+    "title": {
+      "translate": "Arbalmostic"
+    },
+    "description": {
+      "translate": "Almost had it!"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "arbalistic": {
+      "trigger": "minecraft:killed_by_crossbow",
+      "conditions": {
+        "unique_entity_types": 4
+      }
+    },
+    "use_crossbow": {
+      "trigger": "minecraft:item_durability_changed",
+      "conditions": {
+        "item": {
+          "item": "minecraft:crossbow",
+          "enchantments": [
+            {
+              "enchantment": "minecraft:piercing",
+              "levels": {
+                "max": 3
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "requirements": [
+    [
+      "arbalistic"
+    ],
+    [
+      "use_crossbow"
+    ]
+  ]
+}
