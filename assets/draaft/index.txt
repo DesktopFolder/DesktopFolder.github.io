@@ -1,4 +1,3 @@
-draaftpack/data/draaftpack/advancements/adventure/almost_arbalistic.json
 draaftpack/data/draaftpack/advancements/adventure/conduit.json
 draaftpack/data/draaftpack/advancements/adventure/disc.json
 draaftpack/data/draaftpack/advancements/adventure/kill_trader.json
