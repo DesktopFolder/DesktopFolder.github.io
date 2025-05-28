@@ -1,12 +1,11 @@
 import { pools, DraftItem } from "./draaft/options.js";
-import { Player } from "./draaft/players.js";
+import { Player, allPlayers } from "./draaft/players.js";
 import { playerFaceLink, STEVE } from "./draaft/utils.js";
 import { conf, initialize } from "./draaft/config.js";
+import { load_overlay } from "./draaft/overlay.js";
 
 // Populated in launchSeeds
 var SEEDLIST: Array<string> = [];
-
-let allPlayers: Array<Player> = [];
 
 // https://stackoverflow.com/questions/2719668/an-html5-canvas-element-in-the-background-of-my-page/2723376
 // https://coolors.co/edffec-61e786-5a5766-48435c-9792e3
@@ -318,6 +317,13 @@ class StateMachine {
 }
 
 function main() {
+    const queryString = window.location.search;
+    const params = new URLSearchParams(queryString);
+    if (params.get("overlay") == "true") {
+        console.log("Entering overlay mode. xqcL - oliivia");
+        return load_overlay(params);
+    }
+
     initialize();
 
     launchSeeds();

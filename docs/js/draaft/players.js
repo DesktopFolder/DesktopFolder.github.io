@@ -2,6 +2,7 @@ import { allItems, getDraftItem, pools } from "./options.js";
 // @ts-ignore Import module
 import { downloadZip } from "https://cdn.jsdelivr.net/npm/client-zip/index.js";
 import { isValidPlayerName, STEVE } from "./utils.js";
+export let allPlayers = [];
 export class Player {
     name = "";
     // Player objects represent all their information.
@@ -45,6 +46,9 @@ export class Player {
         this.draftedPools.set(di.pool, cur + 1);
         this.updateDraft(di.id);
         return true;
+    }
+    encodePicks() {
+        return this.drafted.join(",");
     }
     undoDraft(di) {
         console.assert(this.draftedPools.has(di.pool));
@@ -200,6 +204,35 @@ export class Player {
             return false;
         };
         buttons.appendChild(downloadButton);
+        let getOverlayButton = document.createElement("a");
+        getOverlayButton.classList.add("player-button");
+        getOverlayButton.href = "#";
+        getOverlayButton.innerHTML = "copy overlay";
+        getOverlayButton.onclick = () => {
+            let uristr = `${window.location.href}?overlay=true&name=${this.name}&picks=${this.encodePicks()}`;
+            let otherplayer = undefined;
+            for (const p of allPlayers) {
+                if (p.exists() && p.name != this.name) {
+                    if (otherplayer != undefined) {
+                        console.log(`Found too many players (${otherplayer} and ${p.name}) - no otherplayer.`);
+                        otherplayer = undefined;
+                        break;
+                    }
+                    otherplayer = p.name;
+                    console.log(`Found other player: ${otherplayer}`);
+                }
+                else {
+                    console.log('Skipping this player while finding other player.');
+                }
+            }
+            console.log(`Other player is ${otherplayer}`);
+            if (otherplayer != undefined) {
+                uristr += `&otherplayer=${otherplayer}`;
+            }
+            navigator.clipboard.writeText(uristr);
+            return false;
+        };
+        buttons.appendChild(getOverlayButton);
         this.container = document.createElement("div");
         this.container.classList.add("flex-down", "player-container");
         this.draftedList = document.createElement("p");

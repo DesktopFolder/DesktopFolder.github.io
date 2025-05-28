@@ -58,6 +58,14 @@ export class DraftItem {
         console.assert(this.id == allItems.length);
     }
 
+    public getValue() {
+        if (this.pool == 'big') { return 0; }
+        if (this.pool == 'biomes') { return 2; }
+        if (this.pool == 'misc') { return 4; }
+        if (this.pool == 'early') { return 6; }
+        return 8;
+    }
+
     public setFrom(it: DraftItem, pool: string) {
         this.pool = pool;
         this.simpleName = it.simpleName;
