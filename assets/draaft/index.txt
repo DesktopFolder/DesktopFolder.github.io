@@ -4,6 +4,7 @@ draaftpack/data/draaftpack/advancements/adventure/kill_trader.json
 draaftpack/data/draaftpack/advancements/adventure/riptide.json
 draaftpack/data/draaftpack/advancements/husbandry/fish_rod.json
 draaftpack/data/draaftpack/advancements/husbandry/kill_turtle.json
+draaftpack/data/draaftpack/advancements/husbandry/stew.json
 draaftpack/data/draaftpack/advancements/story/endchanter.json
 draaftpack/data/draaftpack/functions/load.mcfunction
 draaftpack/data/draaftpack/functions/on_load.mcfunction
