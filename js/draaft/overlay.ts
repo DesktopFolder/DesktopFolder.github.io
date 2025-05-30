@@ -97,7 +97,7 @@ export function load_overlay(params: URLSearchParams) {
         if (i == 1) {
             let lepick = document.createElement("p");
             lepick.innerHTML = "- Shared -";
-            lepick.classList.add('lepick', "common-shadow");
+            lepick.classList.add('lepick', "common-shadow", "newpick", "sharedpicks");
             container.appendChild(lepick);
         }
         for (const pickdi of lepicks) {
