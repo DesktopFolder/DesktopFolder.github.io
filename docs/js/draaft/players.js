@@ -209,7 +209,7 @@ export class Player {
         getOverlayButton.href = "#";
         getOverlayButton.innerHTML = "copy overlay";
         getOverlayButton.onclick = () => {
-            let uristr = `${window.location.href}?overlay=true&name=${this.name}&picks=${this.encodePicks()}`;
+            let uristr = `${window.location.href.replaceAll('#', '')}?overlay=true&name=${this.name}&picks=${this.encodePicks()}`;
             let otherplayer = undefined;
             for (const p of allPlayers) {
                 if (p.exists() && p.name != this.name) {

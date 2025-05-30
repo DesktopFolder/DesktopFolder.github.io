@@ -63,7 +63,9 @@ export class DraftItem {
         if (this.pool == 'biomes') { return 2; }
         if (this.pool == 'misc') { return 4; }
         if (this.pool == 'early') { return 6; }
-        return 8;
+        if (this.pool == 'armour') { return 8; }
+        if (this.pool == 'tools') { return 8; }
+        return 12;
     }
 
     public setFrom(it: DraftItem, pool: string) {

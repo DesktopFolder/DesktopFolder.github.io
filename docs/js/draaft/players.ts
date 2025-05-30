@@ -241,7 +241,7 @@ export class Player {
         getOverlayButton.href = "#";
         getOverlayButton.innerHTML = "copy overlay";
         getOverlayButton.onclick = () => {
-            let uristr = `${window.location.href}?overlay=true&name=${
+            let uristr = `${window.location.href.replaceAll('#', '')}?overlay=true&name=${
                 this.name
             }&picks=${this.encodePicks()}`;
             let otherplayer = undefined;

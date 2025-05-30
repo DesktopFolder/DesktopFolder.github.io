@@ -64,7 +64,13 @@ export class DraftItem {
         if (this.pool == 'early') {
             return 6;
         }
-        return 8;
+        if (this.pool == 'armour') {
+            return 8;
+        }
+        if (this.pool == 'tools') {
+            return 8;
+        }
+        return 12;
     }
     setFrom(it, pool) {
         this.pool = pool;
