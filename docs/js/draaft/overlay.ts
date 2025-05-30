@@ -1,6 +1,17 @@
 import { isValidPlayerName, STEVE } from "./utils.js";
 import { DraftItem, getDraftItem } from "./options.js";
 
+function decode_picks(x: string)
+{
+    const picks = x.split(',').map((numk) => getDraftItem(parseInt(numk)));
+
+    picks.sort((a: DraftItem, b: DraftItem) => {
+        return a.getValue() - b.getValue();
+    });
+
+    return picks;
+}
+
 export function load_overlay(params: URLSearchParams) {
     console.log("Loading overlay...");
     document.getElementById("bg-video").remove();
@@ -13,7 +24,8 @@ export function load_overlay(params: URLSearchParams) {
     const nname = pname || "???";
 
     // '1,2,5,10'
-    const ummmmwhatrewegetting = (params.get("picks") || '').split(',').map((numk) => getDraftItem(parseInt(numk)));
+    const ourpicks = decode_picks(params.get("picks") || '');
+    const theirpicks = decode_picks(params.get("otherpicks") || '');
 
     // let's over some lays yo
     document.body.classList.add("overlay-body");
@@ -44,12 +56,8 @@ export function load_overlay(params: URLSearchParams) {
     let footer = document.createElement("div");
     footer.classList.add("flex-down");
 
-    ummmmwhatrewegetting.sort((a: DraftItem, b: DraftItem) => {
-        return a.getValue() - b.getValue();
-    });
-
     var lastpick = null;
-    for (const pickdi of ummmmwhatrewegetting) {
+    for (const pickdi of ourpicks) {
         if (pickdi == undefined) { continue; }
         if (pickdi.pool == 'armour' || pickdi.pool == 'tools') {
             continue;
@@ -71,6 +79,57 @@ export function load_overlay(params: URLSearchParams) {
     opicks.id = "overlay-picks";
 
     document.body.appendChild(opicks);
+    
+    // HEIGHT OF PICK AREA: 368
+    var ourids = new Set(ourpicks.map((di) => di.id));
+    var theirids = new Set(theirpicks.map((di)=>di.id));
+    var deconflict = ourids.intersection(theirids);
+
+    let allpicks = document.createElement("div");
+    allpicks.classList.add("flex-right");
+    document.body.appendChild(allpicks);
+    for (var i = 0; i < 3; i++) {
+        let container = document.createElement("div");
+        container.classList.add("mainpick");
+
+        var lastpick = null;
+        let lepicks = i == 0 ? ourpicks : theirpicks;
+        if (i == 1) {
+            let lepick = document.createElement("p");
+            lepick.innerHTML = "- Shared -";
+            lepick.classList.add('lepick', "common-shadow");
+            container.appendChild(lepick);
+        }
+        for (const pickdi of lepicks) {
+            if (pickdi == undefined) { continue; }
+            // if (pickdi.pool == 'armour' || pickdi.pool == 'tools') {
+            //     continue;
+            // }
+
+            if (deconflict.has(pickdi.id)) {
+                // it is shared.
+                if (i != 1) {
+                    continue;
+                }
+            }
+            else if (i == 1) {
+                continue; 
+            }
+
+            let lepick = document.createElement("p");
+            lepick.innerHTML = pickdi.prettyName;
+            lepick.classList.add('lepick', "common-shadow");
+            if (lastpick != pickdi.pool) {
+                lepick.classList.add('newpick');
+            }
+            container.appendChild(lepick);
+            lastpick = pickdi.pool;
+        }
+
+        console.log(`Added picks for #${i}`);
+
+        allpicks.appendChild(container);
+    }
 
     /*********************************************/
     let bigname = document.createElement("div");

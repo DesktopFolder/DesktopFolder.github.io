@@ -399,3 +399,9 @@ div.player-container {
     font-size: 24px;
     line-height: 28px;
 }
+
+div.mainpick {
+    /* desired midpoint: 480px */
+    /* other midpoint: 1440px */
+    width: 480px;
+}

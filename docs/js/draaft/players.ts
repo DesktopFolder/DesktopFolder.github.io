@@ -248,20 +248,21 @@ export class Player {
             for (const p of allPlayers) {
                 if (p.exists() && p.name != this.name) {
                     if (otherplayer != undefined) {
-                        console.log(`Found too many players (${otherplayer} and ${p.name}) - no otherplayer.`);
+                        console.log(`Found too many players (${otherplayer.name} and ${p.name}) - no otherplayer.`);
                         otherplayer = undefined;
                         break;
                     }
-                    otherplayer = p.name;
-                    console.log(`Found other player: ${otherplayer}`);
+                    otherplayer = p;
+                    console.log(`Found other player: ${otherplayer.name}`);
                 }
                 else {
                     console.log('Skipping this player while finding other player.');
                 }
             }
-            console.log(`Other player is ${otherplayer}`);
+            console.log(`Other player is ${otherplayer.name}`);
             if (otherplayer != undefined) {
-                uristr += `&otherplayer=${otherplayer}`;
+                uristr += `&otherplayer=${otherplayer.name}`;
+                uristr += `&otherpicks=${otherplayer.encodePicks()}`;
             }
             navigator.clipboard.writeText(uristr);
             return false;
