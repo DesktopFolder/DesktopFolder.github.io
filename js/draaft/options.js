@@ -68,8 +68,9 @@ export class DraftItem {
             return 8;
         }
         if (this.pool == 'tools') {
-            return 8;
+            return 10;
         }
+        console.log(`Warning: Unexpected pool: ${this.pool}`);
         return 12;
     }
     setFrom(it, pool) {

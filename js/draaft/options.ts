@@ -64,7 +64,8 @@ export class DraftItem {
         if (this.pool == 'misc') { return 4; }
         if (this.pool == 'early') { return 6; }
         if (this.pool == 'armour') { return 8; }
-        if (this.pool == 'tools') { return 8; }
+        if (this.pool == 'tools') { return 10; }
+        console.log(`Warning: Unexpected pool: ${this.pool}`);
         return 12;
     }
 
