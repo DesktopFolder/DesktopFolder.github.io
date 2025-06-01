@@ -6,7 +6,7 @@
         },
         "title": {"translate":"Shearly there was another way..."},
         "description": {"translate":"Kill a Turtle"},
-        "frame": "challenge",
+        "frame": "task",
         "show_toast": true,
         "announce_to_chat": true,
         "hidden": true
