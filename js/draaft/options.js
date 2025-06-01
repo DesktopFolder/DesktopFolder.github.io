@@ -426,7 +426,7 @@ let dLogs = new DraftItem("Logs", "Gives 64 oak logs.", "logs.png", itemGiver("a
 let dEyes = new DraftItem("Eyes", "Gives 2 eyes of ender.", "eyes.png", itemGiver("ender_eye", 2));
 let dCrossbow = new DraftItem("Crossbow", "Gives a Piercing IV crossbow.", "crossbow.png", itemGiver('crossbow{Enchantments:[{id:"minecraft:piercing",lvl:4s}]}', 1));
 let SHULKER_COLOUR = Math.floor(Math.random() * 17);
-let dShulkerBoat = new DraftItem("Shulker", "Grants a boated shulker at your spawn location.", "shulker.png", (file) => {
+let dShulkerBoat = new DraftItem("Transport", "Grants a boated shulker at your spawn location.", "shulker.png", (file) => {
     file += `
 execute at @a run summon minecraft:boat ~ ~2 ~ {Passengers:[{id:shulker,Color:${SHULKER_COLOUR}}]}
         `;

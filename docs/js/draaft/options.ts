@@ -639,7 +639,7 @@ let dCrossbow = new DraftItem(
 );
 let SHULKER_COLOUR=Math.floor(Math.random() * 17)
 let dShulkerBoat = new DraftItem(
-    "Shulker",
+    "Transport",
     "Grants a boated shulker at your spawn location.",
     "shulker.png",
     (file) => {
