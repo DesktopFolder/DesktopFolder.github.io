@@ -8,11 +8,11 @@ Commands List:
 
 ## Configuration / Setup Commands
 
-### `?setplayer` (**broadcaster only**)
+#### `?setplayer` (**broadcaster only**)
 
 Set the default Minecraft username for your channel. e.g. after `?setplayer NOHACKSJUSTTIGER`, running a stats command like `?latest` by itself will assume you want the latest AA Paceman data for the user `NOHACKSJUSTTIGER`.
 
-### `?restrict` (**broadcaster only**)
+#### `?restrict` (**broadcaster only**)
 
 Restrict ***all bot output*** to be produced only for commands from moderators or only the broadcaster. To see valid options:
 
@@ -33,7 +33,7 @@ Example: `?restrict moderator` means that any non-moderator chatter runnning `?i
 
 *Note 4: All splits made available from the Paceman API can be used: `['nether', 'bastion', 'fortress', 'first_portal', 'stronghold', 'end', 'elytra', 'credits', 'finish']`*
 
-### `?aalb`
+#### `?aalb`
 
 Queries **Totorewa**'s AA Leaderboard API to get *[unverified AA leaderboard](https://docs.google.com/spreadsheets/d/107ijqjELTQQ29KW4phUmtvYFTX9-pfHsjb18TKoWACk/)* information. This is the leaderboard used by most players & AA community members.
 
@@ -50,7 +50,7 @@ DesktopFolder: ?aalb 41
 folderbot: AA RSG #41: okrzej_ (3:32:24)
 ```
 
-### `?average`
+#### `?average`
 
 Get average time for a split. Examples:
 
@@ -61,7 +61,7 @@ DesktopFolder: ?average !total
 folderbot: Average AA nether for Playerbase: 04:13 (sample: 25312) (median: 04:03)
 ```
 
-### `?conversion`
+#### `?conversion`
 
 Get conversion between two splits. **Two splits are required. They must come first in the arguments list (i.e. `?conversion 10d end elytra` is invalid, you must instead do `?conversion end elytra 10d`.**
 
@@ -74,7 +74,7 @@ DesktopFolder: ?conversion elytra credits feinberg 72d
 folderbot: 92.86% (26 / 28) of feinberg's AA elytra splits lead to starting credits splits. (in the last 1728:00:00)
 ```
 
-### `?count`
+#### `?count`
 
 Counts the number of instances of a split.
 
@@ -85,7 +85,7 @@ DesktopFolder: ?count bastion !total
 folderbot: There are 14596 known bastion times. Fastest: 01:11 (by Ravalle)
 ```
 
-### `?pb`
+#### `?pb`
 
 Prints the best time for a split. *Note: this command's default split is `finish`, not `nether`.*
 
@@ -98,7 +98,7 @@ DesktopFolder: ?pb !total 30d
 folderbot: Best known finish (in the last 720:00:00): 3:05:07 (by DesktopFolder) (1 day, 9:44:29 ago)
 ```
 
-### `?lb`
+#### `?lb`
 
 Gets top Paceman times for a split. *Note: this command's default split is `finish`, not `nether`.
 
@@ -107,7 +107,7 @@ DesktopFolder: ?lb elytra 30d
 folderbot: Top 5 elytra times for Playerbase: 1. 0:12:46 (DoyPingu), 2. 0:14:37 (CroProYT), 3. 0:14:45 (DoyPingu), 4. 0:15:01 (DoyPingu), 5. 0:15:11 (Feinberg)
 ```
 
-### `?countlt`
+#### `?countlt`
 
 Counts instances of a split that are slower than or equal to a specific time. **This time must be specified as the first argument. All other arguments (including the optional time range) are parsed as normal as long as they go after.** The format for the time (*not the time range*) here is somewhat pickier (must be either a number, which will be parsed as minutes, number:number, which will be parsed as minutes:seconds, or number:number:number, which will be parsed as hours:minutes:seconds)
 
@@ -118,11 +118,11 @@ DesktopFolder: ?countlt 3:30 nether 100d
 folderbot: DesktopFolder has 26 known nether times faster than 03:30. (in the last 2400:00:00) 
 ```
 
-### `?countgt`
+#### `?countgt`
 
 Counts instances of a split that are strictly faster than a specific time. This command is essentially identical to `?countlt`, so please read its documentation instead, thank you!
 
-### `?latest`
+#### `?latest`
 
 Finally a normal Paceman style command. Just does the normal thing and prints your latest tracked run. Still takes all the normal parameters if you want.
 
@@ -135,7 +135,7 @@ DesktopFolder: ?latest doypingu bastion 1d
 folderbot: Could not find any bastion in the last 24:00:00 for the player doypingu
 ```
 
-### `?trend`
+#### `?trend`
 
 Mediocre attempt at doing trend analysis. Just read the example, it's not too crazy.
 
@@ -151,11 +151,11 @@ DesktopFolder: ?trend elytra 300d doypingu
 folderbot: All-time average elytra split (in the last 7200:00:00) for doypingu is 17:51 (sample: 175). Last 50 average is 16:39. That is roughly 01:12 faster, nice!
 ```
 
-### `?session`
+#### `?session`
 
 does this one even need documentation it's just a session command. I guess there's a lot of code in here which I should probably mention edge cases for but frankly, do you care? I didn't think so. but I guess I should mention, the bot doesn't know anything about your actual session. it just cuts you a new session if there's a 3+ hour gap between nether enters. frankly if you go that long, you should take a break anyways. get up, walk around, go for a hike or a bike ride, get some sun, it's good for you. *please note: this piece of documentation is not targeted at anyone in particular.*
 
-### `?bastion_breakdown`
+#### `?bastion_breakdown`
 
 The first real stats command I made for this thing. It's kind of useless but it's cute in like a, aww, I'm sure you'll be useful to someone some day kind of way, you know?
 
@@ -168,23 +168,23 @@ Basically, this gives you "% conversion rate nether -> bastion based on nether e
 
 ## Help / Documentation Commands
 
-### `?aapaceman`
+#### `?aapaceman`
 
 Sends the setup link for AA paceman. [You can just click here instead.](https://discord.com/channels/835893596992438372/835893596992438375/1330305232516677733)
 
-### `?botdiscord`
+#### `?botdiscord`
 
 Sends the link to my Discord where you can ask questions, mention bot issues, etc etc. Or you can just ping me somewhere else, I don't care, it's your life.
 
-### `?paceman`
+#### `?paceman`
 
 Prints a link to the Paceman AA page for a player. <s>this is useful because it's really annoying to get there otherwise like seriously where is this linked on the main page</s>
 
-### `?about`
+#### `?about`
 
 Says, and I do quote here: "Made by DesktopFolder. Uses stats from Jojoe's Paceman AA API. Uses local caching to reduce API calls." Fascinating, I know.
 
-### `?info`
+#### `?info`
 
 Unlike the rest of this section, potentially useful. I mean, it prints metainformation about the bot:
 
@@ -193,23 +193,23 @@ DesktopFolder: ?info
 folderbot: Time since update: 0:00:01. (0:43:12 before this command) Bot knows of 26 channels (20 joined). 25312 known AA runs. Latest nether: 03:42 by Queenkac (0:11:42 ago). ~2724 total statistics queries made. 
 ```
 
-### `?help`
+#### `?help`
 
 Prints arbitrary help information based on what I thought was most useful to stuff into a small chat response. Not necessarily helpful.
 
-### `?statcommands`
+#### `?statcommands`
 
 Lists (some of?) the commands that do stats-related things, I guess.
 
-### `?all`
+#### `?all`
 
 Lists ""all"" of the commands.
 
-### `?join`
+#### `?join`
 
 Prints the link from the top of this page, which allows you to join the bot to your channel. To check that it worked properly, please try a command like `?info` in your chat. It may take a few minutes for the bot to be properly added, however, if there is still no output from `?info`, feel free to send a message.
 
-### `?test_parse`
+#### `?test_parse`
 
 Shows how your command arguments parse to Folderbot. Generally, all commands will "figure out" what you want, however there can be unexpected side effects of this, so `?test_parse` can help clarify unexpected behaviour. Example:
 

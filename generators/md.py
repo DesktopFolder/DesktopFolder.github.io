@@ -1,3 +1,12 @@
+def fixup_markdown(text: str):
+    lz = text.splitlines(keepends=True)
+    out = []
+    for line in lz:
+        if '<code>' in line and '</code>' not in line:
+            line = line.replace('<code>', '<code style="display: block; white-space: pre-wrap;">')
+        out.append(line)
+    return ''.join(out)
+
 class Generator():
     def __init__(self, website):
         self.website = website
@@ -11,4 +20,4 @@ class Generator():
             print(e)
             return ''
 
-        return markdown.markdown(d)
+        return fixup_markdown(markdown.markdown(d))
