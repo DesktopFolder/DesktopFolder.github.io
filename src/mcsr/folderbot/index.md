@@ -1,6 +1,6 @@
 # Folderbot Documentation (AA Paceman Extension)
 
-**To join the bot to your channel, click: https://folderbot.disrespec.tech/oauth?scopes=channel:bot**
+**To join the bot to your channel, click: [https://folderbot.disrespec.tech/oauth?scopes=channel:bot](https://folderbot.disrespec.tech/oauth?scopes=channel:bot)**
 
 **There is currently no way to remove the bot (I guess you could just ban it lol)**
 
