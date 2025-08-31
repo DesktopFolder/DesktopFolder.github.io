@@ -98,6 +98,7 @@ async function loginFlow(token = null) {
 }
 function main() {
     console.log("Launching drAAft 2 web client...");
+    document.getElementById("login-page").classList.add("visible");
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     const token = urlParams.get("token");
@@ -111,7 +112,6 @@ function main() {
     }
     else {
         document.getElementById("login-button").addEventListener("click", () => loginFlow());
-        document.getElementById("login-page").classList.add("visible");
     }
 }
 document.addEventListener("DOMContentLoaded", main, false);
