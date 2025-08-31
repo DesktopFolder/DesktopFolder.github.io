@@ -12,11 +12,11 @@ export class UpdatingText {
             return;
         }
         if (!this.noAppend) {
-            this.textString.innerHTML = this.textString.innerHTML + '.';
+            this.textString.innerHTML = this.textString.innerHTML + ".";
         }
     }
     cancel() {
-        this.textString.innerHTML = '';
+        this.textString.innerHTML = "";
         window.clearInterval(this.intervalID);
         console.log(`Deleted interval ID: ${this.intervalID}`);
         UPDATING_TEXT_MAP.delete(this.eleID);
@@ -54,23 +54,26 @@ function loginSuccess(auth) {
     // Then, "race the beam" to get the user information.
     fetch("http://localhost:8000/user", {
         headers: {
-            "token": auth,
-        },
+            token: auth
+        }
     })
-        .then((resp) => resp.json()).then(async (json) => {
+        .then(resp => resp.json())
+        .then(async (json) => {
         document.getElementById("menu-welcome-text").innerText = `welcome, ${json.username}`;
-    }).catch((error) => {
-        console.error('Error getting user data: ', error);
+    })
+        .catch(error => {
+        console.error("Error getting user data: ", error);
     });
 }
 async function testAuthToken(auth) {
     const interval = new UpdatingText("login-response-text", "contacting drAAft server..", 25, false);
     fetch("http://localhost:8000/authenticated", {
         headers: {
-            "token": auth,
-        },
+            token: auth
+        }
     })
-        .then((resp) => resp.text()).then(async (text) => {
+        .then(resp => resp.text())
+        .then(async (text) => {
         console.log(`Authentication Result: ${text}`);
         interval.cancel();
         if (text != "true") {
@@ -79,23 +82,36 @@ async function testAuthToken(auth) {
         else {
             loginSuccess(auth);
         }
-    }).catch((error) => {
+    })
+        .catch(error => {
         interval.cancel();
         new UpdatingText("login-response-text", "error encountered with login, try copying again", 20, true);
-        console.error('Authentication Error: ', error);
+        console.error("Authentication Error: ", error);
     });
 }
-function loginFlow() {
+async function loginFlow(token = null) {
     console.log("Attempting login...");
     const interval = new UpdatingText("login-response-text", "waiting for paste..", 25, false);
-    navigator.clipboard.readText().then(async (auth) => {
-        interval.cancel();
-        return await testAuthToken(auth);
-    });
+    const auth = token ? token : await navigator.clipboard.readText();
+    interval.cancel();
+    return await testAuthToken(auth);
 }
 function main() {
     console.log("Launching drAAft 2 web client...");
-    document.getElementById("login-button").addEventListener("click", loginFlow);
-    document.getElementById("login-page").classList.add("visible");
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const token = urlParams.get("token");
+    if (token != null) {
+        // Remove the token param from the URL
+        urlParams.delete("token");
+        const newQuery = urlParams.toString();
+        const newUrl = window.location.pathname + (newQuery ? "?" + newQuery : "") + window.location.hash;
+        window.history.replaceState({}, document.title, newUrl);
+        loginFlow(token);
+    }
+    else {
+        document.getElementById("login-button").addEventListener("click", () => loginFlow());
+        document.getElementById("login-page").classList.add("visible");
+    }
 }
 document.addEventListener("DOMContentLoaded", main, false);

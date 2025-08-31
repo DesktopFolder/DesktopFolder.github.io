@@ -1,14 +1,41 @@
----
-page.title=drAAfting Tool
-website.title=Desktop's Website
-page.description=A tool for doing AA drafts
-src=templates/generic.html
-css.extras=/styles/draaft2.css
-meta=<link href="https://fonts.cdnfonts.com/css/minecraftia" rel="stylesheet">
-page.image=/draaft-logo.png
----
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <title>drAAfting Tool</title>
+
+    <script type="module">
+        // As suggested by:
+        // https://www.matuzo.at/blog/html-boilerplate/
+        document.documentElement.classList.remove('no-js');
+        document.documentElement.classList.add('js');
+    </script>
+
+    <link href="https://fonts.cdnfonts.com/css/minecraftia" rel="stylesheet">
+
+    <link rel="stylesheet" href="styles.css">
+    <!--<link rel="stylesheet" href="path/to/print.css" media="print">-->
+    <link rel="stylesheet" href="/styles/draaft2.css">
+
+    <meta name="description" content="A tool for doing AA drafts" />
+    <meta property="og:title" content="drAAfting Tool" />
+    <meta property="og:site_name" content="Desktop's Website" />
+    <meta property="og:description" content="A tool for doing AA drafts" />
+    <meta property="og:image" content="/draaft-logo.png" />
+
+    
+    <!-- Favicon stuff :) -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+
+</head>
+<a href="/" id="home-button" style="position:absolute;left:7px;top:12px;margin:0;font-size:60%;line-height:0;">home</a>
+
 <body class="maxerino">
-<video autoplay muted loop id="background-video" preload="auto" controls disablePictureInPicture>
+<video autoplay muted loop id="background-video" controls disablePictureInPicture>
   <source src="/assets/draaft/bg.webm" type="video/webm">
 </video>
 
@@ -69,3 +96,5 @@ page.image=/draaft-logo.png
 <script>var exports = {"__esModule": true};</script>
 <script src="/js/draaft2.js" type="module"></script><!--All of our actual logic resides here.-->
 </body
+
+</html>
