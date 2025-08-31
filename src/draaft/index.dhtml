@@ -3,23 +3,69 @@ page.title=drAAfting Tool
 website.title=Desktop's Website
 page.description=A tool for doing AA drafts
 src=templates/generic.html
-css.extras=/styles/draaft.css
+css.extras=/styles/draaft2.css
 meta=<link href="https://fonts.cdnfonts.com/css/minecraftia" rel="stylesheet">
 page.image=/draaft-logo.png
 ---
 <body class="maxerino">
-<video autoplay muted loop id="bg-video">
+<video autoplay muted loop id="background-video" controls disablePictureInPicture>
   <source src="/assets/draaft/bg.webm" type="video/webm">
 </video>
-<div class="options-div hidden" id="options-div">
-    <h3 id="notice">DOES NOTHING WIP :)</h3>
-<!--    <h3 id="notice">Reload page after configuring!</h3> -->
-    <p><input id="poolrandomizer" class="config-cb ds-small configurer" type="checkbox">Randomize Pools</p>
-    <p><input id="seedhider" class="config-cb ds-small configurer" type="checkbox">Hide Seeds</p>
-    <p><input id="timesetter" class="config-num ds-small configurer" type="text">Seconds per pick</p>
+
+<!-- Login Page ! Let's do this in HTML for funsies. :) -->
+<!-- Login Page Requirements:
+- Link to old drAAft page
+- Link to discord server
+- Link to twitter..?
+- Link to documentation / setup guide (new)
+-->
+<div id="login-page">
+    <img id="login-draaft-logo" src="/draaft-logo.png" />
+
+    <button id="login-button" class="basic-shadow">click to paste login code</button>
+
+    <div id="login-response-container">
+        <p id="login-response-text" class="stroke-text-black"></p>
+    </div>
+
+    <div class="helper-buttons">
+        <div class="helper-button-row">
+            <a class="helper-button as-button basic-shadow" href="https://discord.gg/37Q3KnbeQQ" target="_blank">discord</a>
+            <a class="helper-button as-button basic-shadow" href="https://disrespec.tech/draaft/intro.html" target="_blank">help me!</a>
+        </div>
+        <div class="helper-button-row">
+            <a class="helper-button as-button basic-shadow" href="https://disrespec.tech/draaft/old.html" target="_blank">old site</a>
+            <a class="helper-button as-button basic-shadow" href="https://twitter.com/DesktopFolder" target="_blank">twitter</a>
+        </div>
+    </div>
 </div>
-<a id="options-shower" href='#' onclick="document.getElementById('options-div').classList.toggle('hidden');">show / hide options</a>
-<a id="undo-button" href='#' onclick="undefined">undo</a>
+
+<div id="menu-page">
+    <img class="draaft-logo" src="/draaft-logo.png" />
+    <p id="menu-welcome-text"></p>
+
+    <div id="menu-rooms" class="full-flex-down">
+        <div id="menu-join-room" class="full-flex-right">
+            <input type="text" class="standard-ui hide-input basic-shadow" id="menu-input-roomid" placeholder="room code..." />
+            <button id="menu-roomid-join" class="basic-shadow">join</button>
+        </div>
+        <button class="basic-shadow" id="menu-create-room">create a room</button>
+    </div>
+
+    <div id="menu-helpers">
+        <div class="helper-buttons" id="menu-helper-buttons">
+            <div class="menu-helper-row">
+                <a class="helper-button as-button basic-shadow" href="https://discord.gg/37Q3KnbeQQ" target="_blank">discord</a>
+                <a class="helper-button as-button basic-shadow" href="https://disrespec.tech/draaft/intro.html" target="_blank">help me!</a>
+            </div>
+            <div class="menu-helper-row">
+                <a class="helper-button as-button basic-shadow" href="https://disrespec.tech/draaft/old.html" target="_blank">old site</a>
+                <a class="helper-button as-button basic-shadow" href="https://twitter.com/DesktopFolder" target="_blank">twitter</a>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>var exports = {"__esModule": true};</script>
-<script src="/js/draaft.js" type="module"></script><!--All of our actual logic resides here.-->
-</body>
+<script src="/js/draaft2.js" type="module"></script><!--All of our actual logic resides here.-->
+</body
