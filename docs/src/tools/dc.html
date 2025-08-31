@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <title>Items-In-Containers-Of-Shulker-Boxes Calculator</title>
+
+    <script type="module">
+        // As suggested by:
+        // https://www.matuzo.at/blog/html-boilerplate/
+        document.documentElement.classList.remove('no-js');
+        document.documentElement.classList.add('js');
+    </script>
+
+    
+
+    <link rel="stylesheet" href="styles.css">
+    <!--<link rel="stylesheet" href="path/to/print.css" media="print">-->
+    <link rel="stylesheet" href="styles.css">
+
+    <meta name="description" content="I'm tired of using the multiplication symbol." />
+    <meta property="og:title" content="Items-In-Containers-Of-Shulker-Boxes Calculator" />
+    <meta property="og:site_name" content="DesktopFolder.github.io" />
+    <meta property="og:description" content="I'm tired of using the multiplication symbol." />
+    <meta property="og:image" content="https://cdn.discordapp.com/attachments/721171727673196605/823412989070671882/brbr.png" />
+
+    
+    <!-- Favicon stuff :) -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+
+</head>
+<a href="/" id="home-button" style="position:absolute;left:7px;top:12px;margin:0;font-size:60%;line-height:0;">home</a>
+
+<body class="wider">
+    <p style="text-align: center;">Enter the number of containers you have filled with shulkers filled with items.</p>
+<div class="query-container">
+    <input class="query" type="number" placeholder="0" id="double-chests"> double chests and <input class="query" type="number" placeholder="0" id="chests"> chests and <input class="query" type="number" placeholder="0" id="hoppers"> hoppers. 
+    (And <input class="query" type="number" placeholder="0" id="slots"> slots)
+</div>
+<div class="query-container flex-vertical">
+    <p id="current-url-p" style="text-align: center;">Link to this calculation: <a id="current-url" href=""></a></p>
+    <p id="output"></p>
+</div>
+
+<script>
+function doCalc(dcs, cs, hs, s) {
+    const SHULKER_STORAGE = 27 * 64;
+    const MULTIPLIER = (dcs * 27 * 2) + (cs * 27) + (hs * 5) + s;
+    return SHULKER_STORAGE * MULTIPLIER;
+}
+
+function updateUrl(double_chests, chests, hoppers, slots) {
+    var o = document.getElementById("current-url");
+    var newUrl = 'https://' + location.host + location.pathname;
+    // this should use join, but shh
+    var dc = (double_chests == 0) ? '' : ('d=' + double_chests);
+    var c = (chests == 0) ? '' : ('c=' + chests);
+    var h = (hoppers == 0) ? '' : ('h=' + hoppers);
+    var s = (slots == 0) ? '' : ('s=' + slots);
+    const res = [dc, c, h, s].filter(v => v).join('&');
+    if (res.length != 0) {
+        newUrl = newUrl + '?' + res;
+    }
+    o.href = newUrl;
+    o.innerHTML = newUrl;
+}
+
+function recalculate() {
+    console.log("Recalculating.");
+    var o = document.getElementById("output");
+    var double_chests = parseInt(document.getElementById("double-chests").value) || 0;
+    var chests = parseInt(document.getElementById("chests").value) || 0;
+    var hoppers = parseInt(document.getElementById("hoppers").value) || 0;
+    var slots = parseInt(document.getElementById("slots").value) || 0;
+    o.innerHTML = "You have " + doCalc(double_chests, chests, hoppers, slots) + " items stored. :)";
+
+    updateUrl(double_chests, chests, hoppers, slots);
+}
+
+function onDomLoaded() {
+    document.getElementById("double-chests").addEventListener("change", function() {
+        recalculate();
+    });
+    document.getElementById("chests").addEventListener("change", function() {
+        recalculate();
+    });
+    document.getElementById("hoppers").addEventListener("change", function() {
+        recalculate();
+    });
+    document.getElementById("slots").addEventListener("change", function() {
+        recalculate();
+    });
+
+    var query = window.location.href;
+    var url = new URL(query);
+    var double_chests = parseInt(url.searchParams.get("d")) || 0;
+    document.getElementById("double-chests").value = double_chests;
+    var chests = parseInt(url.searchParams.get("c")) || 0;
+    document.getElementById("chests").value = chests;
+    var hoppers = parseInt(url.searchParams.get("h")) || 0;
+    document.getElementById("hoppers").value = hoppers;
+    var slots = parseInt(url.searchParams.get("s")) || 0;
+    document.getElementById("slots").value = slots;
+
+    recalculate();
+}
+
+document.addEventListener('DOMContentLoaded', onDomLoaded, false);
+</script>
+</body>
+
+</html>

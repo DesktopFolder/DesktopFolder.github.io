@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <title>Loop Subregion Calculator</title>
+
+    <script type="module">
+        // As suggested by:
+        // https://www.matuzo.at/blog/html-boilerplate/
+        document.documentElement.classList.remove('no-js');
+        document.documentElement.classList.add('js');
+    </script>
+
+    
+
+    <link rel="stylesheet" href="styles.css">
+    <!--<link rel="stylesheet" href="path/to/print.css" media="print">-->
+    <link rel="stylesheet" href="styles.css">
+
+    <meta name="description" content="A calculator for determining subregion positions for the Loop infinite bedrock breaker." />
+    <meta property="og:title" content="Loop Subregion Calculator" />
+    <meta property="og:site_name" content="DesktopFolder.github.io" />
+    <meta property="og:description" content="A calculator for determining subregion positions for the Loop infinite bedrock breaker." />
+    <meta property="og:image" content="https://cdn.discordapp.com/attachments/721171727673196605/823412989070671882/brbr.png" />
+
+    
+    <!-- Favicon stuff :) -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+
+</head>
+<a href="/" id="home-button" style="position:absolute;left:7px;top:12px;margin:0;font-size:60%;line-height:0;">home</a>
+
+<body class="wider">
+    <p style="text-align: center;"><b>Video WIP; this page should now cover all cases.</b></p>
+    <p style="text-align: center;">Enter your render distance: 
+        <input class="query" type="number" placeholder="9" id="render-distance"> 
+        Is single player: <input class="query" type="checkbox" placeholder="" id="is-single-player" style="width:auto;" checked> 
+        <i id="simulation-distance-reporter">Calculated Simulation Distance: 7 (112 blocks)</i>
+    </p>
+    <p>
+        Raise secondary player: <input class="query" type="checkbox" placeholder="" id="raise-secondary-player" style="width:auto;"> 
+    </p>
+    <p style="text-align: center;">
+        Placement Origin x: 
+        <input class="query" type="number" placeholder="0" id="origin-x">
+        Placement Origin z: 
+        <input class="query" type="number" placeholder="0" id="origin-z">
+    </p>
+    <p style="text-align: center;">
+        Machine Width [Widths > 128 may require checking "Raise Secondary Player" for smaller render distances]: 
+        <input class="query" type="number" placeholder="0" id="machine-width">
+    </p>
+    <p style="text-align: center;">
+    <b>Warning: Widths above 300 may require a second player to cycle the piston items to prevent them from despawning.</b>
+    </p>
+</div>
+<div class="query-container flex-vertical">
+    <p id="current-url-p" style="text-align: center;margin-bottom:0;">Link to this calculation: <a id="current-url" href=""></a></p>
+    <p style="text-align: center;margin-bottom:0;"><a href="https://disrespec.tech/videos/infinite-3way/download.html" target="_blank" rel="noopener noreferrer">Download the Litematic &#x2197;</a></p>
+    <p id="output"></p>
+</div>
+<div class="query-container flex-vertical" id="display-origins">
+</div>
+
+<script>
+var isSinglePlayer = true;
+var raiseSecondaryPlayer = false;
+var renderDistance = 9;
+var baseSimulationDistance = 7;
+var simulationDistance = 7;
+var baseWidth = 64;
+var width = 64;
+var origin = [0, 0];
+
+origins = {
+    "main_player": {
+        "name": "1. Main Player",
+        "origin": [2, -35],
+        "move": ((origin, change) => [origin[0], origin[1] - change]) // -z
+    },
+    "main_player_return": {
+        "name": "1. Main Player Return",
+        "origin": [4, -136],
+        "move": ((origin, change) => [origin[0], origin[1] - change]), // -z
+        // For increased width, we simply adjust the return stations further to the left.
+        "updateWidth": ((origin, change) => [origin[0], origin[1] - change]) // -z
+    },
+    "main_player_spawner": {
+        "name": "1. Main Player Spawner (Creative Only)",
+        "origin": [7, -41],
+        "move": ((origin, change) => [origin[0], origin[1] - change]) // -z
+    },
+    "main_player_holder": {
+        "name": "2. Lazy Offset Holder",
+        "origin": [10, -66],
+        "move": ((origin, change) => [origin[0], origin[1] - change]) // -z
+    },
+    "main_player_timer": {
+        "name": "2. Lazy Offset Timer",
+        "origin": [24, -58],
+        "move": ((origin, change) => [origin[0], origin[1] - change]) // -z
+    },
+    "secondary_player": {
+        "name": "3. Secondary Player",
+        "origin": [2, 193],
+        "move": ((origin, change) => [origin[0], origin[1] + change]) // +z
+    },
+    "secondary_player_return": {
+        "name": "3. Secondary Player Return",
+        "origin": [5, 116],
+        "move": ((origin, change) => [origin[0], origin[1] + change]), // +z
+        "updateWidth": ((origin, change) => [origin[0], origin[1] - change]) // -z
+    },
+    "secondary_player_spawner": {
+        "name": "3. Secondary Player Spawner (Creative Only)",
+        "origin": [8, 195],
+        "move": ((origin, change) => [origin[0], origin[1] + change]) // +z
+    },
+    "breaker_return": {
+        "name": "4. Breaker Return (Left)",
+        "origin": [15, -7],
+        "rd_conditional": false,
+        "move": ((origin, change) => [origin[0], origin[1] - change]), // -z 
+        "updateWidth": ((origin, change) => [origin[0], origin[1] - change]) // -z
+    },
+    "breaker_start": {
+        "name": "4. Breaker Return (Right)",
+        "origin": [-14, 79],
+        "rd_conditional": false,
+        "move": ((origin, change) => [origin[0], origin[1] + change]) // +z
+    },
+    "conveyer_end": {
+        "name": "5. Item Conveyer End",
+        "origin": [133, 61],
+        "move": ((origin, change) => [origin[0] + change, origin[1]]) // +x
+    },
+    "placer_engine": {
+        "name": "5. Placer Engine",
+        "origin": [134, 60],
+        "move": ((origin, change) => [origin[0] + change, origin[1]]) // +x
+    },
+};
+var playerOrigins = {...origins};
+
+function updateOrigin() {
+    origin[0] = parseInt(document.getElementById("origin-x").value) || 0;
+    origin[1] = parseInt(document.getElementById("origin-z").value) || 0;
+}
+
+function updateWidth() {
+    width = parseInt(document.getElementById("machine-width").value) || 64;
+}
+
+function adjustedOrigin(o) {
+    // Update based on player's origin
+    o.origin = [o.origin[0] + origin[0], o.origin[1] + origin[1]];
+
+    // Put this AFTER we adjust origin.
+    // This reflects the initial values the subregions will have based on the player's origin,
+    // by default, anyways.
+    var initial_x = o.origin[0];
+    var initial_z = o.origin[1];
+
+    // Update based on render distance
+    if (o.rd_conditional !== false) {
+        var diff = simulationDistance - baseSimulationDistance;
+        o.origin = o.move(o.origin, diff * 16);
+    }
+
+    // Update based on width
+    if (!!o.updateWidth) {
+        console.log("Updating width for: " + o.name, "(", width, "-", baseWidth, ")");
+        var diff = width - baseWidth;
+        o.origin = o.updateWidth(o.origin, diff);
+    }
+
+    if (o.origin[0] != initial_x) o.x_modified = true;
+    if (o.origin[1] != initial_z) o.z_modified = true;
+    return o;
+}
+
+function adjustedOrigins()
+{
+    console.log('-> Calculating adjusted origins. Raise Secondary Player:', raiseSecondaryPlayer);
+    for (const k in origins) {
+        /**
+         * "name": "4. Breaker Return (Right)",
+         * "origin": [-14, 79],
+         * "rd_conditional": false,
+         * "move": ((origin, change) => [origin[0], origin[1] + change]) // +z
+         */
+        playerOrigins[k] = adjustedOrigin({...origins[k]});
+    }
+    for (const raisable of ["secondary_player", "secondary_player_return", "secondary_player_spawner"]) {
+        if (raiseSecondaryPlayer) {
+            playerOrigins[raisable].note = "(Raise by 5 blocks)";
+        }
+        else {
+            playerOrigins[raisable].note = "";
+        }
+    }
+    return playerOrigins;
+}
+
+function updateUrl() {
+    var o = document.getElementById("current-url");
+    var newUrl = 'https://' + location.host + location.pathname;
+    // this should use join, but shh
+    var isSP = isSinglePlayer ? '' : ('mp');
+    var isRS = raiseSecondaryPlayer ? ('rs') : '';
+    var w = (width == 64) ? '' : ('w=' + width);
+    var rd = (renderDistance == 9) ? '' : ('rd=' + renderDistance);
+    var ox = (origin[0] == 0) ? '' : ('ox=' + origin[0]);
+    var oz = (origin[1] == 0) ? '' : ('oz=' + origin[1]);
+    const res = [isSP, rd, ox, oz, w].filter(v => v).join('&');
+    if (res.length != 0) {
+        newUrl = newUrl + '?' + res;
+    }
+    o.href = newUrl;
+    o.innerHTML = newUrl;
+}
+
+function recalculateSimulationDistance() {
+    console.log("Recalculating simulation distance.");
+    var o = document.getElementById("simulation-distance-reporter");
+    isSinglePlayer = document.getElementById("is-single-player").checked;
+    raiseSecondaryPlayer = document.getElementById("raise-secondary-player").checked;
+    renderDistance = parseInt(document.getElementById("render-distance").value) || 9;
+    simulationDistance = renderDistance - 2 + !isSinglePlayer;
+    console.log(simulationDistance, renderDistance, 0 + !isSinglePlayer);
+    o.innerHTML = `Calculated Simulation Distance: ${simulationDistance} (${simulationDistance*16} blocks)`;
+}
+
+function displayPlayerOrigins() {
+    var ihtml = String("".toString());
+    for (const veeeeee in playerOrigins) {
+        const v = playerOrigins[veeeeee];
+        console.log(v);
+        // Use concat method to be safer - in case ihtml is not a string
+        ihtml = ihtml.concat(`<p style="margin:0;">${v.name} &#8594; `);
+        if (v.x_modified == true) ihtml = ihtml.concat('<b>');
+        ihtml = ihtml.concat(`x: ${v.origin[0]}`);
+        if (v.x_modified == true) ihtml = ihtml.concat('</b>');
+        ihtml = ihtml.concat(' , ');
+        if (v.z_modified == true) ihtml = ihtml.concat('<b>');
+        ihtml = ihtml.concat(`z: ${v.origin[1]}`);
+        if (v.z_modified == true) ihtml = ihtml.concat('</b>');
+        if ('note' in v) {
+            ihtml = ihtml.concat(`<i style="margin-left:1em;">${v.note}</i>`);
+        }
+        ihtml = ihtml.concat(`</b></p>`);
+    }
+    document.getElementById("display-origins").innerHTML = String(ihtml);
+}
+
+function doPageUpdates() {
+    recalculateSimulationDistance();
+    updateOrigin();
+    updateWidth();
+    adjustedOrigins();
+    displayPlayerOrigins();
+    updateUrl();
+}
+
+function onDomLoaded() {
+    for (const playerOriginsChanger of ["render-distance", "is-single-player", "origin-x", "origin-z", "machine-width", "raise-secondary-player"]) {
+        document.getElementById(playerOriginsChanger).addEventListener("change", function() {
+            doPageUpdates();
+        });
+    }
+
+    var query = window.location.href;
+    var url = new URL(query);
+    isSinglePlayer = !(url.searchParams.get("mp") == '');
+    document.getElementById("is-single-player").checked = isSinglePlayer;
+    raiseSecondaryPlayer = (url.searchParams.get("rs") == '');
+    document.getElementById("raise-secondary-player").checked = raiseSecondaryPlayer;
+    renderDistance = parseInt(url.searchParams.get("rd")) || renderDistance;
+    document.getElementById("render-distance").value = renderDistance;
+    origin[0] = parseInt(url.searchParams.get("ox")) || 0;
+    document.getElementById("origin-x").value = origin[0];
+    origin[1] = parseInt(url.searchParams.get("oz")) || 0;
+    document.getElementById("origin-z").value = origin[1];
+    width = parseInt(url.searchParams.get("w")) || width;
+    document.getElementById("machine-width").value = width;
+
+    // Set up our basic displays.
+    doPageUpdates();
+}
+
+document.addEventListener('DOMContentLoaded', onDomLoaded, false);
+</script>
+</body>
+
+</html>

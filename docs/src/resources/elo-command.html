@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <title>Fossa & Nightbot !elo Command</title>
+
+    <script type="module">
+        // As suggested by:
+        // https://www.matuzo.at/blog/html-boilerplate/
+        document.documentElement.classList.remove('no-js');
+        document.documentElement.classList.add('js');
+    </script>
+
+    
+
+    <link rel="stylesheet" href="styles.css">
+    <!--<link rel="stylesheet" href="path/to/print.css" media="print">-->
+    
+
+    <meta name="description" content="A quick !elo Fossa/Nightbot guide" />
+    <meta property="og:title" content="Fossa & Nightbot !elo Command" />
+    <meta property="og:site_name" content="Desktop's Website" />
+    <meta property="og:description" content="A quick !elo Fossa/Nightbot guide" />
+    <meta property="og:image" content="/assets/logo.png" />
+
+    
+    <!-- Favicon stuff :) -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+
+</head>
+<a href="/" id="home-button" style="position:absolute;left:7px;top:12px;margin:0;font-size:60%;line-height:0;">home</a>
+
+<body class="wider">
+<p><b>Updated for API 1.1.x</b> To get correct commands/helpers, enter your username here: <input id="username-value" /></p>
+<p>Also enter the current season if it is not season 2 (Season 2 runs from mid February to mid March 2023): <input id="season-value" /></p>
+<p>To get <b>Nightbot</b> to evaluate your !elo command, you need to create the following commands. First, create the !elohelper command:</p>
+
+<pre style="white-space: pre-wrap">
+!addcom !elo -a=!elohelper $(eval '$(1)' == 'null' ? '<b class="username-val">YOUR_USERNAME</b>' : '$(1)')
+</pre>
+
+<p>Then add the !elo command:</p>
+
+<pre style="white-space: pre-wrap">
+!addcom !elohelper $(eval r=$(urlfetch json https://mcsrranked.com/api/users/$(1)); d=r['data']; `stats for ${d['nickname']} - elo: ${d['elo_rate']} | rank: ${d['elo_rank']} | record: ${d['records']['<b class="season-val">2</b>']['win']} W - ${d['records']['<b class="season-val">2</b>']['lose']} L`)
+</pre>
+
+<p>To get <b>Fossabot</b> to evaluate your !elo command, you only need one command (note: untested). Make your !elo command the following:</p>
+
+<pre style="white-space: pre-wrap">
+$(eval r=$(customapi https://mcsrranked.com/api/users/$(index1 <b class="username-val">YOUR_USERNAME</b>)); `stats for ${r['data']['nickname']} - elo: ${r['data']['elo_rate']} | rank: ${r['data']['elo_rank']} | record: ${r['data']['records']['<b class="season-val">2</b>']['win']} W - ${r['data']['records']['<b class="season-val">2</b>']['lose']} L`)
+</pre>
+
+<h3>Debugging</h3>
+
+<p>It's possible that these commands stop working due to API updates. Here are a few things you can check.</p>
+
+<h4>MCSR Ranked API</h4>
+
+<p>Okay I legit have 0 interest in writing this out, if you have an issue just ping me in discord and I'll get around to updating this. (DesktopFolder)</p>
+
+<script>
+
+function fixUsernames() {
+    Array.from(document.getElementsByClassName("username-val")).forEach(x => x.innerHTML = document.getElementById("username-value").value);
+    document.getElementById("fixableuri").href = "https://api.mojang.com/users/profiles/minecraft/" + document.getElementById("username-value").value
+    // yes I'm LAZY I GET IT
+    document.getElementById("fixableuri2").href = "https://api.mojang.com/users/profiles/minecraft/" + document.getElementById("username-value").value
+    console.log("Fixed usernames.");
+}
+function fixSeasons() {
+    Array.from(document.getElementsByClassName("season-val")).forEach(x => x.innerHTML = document.getElementById("season-value").value);
+    console.log("Fixed seasons.");
+}
+
+function onDomLoaded() {
+    document.getElementById("username-value").addEventListener("input", function() {
+        fixUsernames();
+    });
+    document.getElementById("season-value").addEventListener("input", function() {
+        fixSeasons();
+    });
+    console.log("Setup event listeners.");
+}
+
+document.addEventListener('DOMContentLoaded', onDomLoaded, false);
+</script>
+</body>
+
+</html>

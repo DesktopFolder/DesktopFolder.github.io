@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <title>Piston Calculator</title>
+
+    <script type="module">
+        // As suggested by:
+        // https://www.matuzo.at/blog/html-boilerplate/
+        document.documentElement.classList.remove('no-js');
+        document.documentElement.classList.add('js');
+    </script>
+
+    
+
+    <link rel="stylesheet" href="styles.css">
+    <!--<link rel="stylesheet" href="path/to/print.css" media="print">-->
+    <link rel="stylesheet" href="styles.css">
+
+    <meta name="description" content="A 3-way bedrock breaker piston and overhead calculator." />
+    <meta property="og:title" content="Piston Calculator" />
+    <meta property="og:site_name" content="DesktopFolder.github.io" />
+    <meta property="og:description" content="A 3-way bedrock breaker piston and overhead calculator." />
+    <meta property="og:image" content="https://cdn.discordapp.com/attachments/721171727673196605/823412989070671882/brbr.png" />
+
+    
+    <!-- Favicon stuff :) -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+
+</head>
+<a href="/" id="home-button" style="position:absolute;left:7px;top:12px;margin:0;font-size:60%;line-height:0;">home</a>
+
+<body class="wider">
+<div class="query-container">
+    <input class="query" type="number" placeholder="0" id="chunks"> chunks and <input class="query" type="number" placeholder="0" id="blocks"> blocks.
+</div>
+<div class="query-container flex-vertical">
+    <p id="current-url-p" style="text-align: center;">Link to this calculation: <a id="current-url" href=""></a></p>
+    <p id="output" style="margin-bottom: 5px;">(Top layer) 0 pistons required. ((0 + 0*16 + 46)^2) - 0 shulker boxes of redstone.</p><p style="margin-top:0;"><b>Note: This accounts for 46 blocks of overhead on the diameter, which is the amount required on the top layer to have your desired diameter on the bottom layer.</b></p>
+    <p id="output-total">(5 layers) 0 pistons required. - 0 shulker boxes of redstone.</p>
+    <p id="output-total-overhead">(Note: This is 0 overhead; 100% of the total cost.)</p>
+    <p id="output-time">(5 layers) Rough time estimate: 0 (real-time) days. (Running 2: 0 days.)</p>
+    <p id="note-breaker">This page assumes you are using exactly one instance of <a href=https://www.youtube.com/watch?v=kTRjq0kCfHU">this 3-way bedrock breaker</a> per layer.</p>
+</div>
+
+<script>
+function fivelayers(diameter) {
+    if (diameter == 0) return 0;
+    var l1 = (diameter + 46)**2;
+    var l5 = (diameter)**2;
+    var l4 = (diameter + 18) * (diameter + 5);
+    var l3 = (diameter + 23) * (diameter + 23);
+    var l2 = (diameter + 41) * (diameter + 28);
+    return l1 + l2 + l3 + l4 + l5;
+}
+
+function shulkers(blocks) {
+    if (blocks == 0) return 0;
+    return (blocks / (64*27)).toFixed(2);
+}
+
+function construct_req(layer, piston_num, calc_str) {
+    s = "";
+    if (piston_num > 200000) {
+        s = " " + (shulkers(piston_num) / (27 * 2)).toFixed(2) + " double chests of shulkers.";
+    }
+    return "(" + layer + ") " + piston_num + " pistons required. " + (calc_str || "") + shulkers(piston_num) + " shulkers." + s;
+}
+
+function updateUrl(chunks, blocks) {
+    var o = document.getElementById("current-url");
+    var newUrl = 'https://' + location.host + location.pathname;
+    // this should use join, but shh
+    if (chunks != 0 || blocks != 0) {
+        newUrl = newUrl + '?';
+        if (chunks != 0) {
+            newUrl = newUrl + 'c=' + chunks;
+            if (blocks != 0) {
+                newUrl = newUrl + '&b=' + blocks;
+            }
+        }
+        else {
+            newUrl = newUrl + 'b=' + blocks;
+        }
+    }
+    o.href = newUrl;
+    o.innerHTML = newUrl;
+}
+
+function recalculate() {
+    console.log("Recalculating.");
+    var o = document.getElementById("output");
+    var chunks = parseInt(document.getElementById("chunks").value) || 0;
+    var blocks = parseInt(document.getElementById("blocks").value) || 0;
+    var thecalc = "((" + blocks + " + " + chunks + "*16 + 46)^2) ";
+    var total = (blocks + chunks*16 + 46)**2;
+    var noverhead = (blocks + chunks*16)**2;
+    o.innerHTML = construct_req("1 layer", total, thecalc);
+
+    var o2 = document.getElementById("output-total");
+    var l5 = fivelayers(blocks + chunks * 16);
+    o2.innerHTML = construct_req("5 layers", l5, null);
+
+    var o3 = document.getElementById("output-time");
+    var days = (l5 / (60 * 60 * 24)).toFixed(2);
+    var days2 = (days / 2).toFixed(2);
+    o3.innerHTML = "(5 layers) Rough time estimate: " + days + " (real-time) days. (Running 2: " + days2 + " days.)";
+
+    // YES I KNOW THIS IS BAD
+    var o4 = document.getElementById("output-total-overhead");
+    var overhead = l5 - (5 * noverhead);
+    var overheadp = (100 * overhead / l5).toFixed(2);
+    o4.innerHTML = "(Note: This is " + overhead + " overhead; " + overheadp + "% of the total cost.)";
+
+    updateUrl(chunks, blocks);
+}
+
+function onDomLoaded() {
+    document.getElementById("chunks").addEventListener("change", function() {
+        recalculate();
+    });
+    document.getElementById("blocks").addEventListener("change", function() {
+        recalculate();
+    });
+
+    var query = window.location.href;
+    var url = new URL(query);
+    var chunks = parseInt(url.searchParams.get("c"));
+    if (!isNaN(chunks)) {
+        document.getElementById("chunks").value = chunks;
+    }
+    var blocks = parseInt(url.searchParams.get("b"));
+    if (!isNaN(blocks)) {
+        document.getElementById("blocks").value = blocks;
+    }
+    if (!isNaN(chunks) || !isNaN(blocks)) recalculate();
+
+    updateUrl(chunks || 0, blocks || 0);
+}
+
+document.addEventListener('DOMContentLoaded', onDomLoaded, false);
+</script>
+</body>
+
+</html>

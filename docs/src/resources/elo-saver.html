@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <title>Elo Viewer</title>
+
+    <script type="module">
+        // As suggested by:
+        // https://www.matuzo.at/blog/html-boilerplate/
+        document.documentElement.classList.remove('no-js');
+        document.documentElement.classList.add('js');
+    </script>
+
+    
+
+    <link rel="stylesheet" href="styles.css">
+    <!--<link rel="stylesheet" href="path/to/print.css" media="print">-->
+    
+
+    <meta name="description" content="A small elo grapher" />
+    <meta property="og:title" content="Elo Viewer" />
+    <meta property="og:site_name" content="Desktop's Website" />
+    <meta property="og:description" content="A small elo grapher" />
+    <meta property="og:image" content="/assets/logo.png" />
+
+    
+    <!-- Favicon stuff :) -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+
+</head>
+<a href="/" id="home-button" style="position:absolute;left:7px;top:12px;margin:0;font-size:60%;line-height:0;">home</a>
+
+<body class="wider">
+<p>Username: <input id="username-value" /></p>
+<p style="display: none" id="json-output"></p>
+
+<canvas id="incredible-elo-chart"></canvas>
+
+<h3>Important - How do I use this?</h3>
+<p><i>Note: This is a test project that is not really tested & may have bugs.</i> To use this elo/rank grapher, simply enter your Minecraft username, press enter, then leave the page open while you play games. The tab will automatically update and gather elo data, and save it locally. Because it uses browser storage, this data will not be shared across browsers/computers. Because it gathers data using JavaScript on your browser, this data will not update if you do not have the tab open.</p>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@^3"></script>
+<script src="https://cdn.jsdelivr.net/npm/luxon@^2"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@^1"></script>
+<script>
+// I'm just going to quickly preface this.
+// I have no knowledge whatsoever of best practice within JS.
+// This is just me going based off of some very basic assumptions.
+// This may not be good code. (And most likely isn't.)
+
+// Helpers
+function timestamp() {
+    return Math.floor(Date.now() / 1000);
+}
+
+class Player {
+    constructor(data, username) {
+        this.lastPolled = null;
+        this.data = data;
+        this.username = username;
+    }
+
+    shouldPoll() {
+        // Check if it's been 5 minutes since we last polled.
+        return (timestamp() - (this.lastPolled || 0)) > (1 * 60);
+    }
+
+    polled() {
+        this.lastPolled = timestamp();
+    }
+
+    fetchingPoll() {
+        if (!this.shouldPoll()) {
+            console.log(`Did not poll for ${this.username} due to timeout.`);
+            return;
+        }
+        console.log("Submitting fetch for " + this.username);
+        fetch('https://mcsrranked.com/api/users/' + this.username, {mode:'cors'})
+            .then((response) => response.json())
+            .then((data) => {
+                console.log(data);
+                let output = document.getElementById("json-output");
+                output.innerHTML = JSON.stringify(data);
+                if (data.status == "error") { 
+                    console.log("Refusing to update application with bad data.");
+                    this.polled(); // don't make multiple erroring requests
+                    application.stopTimer();
+                    return;
+                }
+                this.manualUpdate(data.data);
+                application.saveRenderPlayer(this);
+            })
+            .catch((e) => {});
+    }
+
+    asData() {
+        return JSON.stringify(this.data.filter((e, i, a) => (i == 0 || a[i - 1][1] != e[1] || a[i - 1][2] != e[2])));
+    }
+
+    toEloChartData() {
+        return this.data.map(o => ({x: o[0] * 1000, y: o[2]}));
+    }
+    toRankChartData() {
+        return this.data.map(o => ({x: o[0] * 1000, y: o[1]}));
+    }
+
+    manualUpdate(data) {
+        if (data.nickname.toLowerCase() != this.username) {
+            console.log(`Error: manualUpdate received nickname ${data.nickname} but is ${this.username}`);
+            return;
+        }
+
+        this.polled();
+
+        this.data.push([this.lastPolled, data.elo_rank, data.elo_rate]);
+    }
+}
+
+class Application {
+    static #FEINBERG_LINE = 'rgb(255, 99, 132)';
+    static #FEINBERG_BG = 'rgb(75, 192, 192)';
+    static #DEFAULT_LINE = 'rgba(113, 121, 126, 0.8)';
+    static #DEFAULT_BG = 'rgba(226, 242, 252, 0.4)';
+    static #DEFAULT_FG_LINE = 'rgba(178, 121, 126, 0.9)';
+
+    timer = null;
+
+    // LocalStorage accessors/modifiers
+    getItem(id, default_value = null) {
+        return localStorage.getItem('_elo:' + id.toLowerCase()) || default_value;
+    }
+
+    setItem(id, val) {
+        return localStorage.setItem('_elo:' + id.toLowerCase(), val);
+    }
+
+    removeItem(id) {
+        return localStorage.removeItem('_elo:' + id.toLowerCase());
+    }
+
+    stopTimer() {
+        if (this.timer != null) {
+            clearInterval(this.timer); 
+        }
+    }
+
+    // Setup - load our relevant data
+    constructor() {
+        this.players = new Map(); // These are lazy loaded.
+    }
+
+    init() {
+        if (this.getItem('version', 0) < 1) {
+            // Version upgrade things?
+        }
+        this.ctx = document.getElementById("incredible-elo-chart");
+        this.data = {
+            labels: [],
+            datasets: [{
+                label: 'Elo Value',
+                backgroundColor: Application.#DEFAULT_BG,
+                borderColor: Application.#DEFAULT_LINE, 
+                fill: true,
+                data: [],
+                yAxisID: 'ELO',
+            }, {
+                label: 'MCSR Rank',
+                backgroundColor: Application.#DEFAULT_BG,
+                borderColor: Application.#DEFAULT_FG_LINE, 
+                fill: false,
+                data: [],
+                yAxisID: 'RANK',
+            }
+            ],
+        };
+        this.graph = new Chart(this.ctx, {
+            type: 'line',
+            data: this.data,
+            options: {
+                plugins: {
+                    title: {
+                        text: 'Elo Graph',
+                        display: true
+                    }
+                },
+                scales: {
+                    x: {
+                        type: 'time',
+                        time: {
+                            tooltipFormat: 'DD T'
+                        },
+                        title: {
+                            display: true,
+                            text: 'Date'
+                        }
+                    },
+                    ELO: {
+                        type: 'linear',
+                        position: 'left',
+                        id: 'ELO',
+                        title: {
+                            display: true,
+                            text: 'Elo'
+                        }
+                    },
+                    RANK: {
+                        type: 'linear',
+                        position: 'right',
+                        id: 'RANK',
+                        title: {
+                            display: true,
+                            text: 'Rank'
+                        },
+                        reverse: true,
+                    }
+                }
+            }
+        });
+    }
+
+    // This really assumes no multithreading (i.e. multiple tabs)
+    #loadPlayerData(username) {
+        // don't at me
+        return JSON.parse(this.getItem('player:' + username) || '[]');
+    }
+    getPlayer(someUsername) {
+        let username = someUsername.toLowerCase();
+        if (username == 'feinberg') {
+            this.graph.data.datasets[0].backgroundColor = Application.#FEINBERG_BG;
+            this.graph.data.datasets[0].borderColor = Application.#FEINBERG_LINE;
+            this.graph.update();
+        }
+        if (this.players.has(username)) { return this.players.get(username); }
+        this.players.set(username, new Player(this.#loadPlayerData(username), username)); 
+        return this.players.get(username);
+    }
+
+    commit() {
+        for (const [name, player] of this.players) {
+            if (player.data.length == 0) {
+                console.log(`Did not store player ${player.username} (invalid data)`);
+                continue;
+            }
+            const res = player.asData();
+            const key = 'player:' + player.username;
+            this.setItem(key, res);
+            console.log(`Stored player ${player.username} at '${key}' as: ${res}`);
+        }
+        this.setItem('version', 1);
+    }
+
+    #fetchingUpdate(username) {
+        // Load the player that we're updating from.
+        var p = this.getPlayer(username);
+
+        // Next, we want to save elo rate and rank right now, along with a timestamp.
+        p.fetchingPoll();
+        console.log(`(Ran fetching update for ${p.username})`);
+    }
+
+    saveRenderPlayer(player) {
+        this.commit();
+
+        this.graph.data.datasets[0].data = player.toEloChartData();
+        this.graph.data.datasets[1].data = player.toRankChartData();
+        this.graph.update();
+
+        this.stopTimer();
+        this.timer = setInterval(() => this.#fetchingUpdate(player.username), 60 * 1000);
+    }
+
+    loadUsername(username) {
+        if (!/^([a-zA-Z0-9_]{2,17})$/.test(username)) {
+            return;
+        }
+
+        this.#fetchingUpdate(username.toLowerCase());
+    }
+}
+
+var application = new Application();
+
+function onDomLoaded() {
+    application.init();
+    document.getElementById("username-value").addEventListener("change", function(e) {
+        // do nothing for now
+        // application.loadUsername(document.getElementById("username-value").value);
+    });
+    document.getElementById("username-value").addEventListener("keypress", function(e) {
+        if (e.key == 'Enter')
+            application.loadUsername(document.getElementById("username-value").value);
+    });
+    console.log("Setup event listeners.");
+}
+
+document.addEventListener('DOMContentLoaded', onDomLoaded, false);
+</script>
+</body>
+
+</html>

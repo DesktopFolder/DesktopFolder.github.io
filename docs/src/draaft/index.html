@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <title>drAAfting Tool</title>
+
+    <script type="module">
+        // As suggested by:
+        // https://www.matuzo.at/blog/html-boilerplate/
+        document.documentElement.classList.remove('no-js');
+        document.documentElement.classList.add('js');
+    </script>
+
+    <link href="https://fonts.cdnfonts.com/css/minecraftia" rel="stylesheet">
+
+    <link rel="stylesheet" href="styles.css">
+    <!--<link rel="stylesheet" href="path/to/print.css" media="print">-->
+    <link rel="stylesheet" href="/styles/draaft2.css">
+
+    <meta name="description" content="A tool for doing AA drafts" />
+    <meta property="og:title" content="drAAfting Tool" />
+    <meta property="og:site_name" content="Desktop's Website" />
+    <meta property="og:description" content="A tool for doing AA drafts" />
+    <meta property="og:image" content="/draaft-logo.png" />
+
+    
+    <!-- Favicon stuff :) -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+
+</head>
+<a href="/" id="home-button" style="position:absolute;left:7px;top:12px;margin:0;font-size:60%;line-height:0;">home</a>
+
+<body class="maxerino">
+<video autoplay muted loop id="background-video" controls disablePictureInPicture>
+  <source src="/assets/draaft/bg.webm" type="video/webm">
+</video>
+
+<!-- Login Page ! Let's do this in HTML for funsies. :) -->
+<!-- Login Page Requirements:
+- Link to old drAAft page
+- Link to discord server
+- Link to twitter..?
+- Link to documentation / setup guide (new)
+-->
+<div id="login-page">
+    <img id="login-draaft-logo" src="/draaft-logo.png" />
+
+    <button id="login-button" class="basic-shadow">click to paste login code</button>
+
+    <div id="login-response-container">
+        <p id="login-response-text" class="stroke-text-black"></p>
+    </div>
+
+    <div class="helper-buttons">
+        <div class="helper-button-row">
+            <a class="helper-button as-button basic-shadow" href="https://discord.gg/37Q3KnbeQQ" target="_blank">discord</a>
+            <a class="helper-button as-button basic-shadow" href="https://disrespec.tech/draaft/intro.html" target="_blank">help me!</a>
+        </div>
+        <div class="helper-button-row">
+            <a class="helper-button as-button basic-shadow" href="https://disrespec.tech/draaft/old.html" target="_blank">old site</a>
+            <a class="helper-button as-button basic-shadow" href="https://twitter.com/DesktopFolder" target="_blank">twitter</a>
+        </div>
+    </div>
+</div>
+
+<div id="menu-page">
+    <img class="draaft-logo" src="/draaft-logo.png" />
+    <p id="menu-welcome-text"></p>
+
+    <div id="menu-rooms" class="full-flex-down">
+        <div id="menu-join-room" class="full-flex-right">
+            <input type="text" class="standard-ui hide-input basic-shadow" id="menu-input-roomid" placeholder="room code..." />
+            <button id="menu-roomid-join" class="basic-shadow">join</button>
+        </div>
+        <button class="basic-shadow" id="menu-create-room">create a room</button>
+    </div>
+
+    <div id="menu-helpers">
+        <div class="helper-buttons" id="menu-helper-buttons">
+            <div class="menu-helper-row">
+                <a class="helper-button as-button basic-shadow" href="https://discord.gg/37Q3KnbeQQ" target="_blank">discord</a>
+                <a class="helper-button as-button basic-shadow" href="https://disrespec.tech/draaft/intro.html" target="_blank">help me!</a>
+            </div>
+            <div class="menu-helper-row">
+                <a class="helper-button as-button basic-shadow" href="https://disrespec.tech/draaft/old.html" target="_blank">old site</a>
+                <a class="helper-button as-button basic-shadow" href="https://twitter.com/DesktopFolder" target="_blank">twitter</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>var exports = {"__esModule": true};</script>
+<script src="/js/draaft2.js" type="module"></script><!--All of our actual logic resides here.-->
+</body
+
+</html>
