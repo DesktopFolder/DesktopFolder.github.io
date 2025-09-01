@@ -96,6 +96,7 @@ button, .as-button, .standard-ui {
 }
 
 .hide-input {
+    /* Use setupLazySecret instead */
     -webkit-text-security: square;
     -moz-text-security: square;
     text-security: square;

@@ -73,7 +73,7 @@
 
     <div id="menu-rooms" class="full-flex-down">
         <div id="menu-join-room" class="full-flex-right">
-            <input type="text" class="standard-ui hide-input basic-shadow" id="menu-input-roomid" placeholder="room code..." />
+            <input type="text" class="standard-ui basic-shadow" id="menu-input-roomid" placeholder="room code..." />
             <button id="menu-roomid-join" class="basic-shadow">join</button>
         </div>
         <button class="basic-shadow" id="menu-create-room">create a room</button>
@@ -93,8 +93,34 @@
     </div>
 </div>
 
+<div id="room-page" style="display: none">
+    <img class="draaft-logo" src="/draaft-logo.png" />
+    <p id="menu-welcome-text"></p>
+
+    <div id="menu-rooms" class="full-flex-down">
+        <div id="menu-join-room" class="full-flex-right">
+            <input type="text" class="standard-ui basic-shadow" id="menu-input-roomid" placeholder="room code..." />
+            <button id="menu-roomid-join" class="basic-shadow">:)</button>
+        </div>
+        <button class="basic-shadow" id="menu-create-room">ur in a room</button>
+    </div>
+
+    <div id="menu-helpers">
+        <div class="helper-buttons" id="menu-helper-buttons">
+            <div class="menu-helper-row">
+                <a class="helper-button as-button basic-shadow" id="quick-remove" href="https://discord.gg/37Q3KnbeQQ" target="_blank">discord</a>
+                <a class="helper-button as-button basic-shadow" href="https://disrespec.tech/draaft/intro.html" target="_blank">help me!</a>
+            </div>
+            <div class="menu-helper-row">
+                <a class="helper-button as-button basic-shadow" href="https://disrespec.tech/draaft/old.html" target="_blank">old site</a>
+                <a class="helper-button as-button basic-shadow" href="https://twitter.com/DesktopFolder" target="_blank">twitter</a>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>var exports = {"__esModule": true};</script>
 <script src="/js/draaft2.js" type="module"></script><!--All of our actual logic resides here.-->
-</body
+</body>
 
 </html>
