@@ -68,4 +68,4 @@ page.image=/draaft-logo.png
 
 <script>var exports = {"__esModule": true};</script>
 <script src="/js/draaft2.js" type="module"></script><!--All of our actual logic resides here.-->
-</body
+</body>
