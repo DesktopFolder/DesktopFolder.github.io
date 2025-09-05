@@ -174,7 +174,7 @@ export class DraftPool {
         let poolHeader = document.createElement("div");
         poolHeader.classList.add("draft-header", "basic-box");
         poolHeader.id = `pool-header-${this.name}`;
-        poolHeader.style = "text-align:center;";
+        poolHeader.style.textAlign = 'center';
 
         let poolHeaderText = document.createElement("p");
         poolHeaderText.classList.add("pool-header");

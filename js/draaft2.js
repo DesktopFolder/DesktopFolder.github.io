@@ -125,7 +125,7 @@ async function testAuthToken(auth) {
         console.log(`Authentication Result: ${text}`);
         interval.cancel();
         if (text != "true") {
-            new UpdatingText("login-response-text", "incorrect login token, try copying again", 20, true);
+            new UpdatingText("login-response-text", "incorrect login token, try logging in again", 20, true);
         }
         else {
             loginSuccess(auth);
@@ -133,16 +133,17 @@ async function testAuthToken(auth) {
     })
         .catch(error => {
         interval.cancel();
-        new UpdatingText("login-response-text", "error encountered with login, try copying again", 20, true);
+        new UpdatingText("login-response-text", "error encountered with login, try logging in again", 20, true);
         console.error("Authentication Error: ", error);
     });
 }
-async function loginFlow(token = null) {
+async function loginFlow(port) {
     console.log("Attempting login...");
-    const interval = new UpdatingText("login-response-text", "waiting for paste..", 25, false);
-    const auth = token ? token : await navigator.clipboard.readText();
-    interval.cancel();
-    return await testAuthToken(auth);
+    const response = await fetch(`http://localhost:${port}/`);
+    console.assert(response.status == 200);
+    const json = await response.json();
+    console.assert(json.token !== undefined);
+    return await testAuthToken(json.token);
 }
 function stored_token() {
     return localStorage.getItem("draaft.token");
@@ -208,19 +209,16 @@ function main() {
     document.getElementById("login-page").classList.add("visible");
     setupLazySecret(document.getElementById("menu-input-roomid"));
     setupOnClick();
-    const queryString = window.location.search;
-    const urlParams = new URLSearchParams(queryString);
-    const token = urlParams.get("token");
-    if (token != null) {
+    const url = new URL(window.location.href);
+    const urlParams = url.searchParams;
+    const authPort = urlParams.get("auth_port");
+    if (authPort !== null) {
         // Remove the token param from the URL
-        urlParams.delete("token");
+        urlParams.delete("auth_port");
         const newQuery = urlParams.toString();
-        const newUrl = window.location.pathname + (newQuery ? "?" + newQuery : "") + window.location.hash;
-        window.history.replaceState({}, document.title, newUrl);
-        loginFlow(token);
-    }
-    else {
-        document.getElementById("login-button").addEventListener("click", () => loginFlow());
+        url.search = newQuery;
+        window.history.replaceState({}, "", url);
+        loginFlow(Number.parseInt(authPort));
     }
 }
 document.addEventListener("DOMContentLoaded", main, false);
