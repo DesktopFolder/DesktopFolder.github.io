@@ -115,10 +115,6 @@ a.as-button {
 /**********************************************************
  * Login Page
  **********************************************************/
-button#login-button {
-    font-size: 36px;
-}
-
 div#login-page {
     width: min(100vw, 800px);
     height: min(100vh, 650px);
