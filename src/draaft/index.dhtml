@@ -4,7 +4,6 @@ website.title=Desktop's Website
 page.description=A tool for doing AA drafts
 src=templates/generic.html
 css.extras=/styles/draaft2.css
-meta=<link href="https://fonts.cdnfonts.com/css/minecraftia" rel="stylesheet">
 page.image=/draaft-logo.png
 ---
 <body class="maxerino">
@@ -20,26 +19,34 @@ page.image=/draaft-logo.png
 - Link to documentation / setup guide (new)
 -->
 <div id="login-page">
-    <img id="login-draaft-logo" src="/draaft-logo.png" />
+    <!-- Fixed position; doesn't affect layout -->
 
-    <p class="basic-shadow standard-ui">
-        Click on the bucket in game to log in
-    </p>
-
+    <!-- TODO: make this into a minecraft toast? -->
     <div id="login-response-container">
         <p id="login-response-text" class="stroke-text-black"></p>
     </div>
 
-    <div class="helper-buttons">
-        <div class="helper-button-row">
-            <a class="helper-button as-button basic-shadow" href="https://discord.gg/37Q3KnbeQQ" target="_blank">discord</a>
-            <a class="helper-button as-button basic-shadow" href="https://disrespec.tech/draaft/intro.html" target="_blank">help me!</a>
-        </div>
-        <div class="helper-button-row">
-            <a class="helper-button as-button basic-shadow" href="https://disrespec.tech/draaft/old.html" target="_blank">old site</a>
-            <a class="helper-button as-button basic-shadow" href="https://twitter.com/DesktopFolder" target="_blank">twitter</a>
-        </div>
-    </div>
+    <img id="login-draaft-logo" src="/draaft-logo.png" />
+
+    <a class="as-button basic-shadow login-main-button" href="https://github.com/memerson12/drAAft/releases">download</a>
+
+    <!-- TODO!! -->
+    <a class="as-button basic-shadow login-main-button" href="/draaft/documentation.html" target="_blank">get started</a>
+
+    <a class="as-button basic-shadow login-main-button" href="https://discord.gg/37Q3KnbeQQ" target="_blank">discord</a>
+
+</div>
+
+<div class="floating-footer">
+    <a href="https://github.com/memerson12/drAAft/releases" target="_blank">mod download</a>
+
+    <a href="/draaft/documentation.html" target="_blank">get started</a>
+
+    <a href="https://discord.gg/37Q3KnbeQQ" target="_blank">discord</a>
+
+    <a href="https://twitter.com/DesktopFolder" target="_blank">twitter</a>
+
+    <a href="/draaft/old.html" target="_blank">old site</a>
 </div>
 
 <div id="menu-page">
@@ -54,6 +61,7 @@ page.image=/draaft-logo.png
         <button class="basic-shadow" id="menu-create-room">create a room</button>
     </div>
 
+    <!--
     <div id="menu-helpers">
         <div class="helper-buttons" id="menu-helper-buttons">
             <div class="menu-helper-row">
@@ -66,6 +74,7 @@ page.image=/draaft-logo.png
             </div>
         </div>
     </div>
+    -->
 </div>
 
 <div id="room-page" style="display: none">
@@ -78,19 +87,6 @@ page.image=/draaft-logo.png
             <button id="menu-roomid-join" class="basic-shadow">:)</button>
         </div>
         <button class="basic-shadow" id="menu-create-room">ur in a room</button>
-    </div>
-
-    <div id="menu-helpers">
-        <div class="helper-buttons" id="menu-helper-buttons">
-            <div class="menu-helper-row">
-                <a class="helper-button as-button basic-shadow" id="quick-remove" href="https://discord.gg/37Q3KnbeQQ" target="_blank">discord</a>
-                <a class="helper-button as-button basic-shadow" href="https://disrespec.tech/draaft/intro.html" target="_blank">help me!</a>
-            </div>
-            <div class="menu-helper-row">
-                <a class="helper-button as-button basic-shadow" href="https://disrespec.tech/draaft/old.html" target="_blank">old site</a>
-                <a class="helper-button as-button basic-shadow" href="https://twitter.com/DesktopFolder" target="_blank">twitter</a>
-            </div>
-        </div>
     </div>
 </div>
 

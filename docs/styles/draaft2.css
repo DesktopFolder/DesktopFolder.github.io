@@ -1,6 +1,14 @@
 /**********************************************************
  * General CSS Rules
  **********************************************************/
+@font-face {
+    font-family: 'Minecraftia';
+    font-display: block;
+    font-weight: 400;
+    font-style: normal;
+    src: local('Minecraftia'), url('/assets/Minecraftia.woff') format('woff');
+}
+
 .stroke-text-black {
     text-shadow:
     -1px -1px 0 #000,
@@ -89,7 +97,7 @@ button, .as-button, .standard-ui {
     border: none;
     background-color: rgba(0, 0, 0, 0.5);
     outline: 2px solid rgba(255, 255, 255, 0.8);
-    color: white;
+    color: white !important;
     font-family: Minecraftia;
     font-size: 24px;
     padding: 0.5em;
@@ -109,15 +117,47 @@ button:hover, .as-button:hover  {
 
 a.as-button {
     color: white;
+    text-decoration: none !important;
+}
+
+/**********************************************************
+ * Footer
+ **********************************************************/
+div.floating-footer {
+    position: fixed;
+    bottom: 4px;
+    width: 100%;
+    text-align: center;
+
+    font-size: 1rem;
+    color: white;
+}
+
+div.floating-footer > a {
+    color: white;
     text-decoration: none;
+    margin-left: 10px;
+    margin-right: 10px;
+
+    text-shadow:
+        -1px -1px 0 #555,
+        1px -1px 0 #555,
+        -1px 1px 0 #555,
+        1px 1px 0 #555;
+}
+div.floating-footer > a:hover {
+    text-decoration: underline;
 }
 
 /**********************************************************
  * Login Page
  **********************************************************/
+:root {
+    --login-draaft-height: 216px;
+}
 div#login-page {
-    width: min(100vw, 800px);
-    height: min(100vh, 650px);
+    width: min(100vw, 300px);
+    height: min(100vh, var(--login-draaft-height));
     /* background-color: rgba(0, 0, 0, 0.3); */
 
     display: flex;
@@ -134,6 +174,10 @@ div#login-page.visible {
 div#login-page.invisible {
     opacity: 0 !important;
     transition: opacity 500ms 0ms;
+}
+
+div#login-page > .login-main-button {
+    width: 100%;
 }
 
 div.helper-buttons {
@@ -165,6 +209,8 @@ a.helper-button {
 }
 
 div#login-response-container {
+    position: fixed;
+    top: 20px;
     height: 70px;
     width: 100%;
     text-align: center;
@@ -176,7 +222,7 @@ p#login-response-text {
 }
 
 :root {
-    --draft-logo-width: min(100%, 108px);
+    --draft-logo-width: min(25%, 108px);
 }
 
 .draaft-logo {
@@ -187,6 +233,10 @@ p#login-response-text {
 }
 
 #login-draaft-logo {
+    position: fixed;
+    left: calc(100vw * 0.5 - 0.5 * var(--draft-logo-width));
+    top: calc(0.5 * (100vh / 2 - var(--login-draaft-height) / 2 - var(--draft-logo-width)));
+
     width: var(--draft-logo-width);
 
     -webkit-filter: drop-shadow(6px 6px 6px #444);
@@ -278,3 +328,8 @@ div.menu-helper-row {
     flex-direction: row;
     margin: 0;
 }
+
+/**********************************************************
+ * Room Page
+ **********************************************************/
+

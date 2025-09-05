@@ -96,7 +96,7 @@ function loginSuccess(auth) {
     // First, start to fade out the page.
     hideAllPages();
     // Then, add a timeout to show our menu page.
-    window.setTimeout(() => showMenu(auth), 500);
+    const menuShowTimeout = window.setTimeout(() => showMenu(auth), 500);
     // Don't forget to save the token, I guess.
     localStorage.setItem("draaft.token", auth);
     // Then, "race the beam" to get the user information.
@@ -107,7 +107,14 @@ function loginSuccess(auth) {
     })
         .then(resp => resp.json())
         .then(async (json) => {
-        document.getElementById("menu-welcome-text").innerText = `welcome, ${json.username}`;
+        // Quickly check to see if we should move to a room page.
+        if (json.room != null) {
+            document.getElementById("menu-welcome-text").innerText = `ur in a room?? buggy website...`;
+            window.clearTimeout(menuShowTimeout);
+        }
+        else {
+            document.getElementById("menu-welcome-text").innerText = `welcome, ${json.username.toLowerCase()}`;
+        }
     })
         .catch(error => {
         console.error("Error getting user data: ", error);
@@ -125,7 +132,7 @@ async function testAuthToken(auth) {
         console.log(`Authentication Result: ${text}`);
         interval.cancel();
         if (text != "true") {
-            new UpdatingText("login-response-text", "incorrect login token, try logging in again", 20, true);
+            new UpdatingText("login-response-text", "login token was incorrect, try logging in again", 20, true);
         }
         else {
             loginSuccess(auth);
