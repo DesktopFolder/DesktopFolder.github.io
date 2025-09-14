@@ -1,6 +1,14 @@
 var UPDATING_TEXT_MAP = new Map();
 
-const API_URI = "http://localhost:8000";
+var API_WS: WebSocket | null = null;
+// Cursed but simplest way to do this with this site
+const LOCAL_TESTING: boolean = true;
+
+// Should not have to change any of these in production.
+const API_PROTO = LOCAL_TESTING ? "http://" : "https://";
+const API_HOST = LOCAL_TESTING ? "localhost:8000" : "api.disrespec.tech";
+const API_URI = `${API_PROTO}${API_HOST}`;
+const WS_URI = `ws://${API_HOST}`;
 
 /**
  * Adds listeners to an input element that turn it into a
@@ -84,6 +92,37 @@ export class UpdatingText {
     }
 }
 
+/* WebSocket Testing */
+export function connect(token: string) {
+    if (API_WS == null || API_WS == undefined) {
+        API_WS = new WebSocket(`${WS_URI}/listen?token=${token}`);
+        API_WS.onerror = function(event) {
+            console.warn("WebSocket errored. Must reconnect.");
+            API_WS = null;
+        };
+        API_WS.onopen = function(event) {
+            console.log("Successfully connected websocket.");
+        }
+        API_WS.onmessage = function (event) {
+            // websocket time!
+            console.log(event.data);
+        };
+    } else {
+        console.warn(`Tried to connect() twice... (websocket: ${API_WS})`);
+    }
+}
+export function sendMessage(message: string) {
+    if (API_WS != null) {
+        API_WS.send(message);
+    } else {
+        console.warn("Tried to sendMessage() without websocket...");
+    }
+}
+if (LOCAL_TESTING) {
+    (window as any).test_connect = connect;
+    (window as any).test_message = sendMessage;
+}
+
 function showMenu(auth: string) {
     // Basic setup.
     setMenuClickers();
@@ -115,7 +154,7 @@ function loginSuccess(auth: string) {
     const menuShowTimeout = window.setTimeout(() => showMenu(auth), 500);
 
     // Don't forget to save the token, I guess.
-    localStorage.setItem("draaft.token", auth);
+    set_token(auth);
 
     // Then, "race the beam" to get the user information.
     fetch(`${API_URI}/user`, {
@@ -127,11 +166,10 @@ function loginSuccess(auth: string) {
         .then(async json => {
             // Quickly check to see if we should move to a room page.
             if (json.room != null) {
-            document.getElementById("menu-welcome-text").innerText = `ur in a room?? buggy website...`;
-            window.clearTimeout(menuShowTimeout);
-            }
-            else {
-            document.getElementById("menu-welcome-text").innerText = `welcome, ${json.username.toLowerCase()}`;
+                document.getElementById("menu-welcome-text").innerText = `ur in a room?? buggy website...`;
+                window.clearTimeout(menuShowTimeout);
+            } else {
+                document.getElementById("menu-welcome-text").innerText = `welcome, ${json.username.toLowerCase()}`;
             }
         })
         .catch(error => {
@@ -180,6 +218,9 @@ async function loginFlow(port: number) {
 
 function stored_token() {
     return localStorage.getItem("draaft.token");
+}
+function set_token(token: string) {
+    return localStorage.setItem("draaft.token", token);
 }
 
 function request_headers() {
@@ -232,7 +273,7 @@ function menuCreateRoom() {
         headers: request_headers()
     })
         .then(resp => resp.json())
-        .then(async json => setupRoomPage(json.code) );
+        .then(async json => setupRoomPage(json.code));
 }
 
 function setMenuClickers() {
@@ -240,9 +281,7 @@ function setMenuClickers() {
     document.getElementById("menu-create-room").addEventListener("click", () => menuCreateRoom());
 }
 
-function setupOnClick() {
-    
-}
+function setupOnClick() {}
 
 function main() {
     console.log("Launching drAAft 2 web client...");

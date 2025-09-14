@@ -1,5 +1,12 @@
 var UPDATING_TEXT_MAP = new Map();
-const API_URI = "http://localhost:8000";
+var API_WS = null;
+// Cursed but simplest way to do this with this site
+const LOCAL_TESTING = true;
+// Should not have to change any of these in production.
+const API_PROTO = LOCAL_TESTING ? "http://" : "https://";
+const API_HOST = LOCAL_TESTING ? "localhost:8000" : "api.disrespec.tech";
+const API_URI = `${API_PROTO}${API_HOST}`;
+const WS_URI = `ws://${API_HOST}`;
 /**
  * Adds listeners to an input element that turn it into a
  * password field when focused or when it has a non-empty value.
@@ -70,6 +77,38 @@ export class UpdatingText {
         UPDATING_TEXT_MAP.set(id, this);
     }
 }
+/* WebSocket Testing */
+export function connect(token) {
+    if (API_WS == null || API_WS == undefined) {
+        API_WS = new WebSocket(`${WS_URI}/listen?token=${token}`);
+        API_WS.onerror = function (event) {
+            console.warn("WebSocket errored. Must reconnect.");
+            API_WS = null;
+        };
+        API_WS.onopen = function (event) {
+            console.log("Successfully connected websocket.");
+        };
+        API_WS.onmessage = function (event) {
+            // websocket time!
+            console.log(event.data);
+        };
+    }
+    else {
+        console.warn(`Tried to connect() twice... (websocket: ${API_WS})`);
+    }
+}
+export function sendMessage(message) {
+    if (API_WS != null) {
+        API_WS.send(message);
+    }
+    else {
+        console.warn("Tried to sendMessage() without websocket...");
+    }
+}
+if (LOCAL_TESTING) {
+    window.test_connect = connect;
+    window.test_message = sendMessage;
+}
 function showMenu(auth) {
     // Basic setup.
     setMenuClickers();
@@ -98,7 +137,7 @@ function loginSuccess(auth) {
     // Then, add a timeout to show our menu page.
     const menuShowTimeout = window.setTimeout(() => showMenu(auth), 500);
     // Don't forget to save the token, I guess.
-    localStorage.setItem("draaft.token", auth);
+    set_token(auth);
     // Then, "race the beam" to get the user information.
     fetch(`${API_URI}/user`, {
         headers: {
@@ -155,6 +194,9 @@ async function loginFlow(port) {
 function stored_token() {
     return localStorage.getItem("draaft.token");
 }
+function set_token(token) {
+    return localStorage.setItem("draaft.token", token);
+}
 function request_headers() {
     return {
         token: stored_token()
@@ -205,8 +247,7 @@ function setMenuClickers() {
     document.getElementById("menu-roomid-join").addEventListener("click", () => menuJoinRoom());
     document.getElementById("menu-create-room").addEventListener("click", () => menuCreateRoom());
 }
-function setupOnClick() {
-}
+function setupOnClick() { }
 function main() {
     console.log("Launching drAAft 2 web client...");
     const storageToken = localStorage.getItem("draaft.token");
