@@ -1,4 +1,5 @@
-var UPDATING_TEXT_MAP = new Map();
+import { Member } from "./draaft2/member.js";
+import { UpdatingText } from "./draaft2/util.js";
 var API_WS = null;
 // Cursed but simplest way to do this with this site
 const LOCAL_TESTING = true;
@@ -32,50 +33,6 @@ function setupLazySecret(element) {
     element.addEventListener("focus", updateInputType); // Always set to password here before user types anything.
     element.addEventListener("blur", updateInputType);
     element.addEventListener("input", updateInputType);
-}
-export class UpdatingText {
-    eleID;
-    intervalID;
-    textString;
-    noAppend;
-    timeoutValue;
-    defaultText;
-    update() {
-        this.timeoutValue -= 1;
-        if (this.timeoutValue <= 0) {
-            this.cancel();
-            return;
-        }
-        if (!this.noAppend) {
-            this.textString.innerHTML = this.textString.innerHTML + ".";
-        }
-    }
-    cancel() {
-        this.textString.innerHTML = this.defaultText;
-        window.clearInterval(this.intervalID);
-        console.log(`Deleted interval ID: ${this.intervalID}`);
-        UPDATING_TEXT_MAP.delete(this.eleID);
-    }
-    constructor(id, text, timeout, noAppend = true, defaultText = "") {
-        this.noAppend = noAppend;
-        this.timeoutValue = timeout;
-        this.defaultText = defaultText;
-        this.textString = document.getElementById(id);
-        if (this.textString == undefined) {
-            console.error(`Could not find ID '${id}' in DOM!`);
-            return;
-        }
-        // Cancel the previous one here, so that we don't have weird side effects.
-        if (UPDATING_TEXT_MAP.has(id)) {
-            UPDATING_TEXT_MAP.get(id).cancel();
-        }
-        console.log(`Creating updating text with initial text: ${text}`);
-        this.eleID = id;
-        this.textString.innerHTML = text;
-        this.intervalID = window.setInterval(() => this.update(), 1000);
-        console.log(`Created interval ID: ${this.intervalID}`);
-        UPDATING_TEXT_MAP.set(id, this);
-    }
 }
 /* WebSocket Testing */
 export function connect(token) {
@@ -204,9 +161,12 @@ function request_headers() {
 }
 function showRoom(code) {
     displayOnlyPage("room-page");
-    document.getElementById("quick-remove").innerText = code;
+    console.log("- Showing created room");
+    // document.getElementById("quick-remove").innerText = code;
+    document.getElementById("home-button").style.display = "none";
 }
-function setupRoomPage(code) {
+let ROOM_MEMBERS = [];
+function setupRoomPage(code, members) {
     // First, fade out all pages.
     hideAllPages();
     // Set a timeout to do our stuff.
@@ -217,11 +177,15 @@ function setupRoomPage(code) {
     })
         .then(resp => resp.json())
         .then(async (json) => {
-        document.getElementById("menu-welcome-text").innerText = `welcome, ${json.members.length}`;
+        // document.getElementById("room-welcome-text").innerText = `welcome, ${json.members.length}`;
     })
         .catch(error => {
         console.error("Error getting room data: ", error);
     });
+    // Also fill in the members stuff, which we actually got from the initial request now
+    for (const m of members) {
+        ROOM_MEMBERS.push((new Member(m)).addDiv(document.getElementById("room-page-header")));
+    }
 }
 function menuJoinRoom() {
     new UpdatingText("menu-create-room", "joining room..", 15, false, "create a room");
@@ -232,7 +196,9 @@ function menuJoinRoom() {
             code: rid
         }),
         headers: request_headers()
-    });
+    })
+        .then(resp => resp.json())
+        .then(async (json) => setupRoomPage(json.code, json.members));
 }
 function menuCreateRoom() {
     new UpdatingText("menu-create-room", "creating room..", 15, false, "create a room");
@@ -241,7 +207,7 @@ function menuCreateRoom() {
         headers: request_headers()
     })
         .then(resp => resp.json())
-        .then(async (json) => setupRoomPage(json.code));
+        .then(async (json) => setupRoomPage(json.code, json.members));
 }
 function setMenuClickers() {
     document.getElementById("menu-roomid-join").addEventListener("click", () => menuJoinRoom());

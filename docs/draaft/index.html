@@ -79,7 +79,7 @@
 
 <div id="menu-page">
     <img class="draaft-logo" src="/draaft-logo.png" />
-    <p id="menu-welcome-text"></p>
+    <p id="menu-welcome-text" class="generic-welcome-text"></p>
 
     <div id="menu-rooms" class="full-flex-down">
         <div id="menu-join-room" class="full-flex-right">
@@ -105,16 +105,32 @@
     -->
 </div>
 
-<div id="room-page" style="display: none">
-    <img class="draaft-logo" src="/draaft-logo.png" />
-    <p id="menu-welcome-text"></p>
+<!--
+Room Page. Requirements:
+- Prominent room code
+- Player list -> two lists (top down with buttons, plus top with display of players)
+- Options
+- Spectate / play (can have >4 players, but must reduce to start match)
+- Kick button
+- Leave room! + Start!
 
-    <div id="menu-rooms" class="full-flex-down">
-        <div id="menu-join-room" class="full-flex-right">
-            <input type="text" class="standard-ui basic-shadow" id="menu-input-roomid" placeholder="room code..." />
-            <button id="menu-roomid-join" class="basic-shadow">:)</button>
+Backlog:
+- "Spectator" invite
+-->
+
+<div id="room-page" class="full-flex-down" style="display: none">
+    <div id="room-page-header-container">
+        <div id="room-page-header" class="full-flex-right">
+                        
         </div>
-        <button class="basic-shadow" id="menu-create-room">ur in a room</button>
+    </div>
+
+    <!-- Flex-down, to add in the logo. -->
+    <div id="room-page-left">
+        <img style="display: none;" class="draaft-logo" src="/draaft-logo.png" />
+        <div id="player-gutter">
+            <!-- Player list goes here, dynamically inserted :) -->
+        </div>
     </div>
 </div>
 

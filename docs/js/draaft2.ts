@@ -1,4 +1,5 @@
-var UPDATING_TEXT_MAP = new Map();
+import { Member } from "./draaft2/member.js";
+import { UpdatingText } from "./draaft2/util.js";
 
 var API_WS: WebSocket | null = null;
 // Cursed but simplest way to do this with this site
@@ -36,60 +37,6 @@ function setupLazySecret(element: HTMLInputElement) {
     element.addEventListener("focus", updateInputType); // Always set to password here before user types anything.
     element.addEventListener("blur", updateInputType);
     element.addEventListener("input", updateInputType);
-}
-
-export class UpdatingText {
-    eleID: string;
-    intervalID: number;
-    textString: HTMLParagraphElement;
-    noAppend: boolean;
-    timeoutValue: number;
-    defaultText: string;
-
-    public update() {
-        this.timeoutValue -= 1;
-
-        if (this.timeoutValue <= 0) {
-            this.cancel();
-            return;
-        }
-
-        if (!this.noAppend) {
-            this.textString.innerHTML = this.textString.innerHTML + ".";
-        }
-    }
-
-    public cancel() {
-        this.textString.innerHTML = this.defaultText;
-        window.clearInterval(this.intervalID);
-        console.log(`Deleted interval ID: ${this.intervalID}`);
-        UPDATING_TEXT_MAP.delete(this.eleID);
-    }
-
-    public constructor(id: string, text: string, timeout: number, noAppend: boolean = true, defaultText: string = "") {
-        this.noAppend = noAppend;
-        this.timeoutValue = timeout;
-        this.defaultText = defaultText;
-
-        this.textString = <HTMLParagraphElement>document.getElementById(id);
-        if (this.textString == undefined) {
-            console.error(`Could not find ID '${id}' in DOM!`);
-            return;
-        }
-
-        // Cancel the previous one here, so that we don't have weird side effects.
-        if (UPDATING_TEXT_MAP.has(id)) {
-            UPDATING_TEXT_MAP.get(id).cancel();
-        }
-
-        console.log(`Creating updating text with initial text: ${text}`);
-        this.eleID = id;
-        this.textString.innerHTML = text;
-
-        this.intervalID = window.setInterval(() => this.update(), 1000);
-        console.log(`Created interval ID: ${this.intervalID}`);
-        UPDATING_TEXT_MAP.set(id, this);
-    }
 }
 
 /* WebSocket Testing */
@@ -231,10 +178,13 @@ function request_headers() {
 
 function showRoom(code: string) {
     displayOnlyPage("room-page");
-    document.getElementById("quick-remove").innerText = code;
+    console.log("- Showing created room");
+    // document.getElementById("quick-remove").innerText = code;
+    document.getElementById("home-button").style.display = "none";
 }
 
-function setupRoomPage(code: string) {
+let ROOM_MEMBERS: Array<Member> = [];
+function setupRoomPage(code: string, members) {
     // First, fade out all pages.
     hideAllPages();
 
@@ -247,11 +197,16 @@ function setupRoomPage(code: string) {
     })
         .then(resp => resp.json())
         .then(async json => {
-            document.getElementById("menu-welcome-text").innerText = `welcome, ${json.members.length}`;
+            // document.getElementById("room-welcome-text").innerText = `welcome, ${json.members.length}`;
         })
         .catch(error => {
             console.error("Error getting room data: ", error);
         });
+
+    // Also fill in the members stuff, which we actually got from the initial request now
+    for (const m of members) {
+        ROOM_MEMBERS.push((new Member(m)).addDiv(document.getElementById("room-page-header")))
+    }
 }
 
 function menuJoinRoom() {
@@ -263,7 +218,9 @@ function menuJoinRoom() {
             code: rid
         }),
         headers: request_headers()
-    });
+    })
+        .then(resp => resp.json())
+        .then(async json => setupRoomPage(json.code, json.members));
 }
 
 function menuCreateRoom() {
@@ -273,7 +230,7 @@ function menuCreateRoom() {
         headers: request_headers()
     })
         .then(resp => resp.json())
-        .then(async json => setupRoomPage(json.code));
+        .then(async json => setupRoomPage(json.code, json.members));
 }
 
 function setMenuClickers() {
