@@ -90,6 +90,7 @@ Backlog:
 - "Spectator" invite
 -->
 
+<!-- better flexbox from menx https://codepen.io/me_nx/pen/emJNXrE -->
 <div id="room-page" class="full-flex-down" style="display: none">
     <div id="room-page-header-container">
         <div id="room-page-header" class="full-flex-right">
@@ -98,11 +99,20 @@ Backlog:
     </div>
 
     <!-- Flex-down, to add in the logo. -->
-    <div id="room-page-left">
-        <img style="display: none;" class="draaft-logo" src="/draaft-logo.png" />
-        <div id="player-gutter">
-            <!-- Player list goes here, dynamically inserted :) -->
+    <div id="room-page-main" class="flex-right">
+
+        <!-- Gutter -->
+        <div id="room-page-gutter-container">
+            <div id="room-page-gutter">
+                <button id="room-copy-link" class="standard-ui">copy code</button>
+
+                <!-- <img style="display: none;" class="draaft-logo" src="/draaft-logo.png" /> -->
+                <div id="player-gutter">
+                    <!-- Player list goes here, dynamically inserted :) -->
+                </div>
+            </div>
         </div>
+
     </div>
 </div>
 

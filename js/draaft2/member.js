@@ -1,4 +1,4 @@
-import { STEVE } from "./util.js";
+import { STEVE, IS_ADMIN, UUID } from "./util.js";
 const MOJANG_UUID_LOOKUP_URL = "https://api.ashcon.app/mojang/v2/user";
 // const MOJANG_UUID_LOOKUP_URL = "https://api.minecraftservices.com/minecraft/profile/lookup";
 export async function uuidToUsername(uuid) {
@@ -9,6 +9,7 @@ export async function uuidToUsername(uuid) {
 export class Member {
     uuid;
     username = null;
+    isPlayer = true;
     managed = [];
     constructor(uuid) {
         this.uuid = uuid;
@@ -48,6 +49,59 @@ export class Member {
         div.classList.add("room-member-container");
         this.addImage(div);
         this.addParagraph(div);
+        e.appendChild(div);
+        this.managed.push(div);
+        return this;
+    }
+    addManagementButtons(e) {
+        let div = document.createElement("div");
+        div.classList.add("room-member-manager-buttons");
+        // It's us. So, we just have the "leave" button.
+        // We should probably print ourselves first...
+        if (UUID == this.uuid) {
+            let button = document.createElement("button");
+            button.classList.add("room-member-manager-button", "room-leave-button");
+            button.onclick = (_) => {
+                console.log(`Attempted to have player '${this.username}' leave.`);
+                // TODO. Send leave room request to server and reload page.
+            };
+            button.innerText = "leave";
+            div.appendChild(button);
+            this.managed.push(button);
+        }
+        // If we are not an admin, no more to add.
+        else if (!IS_ADMIN) {
+            // Nothing :)
+        }
+        else {
+            let kick = document.createElement("button");
+            kick.classList.add("room-member-manager-button", "room-kick-button");
+            kick.onclick = (_) => {
+                console.log(`Attempted to have player '${this.username}' kicked.`);
+                // TODO. Send leave room request to server and reload page.
+            };
+            kick.innerText = "kick";
+            div.appendChild(kick);
+            this.managed.push(kick);
+            let swap = document.createElement("button");
+            swap.classList.add("room-member-manager-button", "room-swap-button");
+            swap.onclick = (_) => {
+                console.log(`Attempted to have player '${this.username}' change status.`);
+                // TODO. Send leave room request to server and update swap innerText.
+            };
+            swap.innerText = this.isPlayer ? "make spectator" : "make player";
+            div.appendChild(swap);
+            this.managed.push(swap);
+        }
+        e.appendChild(div);
+        this.managed.push(div);
+        return this;
+    }
+    addManagementDiv(e) {
+        let div = document.createElement("div");
+        div.classList.add("room-member-manager");
+        this.addDiv(div);
+        this.addManagementButtons(div);
         e.appendChild(div);
         this.managed.push(div);
         return this;

@@ -1,5 +1,5 @@
-import { Member } from "./draaft2/member.js";
-import { UpdatingText } from "./draaft2/util.js";
+import {Member} from "./draaft2/member.js";
+import {UpdatingText, set_admin, set_uuid} from "./draaft2/util.js";
 
 var API_WS: WebSocket | null = null;
 // Cursed but simplest way to do this with this site
@@ -43,13 +43,13 @@ function setupLazySecret(element: HTMLInputElement) {
 export function connect(token: string) {
     if (API_WS == null || API_WS == undefined) {
         API_WS = new WebSocket(`${WS_URI}/listen?token=${token}`);
-        API_WS.onerror = function(event) {
+        API_WS.onerror = function (event) {
             console.warn("WebSocket errored. Must reconnect.");
             API_WS = null;
         };
-        API_WS.onopen = function(event) {
+        API_WS.onopen = function (event) {
             console.log("Successfully connected websocket.");
-        }
+        };
         API_WS.onmessage = function (event) {
             // websocket time!
             console.log(event.data);
@@ -111,6 +111,7 @@ function loginSuccess(auth: string) {
     })
         .then(resp => resp.json())
         .then(async json => {
+            set_uuid(json.uuid);
             // Quickly check to see if we should move to a room page.
             if (json.room != null) {
                 document.getElementById("menu-welcome-text").innerText = `ur in a room?? buggy website...`;
@@ -205,8 +206,29 @@ function setupRoomPage(code: string, members) {
 
     // Also fill in the members stuff, which we actually got from the initial request now
     for (const m of members) {
-        ROOM_MEMBERS.push((new Member(m)).addDiv(document.getElementById("room-page-header")))
+        ROOM_MEMBERS.push(
+            new Member(m)
+                .addDiv(document.getElementById("room-page-header"))
+                .addManagementDiv(document.getElementById("player-gutter"))
+        );
     }
+    ROOM_MEMBERS.push(
+        new Member("9a8e24df4c8549d696a6951da84fa5c4")
+                .addDiv(document.getElementById("room-page-header"))
+                .addManagementDiv(document.getElementById("player-gutter"))
+    );
+    ROOM_MEMBERS.push(
+        new Member("9a8e24df4c8549d696a6951da84fa5c4")
+                .addDiv(document.getElementById("room-page-header"))
+                .addManagementDiv(document.getElementById("player-gutter"))
+    );
+    ROOM_MEMBERS.push(
+        new Member("9a8e24df4c8549d696a6951da84fa5c4")
+                .addDiv(document.getElementById("room-page-header"))
+                .addManagementDiv(document.getElementById("player-gutter"))
+    );
+
+    document.getElementById("room-copy-link").onclick = _ => navigator.clipboard.writeText(code);
 }
 
 function menuJoinRoom() {
@@ -230,7 +252,10 @@ function menuCreateRoom() {
         headers: request_headers()
     })
         .then(resp => resp.json())
-        .then(async json => setupRoomPage(json.code, json.members));
+        .then(async json => {
+            set_admin(true);
+            setupRoomPage(json.code, json.members);
+        });
 }
 
 function setMenuClickers() {

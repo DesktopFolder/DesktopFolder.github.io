@@ -1,5 +1,14 @@
 export const STEVE = "/assets/steve.png";
 
+export let IS_ADMIN = false;
+export function set_admin(b: boolean) {
+    IS_ADMIN = b;
+}
+export let UUID: string;
+export function set_uuid(s: string) {
+    UUID = s;
+}
+
 var UPDATING_TEXT_MAP = new Map();
 export class UpdatingText {
     eleID: string;
