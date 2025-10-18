@@ -113,8 +113,10 @@ function loginSuccess(auth: string) {
         .then(async json => {
             set_uuid(json.uuid);
             // Quickly check to see if we should move to a room page.
-            if (json.room != null) {
-                document.getElementById("menu-welcome-text").innerText = `ur in a room?? buggy website...`;
+            if (json.room_code != null) {
+                console.log("Rejoining room after successful login...");
+                console.log(json);
+                menuJoinRoom(json.room_code);
                 window.clearTimeout(menuShowTimeout);
             } else {
                 document.getElementById("menu-welcome-text").innerText = `welcome, ${json.username.toLowerCase()}`;
@@ -173,7 +175,8 @@ function set_token(token: string) {
 
 function request_headers() {
     return {
-        token: stored_token()
+        "token": stored_token(),
+        "Content-Type": "application/json",
     };
 }
 
@@ -214,26 +217,29 @@ function setupRoomPage(code: string, members) {
     }
     ROOM_MEMBERS.push(
         new Member("9a8e24df4c8549d696a6951da84fa5c4")
-                .addDiv(document.getElementById("room-page-header"))
-                .addManagementDiv(document.getElementById("player-gutter"))
+            .addDiv(document.getElementById("room-page-header"))
+            .addManagementDiv(document.getElementById("player-gutter"))
     );
     ROOM_MEMBERS.push(
         new Member("9a8e24df4c8549d696a6951da84fa5c4")
-                .addDiv(document.getElementById("room-page-header"))
-                .addManagementDiv(document.getElementById("player-gutter"))
+            .addDiv(document.getElementById("room-page-header"))
+            .addManagementDiv(document.getElementById("player-gutter"))
     );
     ROOM_MEMBERS.push(
         new Member("9a8e24df4c8549d696a6951da84fa5c4")
-                .addDiv(document.getElementById("room-page-header"))
-                .addManagementDiv(document.getElementById("player-gutter"))
+            .addDiv(document.getElementById("room-page-header"))
+            .addManagementDiv(document.getElementById("player-gutter"))
     );
 
     document.getElementById("room-copy-link").onclick = _ => navigator.clipboard.writeText(code);
 }
 
-function menuJoinRoom() {
+function menuJoinRoom(rid?: string) {
     new UpdatingText("menu-create-room", "joining room..", 15, false, "create a room");
-    const rid = <HTMLInputElement>document.getElementById("menu-input-roomid");
+    if (rid == undefined) {
+        rid = (<HTMLInputElement>document.getElementById("menu-input-roomid")).value;
+    }
+    console.log(`Joining room: ${rid}`);
     fetch(`${API_URI}/room/join`, {
         method: "POST",
         body: JSON.stringify({
@@ -242,7 +248,17 @@ function menuJoinRoom() {
         headers: request_headers()
     })
         .then(resp => resp.json())
-        .then(async json => setupRoomPage(json.code, json.members));
+        .then(async json => {
+            console.log(`Join room command returned JSON: ${json}`);
+            if (json.code === undefined) {
+                console.error(`Error: Bad data returned from API.`);
+            } else {
+                if (json.state == "rejoined_as_admin") {
+                    set_admin(true);
+                }
+                setupRoomPage(json.code, json.members);
+            }
+        });
 }
 
 function menuCreateRoom() {

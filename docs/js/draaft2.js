@@ -105,8 +105,10 @@ function loginSuccess(auth) {
         .then(async (json) => {
         set_uuid(json.uuid);
         // Quickly check to see if we should move to a room page.
-        if (json.room != null) {
-            document.getElementById("menu-welcome-text").innerText = `ur in a room?? buggy website...`;
+        if (json.room_code != null) {
+            console.log("Rejoining room after successful login...");
+            console.log(json);
+            menuJoinRoom(json.room_code);
             window.clearTimeout(menuShowTimeout);
         }
         else {
@@ -157,7 +159,8 @@ function set_token(token) {
 }
 function request_headers() {
     return {
-        token: stored_token()
+        "token": stored_token(),
+        "Content-Type": "application/json",
     };
 }
 function showRoom(code) {
@@ -200,9 +203,12 @@ function setupRoomPage(code, members) {
         .addManagementDiv(document.getElementById("player-gutter")));
     document.getElementById("room-copy-link").onclick = _ => navigator.clipboard.writeText(code);
 }
-function menuJoinRoom() {
+function menuJoinRoom(rid) {
     new UpdatingText("menu-create-room", "joining room..", 15, false, "create a room");
-    const rid = document.getElementById("menu-input-roomid");
+    if (rid == undefined) {
+        rid = document.getElementById("menu-input-roomid").value;
+    }
+    console.log(`Joining room: ${rid}`);
     fetch(`${API_URI}/room/join`, {
         method: "POST",
         body: JSON.stringify({
@@ -211,7 +217,18 @@ function menuJoinRoom() {
         headers: request_headers()
     })
         .then(resp => resp.json())
-        .then(async (json) => setupRoomPage(json.code, json.members));
+        .then(async (json) => {
+        console.log(`Join room command returned JSON: ${json}`);
+        if (json.code === undefined) {
+            console.error(`Error: Bad data returned from API.`);
+        }
+        else {
+            if (json.state == "rejoined_as_admin") {
+                set_admin(true);
+            }
+            setupRoomPage(json.code, json.members);
+        }
+    });
 }
 function menuCreateRoom() {
     new UpdatingText("menu-create-room", "creating room..", 15, false, "create a room");

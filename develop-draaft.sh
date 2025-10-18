@@ -17,11 +17,11 @@ else
     tmux rename-window -t "$sn":0 "servers"
     
     # (1) Launch the draaft server itself
-    tmux send-keys -t "$sn" "cd ${DRAAFTDIR}; ./start.sh" C-m
+    tmux send-keys -t "$sn" "cd ${DRAAFTDIR}; git pull; ./start.sh" C-m
 
     # (2) Launch the website
     tmux split-window -t "$sn"
-    tmux send-keys -t "$sn" "pwd; ./start.sh" C-m
+    tmux send-keys -t "$sn" "pwd; git pull; ./start.sh" C-m
 
     # (3) Add the pane for the templater
     tmux split-window -t "$sn"
@@ -31,7 +31,7 @@ else
     # Create our second pane, drAAft.
     tmux new-window -t "$sn"
     tmux rename-window -t "$sn":1 "webserver"
-    tmux send-keys -t "$sn" "cd ${DRAAFTDIR}" C-m
+    tmux send-keys -t "$sn" "cd ${DRAAFTDIR}; . .env/bin/activate" C-m
 
     # Create our third pane, github.io
     tmux new-window -t "$sn"

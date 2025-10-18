@@ -37,6 +37,7 @@ page.image=/draaft-logo.png
 
 </div>
 
+<!-- FLOATING FOOTER FOR ALL PAGES (?) -->
 <div class="floating-footer">
     <a href="https://github.com/memerson12/drAAft/releases" target="_blank">mod download</a>
 
@@ -49,6 +50,7 @@ page.image=/draaft-logo.png
     <a href="/draaft/old.html" target="_blank">old site</a>
 </div>
 
+<!-- MENU PAGE -->
 <div id="menu-page">
     <img class="draaft-logo" src="/draaft-logo.png" />
     <p id="menu-welcome-text" class="generic-welcome-text"></p>
