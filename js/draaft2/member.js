@@ -63,7 +63,12 @@ export class Member {
             button.classList.add("room-member-manager-button", "room-leave-button");
             button.onclick = (_) => {
                 console.log(`Attempted to have player '${this.username}' leave.`);
-                // TODO. Send leave room request to server and reload page.
+                if (IS_ADMIN) {
+                    document.getElementById("confirm-room-destroy-admin").showModal();
+                }
+                else {
+                    document.getElementById("confirm-room-destroy-user").showModal();
+                }
             };
             button.innerText = "leave";
             div.appendChild(button);

@@ -496,3 +496,23 @@ div#room-page-gutter #room-copy-link {
     margin-bottom: 12px;
     padding-top: 0.3em;
 }
+
+/* Confirm Leave Stuff */
+.confirm-leave::backdrop {
+    background-color: rgba(0,0,0,0.5);
+}
+
+.confirm-leave {
+    background-color: rgba(0,0,0,0.4);
+    color: white;
+}
+
+.confirm-leave form {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.confirm-leave p:first-child {
+    margin-top: 0;
+}

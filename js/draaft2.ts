@@ -175,8 +175,8 @@ function set_token(token: string) {
 
 function request_headers() {
     return {
-        "token": stored_token(),
-        "Content-Type": "application/json",
+        token: stored_token(),
+        "Content-Type": "application/json"
     };
 }
 
@@ -279,7 +279,23 @@ function setMenuClickers() {
     document.getElementById("menu-create-room").addEventListener("click", () => menuCreateRoom());
 }
 
-function setupOnClick() {}
+function setupOnClick() {
+    // One-time on-click setups.
+
+    // Room setup menu.
+    for (const cb of document.getElementsByClassName("confirm-leave")) {
+        cb.addEventListener("close", e => {
+            const d = <HTMLDialogElement>e.target;
+            console.log(`Closed confirm-leave box with return: ${d.returnValue}`);
+            if (d.returnValue == "confirm") {
+                fetch(`${API_URI}/room/leave`, {
+                    method: "POST",
+                    headers: request_headers()
+                }).finally(() => window.location.reload());
+            }
+        });
+    }
+}
 
 function main() {
     console.log("Launching drAAft 2 web client...");

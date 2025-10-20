@@ -120,6 +120,22 @@ Backlog:
 - "Spectator" invite
 -->
 
+<dialog class="confirm-leave" id="confirm-room-destroy-admin" closedby="any">
+    <p>You are the admin of this room. Leaving will destroy it.</p>
+    <p>Are you sure you want to leave?</p>
+    <form method="dialog">
+        <button autofocus class="confirm-button" value="confirm" formmethod="dialog">yes, I want to destroy this room</button>
+        <button class="cancel-button" value="cancel" formmethod="dialog">cancel</button>
+    </form>
+</dialog>
+<dialog class="confirm-leave" id="confirm-room-destroy-user" closedby="any">
+    <p>Are you sure you want to leave?</p>
+    <form method="dialog">
+        <button autofocus class="confirm-button" value="confirm">yes</button>
+        <button class="cancel-button" value="cancel">cancel</button>
+    </form>
+</dialog>
+
 <!-- better flexbox from menx https://codepen.io/me_nx/pen/emJNXrE -->
 <div id="room-page" class="full-flex-down" style="display: none">
     <div id="room-page-header-container">
