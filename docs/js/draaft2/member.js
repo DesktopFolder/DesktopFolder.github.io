@@ -1,3 +1,4 @@
+import { apiRequest } from "./request.js";
 import { STEVE, IS_ADMIN, UUID } from "./util.js";
 const MOJANG_UUID_LOOKUP_URL = "https://api.ashcon.app/mojang/v2/user";
 // const MOJANG_UUID_LOOKUP_URL = "https://api.minecraftservices.com/minecraft/profile/lookup";
@@ -83,7 +84,8 @@ export class Member {
             kick.classList.add("room-member-manager-button", "room-kick-button");
             kick.onclick = (_) => {
                 console.log(`Attempted to have player '${this.username}' kicked.`);
-                // TODO. Send leave room request to server and reload page.
+                // Shouldn't need to await this.
+                apiRequest(`room/kick?member=${this.uuid}`);
             };
             kick.innerText = "kick";
             div.appendChild(kick);

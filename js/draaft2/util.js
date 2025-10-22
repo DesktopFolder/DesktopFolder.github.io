@@ -1,4 +1,10 @@
 export const STEVE = "/assets/steve.png";
+export function stored_token() {
+    return localStorage.getItem("draaft.token");
+}
+export function set_token(token) {
+    return localStorage.setItem("draaft.token", token);
+}
 export let IS_ADMIN = false;
 export function set_admin(b) {
     IS_ADMIN = b;

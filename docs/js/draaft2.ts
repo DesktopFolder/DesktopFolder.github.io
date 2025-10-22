@@ -1,15 +1,8 @@
 import {Member} from "./draaft2/member.js";
-import {UpdatingText, set_admin, set_uuid} from "./draaft2/util.js";
+import {WS_URI, API_URI, LOCAL_TESTING, apiRequest} from "./draaft2/request.js";
+import {UpdatingText, set_admin, set_token, set_uuid} from "./draaft2/util.js";
 
 var API_WS: WebSocket | null = null;
-// Cursed but simplest way to do this with this site
-const LOCAL_TESTING: boolean = true;
-
-// Should not have to change any of these in production.
-const API_PROTO = LOCAL_TESTING ? "http://" : "https://";
-const API_HOST = LOCAL_TESTING ? "localhost:8000" : "api.disrespec.tech";
-const API_URI = `${API_PROTO}${API_HOST}`;
-const WS_URI = `ws://${API_HOST}`;
 
 /**
  * Adds listeners to an input element that turn it into a
@@ -166,20 +159,6 @@ async function loginFlow(port: number) {
     return await testAuthToken(json.token);
 }
 
-function stored_token() {
-    return localStorage.getItem("draaft.token");
-}
-function set_token(token: string) {
-    return localStorage.setItem("draaft.token", token);
-}
-
-function request_headers() {
-    return {
-        token: stored_token(),
-        "Content-Type": "application/json"
-    };
-}
-
 function showRoom(code: string) {
     displayOnlyPage("room-page");
     console.log("- Showing created room");
@@ -196,9 +175,7 @@ function setupRoomPage(code: string, members) {
     window.setTimeout(() => showRoom(code), 500);
 
     // In the meantime, as usual, get additional room metadata.
-    fetch(`${API_URI}/room`, {
-        headers: request_headers()
-    })
+    apiRequest(`room`, undefined, "GET")
         .then(resp => resp.json())
         .then(async json => {
             // document.getElementById("room-welcome-text").innerText = `welcome, ${json.members.length}`;
@@ -231,6 +208,8 @@ function setupRoomPage(code: string, members) {
             .addManagementDiv(document.getElementById("player-gutter"))
     );
 
+    apiRequest("dev/adduser");
+
     document.getElementById("room-copy-link").onclick = _ => navigator.clipboard.writeText(code);
 }
 
@@ -240,13 +219,7 @@ function menuJoinRoom(rid?: string) {
         rid = (<HTMLInputElement>document.getElementById("menu-input-roomid")).value;
     }
     console.log(`Joining room: ${rid}`);
-    fetch(`${API_URI}/room/join`, {
-        method: "POST",
-        body: JSON.stringify({
-            code: rid
-        }),
-        headers: request_headers()
-    })
+    apiRequest(`room/join`, JSON.stringify({code: rid}), "POST")
         .then(resp => resp.json())
         .then(async json => {
             console.log(`Join room command returned JSON: ${json}`);
@@ -263,10 +236,7 @@ function menuJoinRoom(rid?: string) {
 
 function menuCreateRoom() {
     new UpdatingText("menu-create-room", "creating room..", 15, false, "create a room");
-    fetch(`${API_URI}/room/create`, {
-        method: "GET",
-        headers: request_headers()
-    })
+    apiRequest(`room/create`, undefined, "GET")
         .then(resp => resp.json())
         .then(async json => {
             set_admin(true);
@@ -288,10 +258,7 @@ function setupOnClick() {
             const d = <HTMLDialogElement>e.target;
             console.log(`Closed confirm-leave box with return: ${d.returnValue}`);
             if (d.returnValue == "confirm") {
-                fetch(`${API_URI}/room/leave`, {
-                    method: "POST",
-                    headers: request_headers()
-                }).finally(() => window.location.reload());
+                apiRequest(`room/leave`, undefined, "POST").finally(() => window.location.reload());
             }
         });
     }
