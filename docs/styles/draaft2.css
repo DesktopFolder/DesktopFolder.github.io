@@ -72,6 +72,8 @@ body, html
 
     min-height: 100%;
     min-width: 100%;
+
+    max-height: 100vh;
 }
 
 video#background-video {
@@ -431,9 +433,9 @@ div#room-page-gutter {
 }
 
 div#room-page-main {
-    height: auto;
     width: 100%;
     flex-grow: 1;
+    min-height: 0; /* flexbox weirdness */
     padding-left: 20px;
     padding-bottom: 20px;
     box-sizing: border-box;
@@ -444,6 +446,8 @@ button#copy-room-link {
 }
 
 div#player-gutter {
+    overflow-y: auto;
+
     font-size: 24px;
     line-height: 1em;
     max-width: 100%;
@@ -498,21 +502,21 @@ div#room-page-gutter #room-copy-link {
 }
 
 /* Confirm Leave Stuff */
-.confirm-leave::backdrop {
+.basic-modal-dialog::backdrop {
     background-color: rgba(0,0,0,0.5);
 }
 
-.confirm-leave {
+.basic-modal-dialog {
     background-color: rgba(0,0,0,0.4);
     color: white;
 }
 
-.confirm-leave form {
+.basic-modal-dialog form {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
 }
 
-.confirm-leave p:first-child {
+.basic-modal-dialog p:first-child {
     margin-top: 0;
 }

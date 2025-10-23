@@ -58,3 +58,26 @@ export class UpdatingText {
         UPDATING_TEXT_MAP.set(id, this);
     }
 }
+export function fullPageNotification(text, buttontext, callback) {
+    const no = document.createElement("dialog");
+    no.classList.add("notify-require-interact", "basic-modal-dialog");
+    const pr = document.createElement("p");
+    pr.innerText = text;
+    pr.classList.add("notify-require-interact-text");
+    const fm = document.createElement("form");
+    fm.method = "dialog";
+    const bu = document.createElement("button");
+    bu.autofocus = true;
+    bu.classList.add("confirm-button", "notify-require-interact-button");
+    bu.value = "confirm";
+    bu.innerText = buttontext;
+    fm.appendChild(bu);
+    no.appendChild(pr);
+    no.appendChild(fm);
+    bu.addEventListener("click", _ => {
+        callback();
+        no.close();
+    });
+    document.body.appendChild(no);
+    no.showModal();
+}

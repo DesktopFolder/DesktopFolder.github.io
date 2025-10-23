@@ -12,8 +12,15 @@ export class Member {
     username = null;
     isPlayer = true;
     managed = [];
+    playerOnly = [];
+    swapButton = undefined;
     constructor(uuid) {
         this.uuid = uuid;
+    }
+    destroy() {
+        for (const m of this.managed) {
+            m.style.display = "none";
+        }
     }
     populateUsername(e) {
         if (this.username == null) {
@@ -28,33 +35,54 @@ export class Member {
         }
         return this;
     }
-    addImage(e) {
+    addImage(e, playerOnly) {
         let i = document.createElement("img");
         i.classList.add("member-face");
         i.src = `https://mineskin.eu/helm/${this.uuid}/100`;
         i.onerror = () => (i.src = STEVE);
         e.appendChild(i);
-        this.managed.push(i);
+        this.addElement(i, playerOnly);
         return this;
     }
-    addParagraph(e) {
+    addParagraph(e, playerOnly) {
         let p = document.createElement("p");
         p.classList.add("room-member", "member-name");
         this.populateUsername(p);
         e.appendChild(p);
-        this.managed.push(p);
+        this.addElement(p, playerOnly);
         return this;
     }
-    addDiv(e) {
+    addDiv(e, playerOnly) {
         let div = document.createElement("div");
         div.classList.add("room-member-container");
-        this.addImage(div);
-        this.addParagraph(div);
+        this.addImage(div, playerOnly);
+        this.addParagraph(div, playerOnly);
         e.appendChild(div);
-        this.managed.push(div);
+        this.addElement(div, playerOnly);
         return this;
     }
-    addManagementButtons(e) {
+    setIsPlayer(value) {
+        this.isPlayer = value;
+        this.swapButton.innerText = this.isPlayer ? "make spectator" : "make player";
+        console.log(`Updating ${this.playerOnly.length} objects to reflect isPlayer of ${this.isPlayer}`);
+        for (const e of this.playerOnly) {
+            if (this.isPlayer) {
+                // FIX THIS LATER LOL!
+                e.style.display = e.oldDisplay;
+            }
+            else {
+                e.oldDisplay = e.style.display;
+                e.style.display = "none";
+            }
+        }
+    }
+    addElement(e, playerOnly) {
+        this.managed.push(e);
+        if (playerOnly) {
+            this.playerOnly.push(e);
+        }
+    }
+    addManagementButtons(e, playerOnly) {
         let div = document.createElement("div");
         div.classList.add("room-member-manager-buttons");
         // It's us. So, we just have the "leave" button.
@@ -73,7 +101,7 @@ export class Member {
             };
             button.innerText = "leave";
             div.appendChild(button);
-            this.managed.push(button);
+            this.addElement(button, playerOnly);
         }
         // If we are not an admin, no more to add.
         else if (!IS_ADMIN) {
@@ -89,28 +117,31 @@ export class Member {
             };
             kick.innerText = "kick";
             div.appendChild(kick);
-            this.managed.push(kick);
+            this.addElement(kick, playerOnly);
+        }
+        if (IS_ADMIN) {
             let swap = document.createElement("button");
             swap.classList.add("room-member-manager-button", "room-swap-button");
             swap.onclick = (_) => {
                 console.log(`Attempted to have player '${this.username}' change status.`);
-                // TODO. Send leave room request to server and update swap innerText.
+                apiRequest(`room/swapstatus?uuid=${this.uuid}`);
             };
             swap.innerText = this.isPlayer ? "make spectator" : "make player";
             div.appendChild(swap);
-            this.managed.push(swap);
+            this.addElement(swap, playerOnly);
+            this.swapButton = swap;
         }
         e.appendChild(div);
-        this.managed.push(div);
+        this.addElement(div, playerOnly);
         return this;
     }
-    addManagementDiv(e) {
+    addManagementDiv(e, playerOnly) {
         let div = document.createElement("div");
         div.classList.add("room-member-manager");
-        this.addDiv(div);
-        this.addManagementButtons(div);
+        this.addDiv(div, playerOnly);
+        this.addManagementButtons(div, playerOnly);
         e.appendChild(div);
-        this.managed.push(div);
+        this.addElement(div, playerOnly);
         return this;
     }
 }

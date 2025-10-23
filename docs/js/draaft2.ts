@@ -1,6 +1,6 @@
 import {Member} from "./draaft2/member.js";
 import {WS_URI, API_URI, LOCAL_TESTING, apiRequest} from "./draaft2/request.js";
-import {UpdatingText, set_admin, set_token, set_uuid} from "./draaft2/util.js";
+import {UUID, UpdatingText, fullPageNotification, set_admin, set_token, set_uuid, stored_token} from "./draaft2/util.js";
 
 var API_WS: WebSocket | null = null;
 
@@ -32,6 +32,40 @@ function setupLazySecret(element: HTMLInputElement) {
     element.addEventListener("input", updateInputType);
 }
 
+function handlePlayerupdate(d) {
+    switch (d.action) {
+        case "joined":
+            ROOM_MEMBERS.push(
+                new Member(d.uuid)
+                    .addDiv(document.getElementById("room-page-header"), true)
+                    .addManagementDiv(document.getElementById("player-gutter"), false)
+            );
+            break;
+        case "kick":
+        case "leave":
+            if (d.uuid === UUID) {
+                console.log("Looks like we are leaving. Bye!");
+                fullPageNotification("You have been removed from the lobby 😭", "Click to reload 🪣", () => window.location.reload());
+            }
+            else {
+                // Delete the member.
+                visitUuid(d.uuid, (m: Member) => {
+                    m.destroy();
+                });
+                ROOM_MEMBERS = ROOM_MEMBERS.filter(m => m.uuid != d.uuid);
+            }
+            break;
+        case "spectate":
+            visitUuid(d.uuid, (m: Member) => m.setIsPlayer(false));
+            break;
+        case "player":
+            visitUuid(d.uuid, (m: Member) => m.setIsPlayer(true));
+            break;
+        default:
+            console.error(`Unhandled player event: ${d.action}`);
+    }
+}
+
 /* WebSocket Testing */
 export function connect(token: string) {
     if (API_WS == null || API_WS == undefined) {
@@ -45,7 +79,17 @@ export function connect(token: string) {
         };
         API_WS.onmessage = function (event) {
             // websocket time!
-            console.log(event.data);
+            const d = JSON.parse(event.data);
+            console.log(d);
+
+            switch (d.variant) {
+                case "playerupdate":
+                    handlePlayerupdate(d);
+                    break;
+                default:
+                    console.error(`Unhandled event type ${d.variant}`);
+                    break;
+            }
         };
     } else {
         console.warn(`Tried to connect() twice... (websocket: ${API_WS})`);
@@ -167,9 +211,18 @@ function showRoom(code: string) {
 }
 
 let ROOM_MEMBERS: Array<Member> = [];
+function visitUuid(uuid: string, callback: (arg0: Member) => void) {
+    for (const m of ROOM_MEMBERS) {
+        if (m.uuid === uuid) {
+            callback(m);
+        }
+    }
+}
 function setupRoomPage(code: string, members) {
     // First, fade out all pages.
     hideAllPages();
+
+    connect(stored_token());
 
     // Set a timeout to do our stuff.
     window.setTimeout(() => showRoom(code), 500);
@@ -188,27 +241,10 @@ function setupRoomPage(code: string, members) {
     for (const m of members) {
         ROOM_MEMBERS.push(
             new Member(m)
-                .addDiv(document.getElementById("room-page-header"))
-                .addManagementDiv(document.getElementById("player-gutter"))
+                .addDiv(document.getElementById("room-page-header"), true)
+                .addManagementDiv(document.getElementById("player-gutter"), false)
         );
     }
-    ROOM_MEMBERS.push(
-        new Member("9a8e24df4c8549d696a6951da84fa5c4")
-            .addDiv(document.getElementById("room-page-header"))
-            .addManagementDiv(document.getElementById("player-gutter"))
-    );
-    ROOM_MEMBERS.push(
-        new Member("9a8e24df4c8549d696a6951da84fa5c4")
-            .addDiv(document.getElementById("room-page-header"))
-            .addManagementDiv(document.getElementById("player-gutter"))
-    );
-    ROOM_MEMBERS.push(
-        new Member("9a8e24df4c8549d696a6951da84fa5c4")
-            .addDiv(document.getElementById("room-page-header"))
-            .addManagementDiv(document.getElementById("player-gutter"))
-    );
-
-    apiRequest("dev/adduser");
 
     document.getElementById("room-copy-link").onclick = _ => navigator.clipboard.writeText(code);
 }
@@ -266,6 +302,19 @@ function setupOnClick() {
 
 function main() {
     console.log("Launching drAAft 2 web client...");
+
+    if (LOCAL_TESTING) {
+        addEventListener("keyup", event => {
+            if (event.key == "o") {
+                console.log("Let's add Feinberg...");
+                apiRequest("dev/adduser");
+            }
+            else if (event.key == "k") {
+                console.log("Kicking myself when I'm down...");
+                apiRequest(`dev/kickself`);
+            }
+        });
+    }
 
     const storageToken: string = localStorage.getItem("draaft.token");
     if (storageToken != null) {
