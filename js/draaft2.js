@@ -61,6 +61,7 @@ function handlePlayerupdate(d) {
 }
 /* WebSocket Testing */
 export function connect(token) {
+    console.log(`Connecting to websocket at ${WS_URI}`);
     if (API_WS == null || API_WS == undefined) {
         API_WS = new WebSocket(`${WS_URI}/listen?token=${token}`);
         API_WS.onerror = function (event) {

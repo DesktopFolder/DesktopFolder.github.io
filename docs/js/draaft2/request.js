@@ -6,7 +6,7 @@ export const API_PROTO = LOCAL_TESTING ? "http://" : "https://";
 export const API_HOST = LOCAL_TESTING ? "localhost:8000" : "api.disrespec.tech";
 export const API_URI = `${API_PROTO}${API_HOST}`;
 export const WS_PROTO = LOCAL_TESTING ? "ws://" : "wss://";
-export const WS_URI = `${WS_PROTO}://${API_HOST}`;
+export const WS_URI = `${WS_PROTO}${API_HOST}`;
 export function request_headers() {
     return {
         token: stored_token(),
