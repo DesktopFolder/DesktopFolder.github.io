@@ -7,7 +7,7 @@ css.extras=/styles/draaft2.css
 page.image=/draaft-logo.png
 ---
 <body class="maxerino">
-<video autoplay muted loop id="background-video" controls disablePictureInPicture>
+<video autoplay muted loop id="background-video" controls disablePictureInPicture style="pointer-events: none">
   <source src="/assets/draaft/bg.webm" type="video/webm">
 </video>
 
