@@ -31,9 +31,10 @@ else
     # Create our second pane, drAAft.
     tmux new-window -t "$sn"
     tmux rename-window -t "$sn":1 "webserver"
-    tmux send-keys -t "$sn" "cd ${DRAAFTDIR}; . .env/bin/activate" C-m
+    tmux send-keys -t "$sn" "cd ${DRAAFTDIR}; . .env/bin/activate; fv" C-m
 
     # Create our third pane, github.io
     tmux new-window -t "$sn"
     tmux rename-window -t "$sn":1 "site"
+    tmux send-keys -t "$sn" "fv" C-m
 fi

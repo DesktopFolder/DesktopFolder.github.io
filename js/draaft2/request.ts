@@ -1,7 +1,7 @@
 import {stored_token} from "./util.js";
 
 // Cursed but simplest way to do this with this site
-export const LOCAL_TESTING: boolean = true;
+export const LOCAL_TESTING: boolean = false;
 
 // Should not have to change any of these in production.
 export const API_PROTO = LOCAL_TESTING ? "http://" : "https://";

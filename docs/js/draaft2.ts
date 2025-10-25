@@ -1,6 +1,6 @@
 import {Member} from "./draaft2/member.js";
 import {WS_URI, API_URI, LOCAL_TESTING, apiRequest} from "./draaft2/request.js";
-import {UUID, UpdatingText, fullPageNotification, set_admin, set_token, set_uuid, stored_token} from "./draaft2/util.js";
+import {IS_ADMIN, UUID, UpdatingText, fullPageNotification, set_admin, set_token, set_uuid, stored_token, annoy_user_lol} from "./draaft2/util.js";
 
 var API_WS: WebSocket | null = null;
 
@@ -261,12 +261,17 @@ function menuJoinRoom(rid?: string) {
             console.log(`Join room command returned JSON: ${json}`);
             if (json.code === undefined) {
                 console.error(`Error: Bad data returned from API.`);
+                fullPageNotification("error: bad API interaction", "click to reload 🪣", () => window.location.reload());
             } else {
                 if (json.state == "rejoined_as_admin") {
                     set_admin(true);
                 }
                 setupRoomPage(json.code, json.members);
             }
+        })
+        .catch(async (e) => {
+            console.error(`Got error rejoining room. Attempting to reload. Error: ${e}`);
+            fullPageNotification("error: bad API interaction", "click to reload 🪣", () => window.location.reload());
         });
 }
 
@@ -285,6 +290,10 @@ function setMenuClickers() {
     document.getElementById("menu-create-room").addEventListener("click", () => menuCreateRoom());
 }
 
+function startDrafting() {
+    console.log("It's drafting time, yo!");
+}
+
 function setupOnClick() {
     // One-time on-click setups.
 
@@ -298,6 +307,15 @@ function setupOnClick() {
             }
         });
     }
+
+    (<HTMLButtonElement>document.getElementById("room-start")).addEventListener("click", _ => {
+        if (!IS_ADMIN) {
+            annoy_user_lol();
+        }
+        else {
+            fullPageNotification("are you sure you want to start draafting?", "🪣🪣🪣 yes 🪣🪣🪣", startDrafting, true);
+        }
+    });
 }
 
 function main() {
