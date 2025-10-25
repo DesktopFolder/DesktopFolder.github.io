@@ -65,6 +65,7 @@
 
 </div>
 
+<!-- FLOATING FOOTER FOR ALL PAGES (?) -->
 <div class="floating-footer">
     <a href="https://github.com/memerson12/drAAft/releases" target="_blank">mod download</a>
 
@@ -77,9 +78,10 @@
     <a href="/draaft/old.html" target="_blank">old site</a>
 </div>
 
+<!-- MENU PAGE -->
 <div id="menu-page">
     <img class="draaft-logo" src="/draaft-logo.png" />
-    <p id="menu-welcome-text"></p>
+    <p id="menu-welcome-text" class="generic-welcome-text"></p>
 
     <div id="menu-rooms" class="full-flex-down">
         <div id="menu-join-room" class="full-flex-right">
@@ -105,16 +107,68 @@
     -->
 </div>
 
-<div id="room-page" style="display: none">
-    <img class="draaft-logo" src="/draaft-logo.png" />
-    <p id="menu-welcome-text"></p>
+<!--
+Room Page. Requirements:
+- Prominent room code
+- Player list -> two lists (top down with buttons, plus top with display of players)
+- Options
+- Spectate / play (can have >4 players, but must reduce to start match)
+- Kick button
+- Leave room! + Start!
 
-    <div id="menu-rooms" class="full-flex-down">
-        <div id="menu-join-room" class="full-flex-right">
-            <input type="text" class="standard-ui basic-shadow" id="menu-input-roomid" placeholder="room code..." />
-            <button id="menu-roomid-join" class="basic-shadow">:)</button>
+Backlog:
+- "Spectator" invite
+-->
+
+<dialog class="confirm-leave basic-modal-dialog" id="confirm-room-destroy-admin" closedby="any">
+    <p>You are the admin of this room. Leaving will destroy it.</p>
+    <p>Are you sure you want to leave?</p>
+    <form method="dialog">
+        <button autofocus class="confirm-button" value="confirm" formmethod="dialog">yes, I want to destroy this room</button>
+        <button class="cancel-button" value="cancel" formmethod="dialog">cancel</button>
+    </form>
+</dialog>
+<dialog class="confirm-leave basic-modal-dialog" id="confirm-room-destroy-user" closedby="any">
+    <p>Are you sure you want to leave?</p>
+    <form method="dialog">
+        <button autofocus class="confirm-button" value="confirm">yes</button>
+        <button class="cancel-button" value="cancel">cancel</button>
+    </form>
+</dialog>
+
+<!-- better flexbox from menx https://codepen.io/me_nx/pen/emJNXrE -->
+<div id="room-page" class="full-flex-down" style="display: none">
+    <div id="room-page-header-container">
+        <div id="room-page-header" class="full-flex-right">
+                        
         </div>
-        <button class="basic-shadow" id="menu-create-room">ur in a room</button>
+    </div>
+
+    <!-- Flex-down, to add in the logo. -->
+    <div id="room-page-main" class="full-flex-right">
+
+        <!-- Gutter -->
+        <div id="room-page-gutter-container">
+            <div id="room-page-gutter">
+                <button id="room-copy-link" class="standard-ui">copy code</button>
+
+                <!-- <img style="display: none;" class="draaft-logo" src="/draaft-logo.png" /> -->
+                <div id="player-gutter">
+                    <!-- Player list goes here, dynamically inserted :) -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Room management! -->
+        <div id="room-page-config-container">
+            <div id="room-page-config">
+                <button id="room-start" class="standard-ui">begin draafting</button>
+
+                <div id="config-area">
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
 

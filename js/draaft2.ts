@@ -1,6 +1,8 @@
-var UPDATING_TEXT_MAP = new Map();
+import {Member} from "./draaft2/member.js";
+import {WS_URI, API_URI, LOCAL_TESTING, apiRequest} from "./draaft2/request.js";
+import {IS_ADMIN, UUID, UpdatingText, fullPageNotification, set_admin, set_token, set_uuid, stored_token, annoy_user_lol} from "./draaft2/util.js";
 
-const API_URI = "http://localhost:8000";
+var API_WS: WebSocket | null = null;
 
 /**
  * Adds listeners to an input element that turn it into a
@@ -30,58 +32,79 @@ function setupLazySecret(element: HTMLInputElement) {
     element.addEventListener("input", updateInputType);
 }
 
-export class UpdatingText {
-    eleID: string;
-    intervalID: number;
-    textString: HTMLParagraphElement;
-    noAppend: boolean;
-    timeoutValue: number;
-    defaultText: string;
-
-    public update() {
-        this.timeoutValue -= 1;
-
-        if (this.timeoutValue <= 0) {
-            this.cancel();
-            return;
-        }
-
-        if (!this.noAppend) {
-            this.textString.innerHTML = this.textString.innerHTML + ".";
-        }
+function handlePlayerupdate(d) {
+    switch (d.action) {
+        case "joined":
+            ROOM_MEMBERS.push(
+                new Member(d.uuid)
+                    .addDiv(document.getElementById("room-page-header"), true)
+                    .addManagementDiv(document.getElementById("player-gutter"), false)
+            );
+            break;
+        case "kick":
+        case "leave":
+            if (d.uuid === UUID) {
+                console.log("Looks like we are leaving. Bye!");
+                fullPageNotification("You have been removed from the lobby 😭", "Click to reload 🪣", () => window.location.reload());
+            }
+            else {
+                // Delete the member.
+                visitUuid(d.uuid, (m: Member) => {
+                    m.destroy();
+                });
+                ROOM_MEMBERS = ROOM_MEMBERS.filter(m => m.uuid != d.uuid);
+            }
+            break;
+        case "spectate":
+            visitUuid(d.uuid, (m: Member) => m.setIsPlayer(false));
+            break;
+        case "player":
+            visitUuid(d.uuid, (m: Member) => m.setIsPlayer(true));
+            break;
+        default:
+            console.error(`Unhandled player event: ${d.action}`);
     }
+}
 
-    public cancel() {
-        this.textString.innerHTML = this.defaultText;
-        window.clearInterval(this.intervalID);
-        console.log(`Deleted interval ID: ${this.intervalID}`);
-        UPDATING_TEXT_MAP.delete(this.eleID);
+/* WebSocket Testing */
+export function connect(token: string) {
+    if (API_WS == null || API_WS == undefined) {
+        API_WS = new WebSocket(`${WS_URI}/listen?token=${token}`);
+        API_WS.onerror = function (event) {
+            console.warn("WebSocket errored. Must reconnect.");
+            API_WS = null;
+        };
+        API_WS.onopen = function (event) {
+            console.log("Successfully connected websocket.");
+        };
+        API_WS.onmessage = function (event) {
+            // websocket time!
+            const d = JSON.parse(event.data);
+            console.log(d);
+
+            switch (d.variant) {
+                case "playerupdate":
+                    handlePlayerupdate(d);
+                    break;
+                default:
+                    console.error(`Unhandled event type ${d.variant}`);
+                    break;
+            }
+        };
+    } else {
+        console.warn(`Tried to connect() twice... (websocket: ${API_WS})`);
     }
-
-    public constructor(id: string, text: string, timeout: number, noAppend: boolean = true, defaultText: string = "") {
-        this.noAppend = noAppend;
-        this.timeoutValue = timeout;
-        this.defaultText = defaultText;
-
-        this.textString = <HTMLParagraphElement>document.getElementById(id);
-        if (this.textString == undefined) {
-            console.error(`Could not find ID '${id}' in DOM!`);
-            return;
-        }
-
-        // Cancel the previous one here, so that we don't have weird side effects.
-        if (UPDATING_TEXT_MAP.has(id)) {
-            UPDATING_TEXT_MAP.get(id).cancel();
-        }
-
-        console.log(`Creating updating text with initial text: ${text}`);
-        this.eleID = id;
-        this.textString.innerHTML = text;
-
-        this.intervalID = window.setInterval(() => this.update(), 1000);
-        console.log(`Created interval ID: ${this.intervalID}`);
-        UPDATING_TEXT_MAP.set(id, this);
+}
+export function sendMessage(message: string) {
+    if (API_WS != null) {
+        API_WS.send(message);
+    } else {
+        console.warn("Tried to sendMessage() without websocket...");
     }
+}
+if (LOCAL_TESTING) {
+    (window as any).test_connect = connect;
+    (window as any).test_message = sendMessage;
 }
 
 function showMenu(auth: string) {
@@ -115,7 +138,7 @@ function loginSuccess(auth: string) {
     const menuShowTimeout = window.setTimeout(() => showMenu(auth), 500);
 
     // Don't forget to save the token, I guess.
-    localStorage.setItem("draaft.token", auth);
+    set_token(auth);
 
     // Then, "race the beam" to get the user information.
     fetch(`${API_URI}/user`, {
@@ -125,13 +148,15 @@ function loginSuccess(auth: string) {
     })
         .then(resp => resp.json())
         .then(async json => {
+            set_uuid(json.uuid);
             // Quickly check to see if we should move to a room page.
-            if (json.room != null) {
-            document.getElementById("menu-welcome-text").innerText = `ur in a room?? buggy website...`;
-            window.clearTimeout(menuShowTimeout);
-            }
-            else {
-            document.getElementById("menu-welcome-text").innerText = `welcome, ${json.username.toLowerCase()}`;
+            if (json.room_code != null) {
+                console.log("Rejoining room after successful login...");
+                console.log(json);
+                menuJoinRoom(json.room_code);
+                window.clearTimeout(menuShowTimeout);
+            } else {
+                document.getElementById("menu-welcome-text").innerText = `welcome, ${json.username.toLowerCase()}`;
             }
         })
         .catch(error => {
@@ -178,61 +203,86 @@ async function loginFlow(port: number) {
     return await testAuthToken(json.token);
 }
 
-function stored_token() {
-    return localStorage.getItem("draaft.token");
-}
-
-function request_headers() {
-    return {
-        token: stored_token()
-    };
-}
-
 function showRoom(code: string) {
     displayOnlyPage("room-page");
-    document.getElementById("quick-remove").innerText = code;
+    console.log("- Showing created room");
+    // document.getElementById("quick-remove").innerText = code;
+    document.getElementById("home-button").style.display = "none";
 }
 
-function setupRoomPage(code: string) {
+let ROOM_MEMBERS: Array<Member> = [];
+function visitUuid(uuid: string, callback: (arg0: Member) => void) {
+    for (const m of ROOM_MEMBERS) {
+        if (m.uuid === uuid) {
+            callback(m);
+        }
+    }
+}
+function setupRoomPage(code: string, members) {
     // First, fade out all pages.
     hideAllPages();
+
+    connect(stored_token());
 
     // Set a timeout to do our stuff.
     window.setTimeout(() => showRoom(code), 500);
 
     // In the meantime, as usual, get additional room metadata.
-    fetch(`${API_URI}/room`, {
-        headers: request_headers()
-    })
+    apiRequest(`room`, undefined, "GET")
         .then(resp => resp.json())
         .then(async json => {
-            document.getElementById("menu-welcome-text").innerText = `welcome, ${json.members.length}`;
+            // document.getElementById("room-welcome-text").innerText = `welcome, ${json.members.length}`;
         })
         .catch(error => {
             console.error("Error getting room data: ", error);
         });
+
+    // Also fill in the members stuff, which we actually got from the initial request now
+    for (const m of members) {
+        ROOM_MEMBERS.push(
+            new Member(m)
+                .addDiv(document.getElementById("room-page-header"), true)
+                .addManagementDiv(document.getElementById("player-gutter"), false)
+        );
+    }
+
+    document.getElementById("room-copy-link").onclick = _ => navigator.clipboard.writeText(code);
 }
 
-function menuJoinRoom() {
+function menuJoinRoom(rid?: string) {
     new UpdatingText("menu-create-room", "joining room..", 15, false, "create a room");
-    const rid = <HTMLInputElement>document.getElementById("menu-input-roomid");
-    fetch(`${API_URI}/room/join`, {
-        method: "POST",
-        body: JSON.stringify({
-            code: rid
-        }),
-        headers: request_headers()
-    });
+    if (rid == undefined) {
+        rid = (<HTMLInputElement>document.getElementById("menu-input-roomid")).value;
+    }
+    console.log(`Joining room: ${rid}`);
+    apiRequest(`room/join`, JSON.stringify({code: rid}), "POST")
+        .then(resp => resp.json())
+        .then(async json => {
+            console.log(`Join room command returned JSON: ${json}`);
+            if (json.code === undefined) {
+                console.error(`Error: Bad data returned from API.`);
+                fullPageNotification("error: bad API interaction", "click to reload 🪣", () => window.location.reload());
+            } else {
+                if (json.state == "rejoined_as_admin") {
+                    set_admin(true);
+                }
+                setupRoomPage(json.code, json.members);
+            }
+        })
+        .catch(async (e) => {
+            console.error(`Got error rejoining room. Attempting to reload. Error: ${e}`);
+            fullPageNotification("error: bad API interaction", "click to reload 🪣", () => window.location.reload());
+        });
 }
 
 function menuCreateRoom() {
     new UpdatingText("menu-create-room", "creating room..", 15, false, "create a room");
-    fetch(`${API_URI}/room/create`, {
-        method: "GET",
-        headers: request_headers()
-    })
+    apiRequest(`room/create`, undefined, "GET")
         .then(resp => resp.json())
-        .then(async json => setupRoomPage(json.code) );
+        .then(async json => {
+            set_admin(true);
+            setupRoomPage(json.code, json.members);
+        });
 }
 
 function setMenuClickers() {
@@ -240,12 +290,49 @@ function setMenuClickers() {
     document.getElementById("menu-create-room").addEventListener("click", () => menuCreateRoom());
 }
 
+function startDrafting() {
+    console.log("It's drafting time, yo!");
+}
+
 function setupOnClick() {
-    
+    // One-time on-click setups.
+
+    // Room setup menu.
+    for (const cb of document.getElementsByClassName("confirm-leave")) {
+        cb.addEventListener("close", e => {
+            const d = <HTMLDialogElement>e.target;
+            console.log(`Closed confirm-leave box with return: ${d.returnValue}`);
+            if (d.returnValue == "confirm") {
+                apiRequest(`room/leave`, undefined, "POST").finally(() => window.location.reload());
+            }
+        });
+    }
+
+    (<HTMLButtonElement>document.getElementById("room-start")).addEventListener("click", _ => {
+        if (!IS_ADMIN) {
+            annoy_user_lol();
+        }
+        else {
+            fullPageNotification("are you sure you want to start draafting?", "🪣🪣🪣 yes 🪣🪣🪣", startDrafting, true);
+        }
+    });
 }
 
 function main() {
     console.log("Launching drAAft 2 web client...");
+
+    if (LOCAL_TESTING) {
+        addEventListener("keyup", event => {
+            if (event.key == "o") {
+                console.log("Let's add Feinberg...");
+                apiRequest("dev/adduser");
+            }
+            else if (event.key == "k") {
+                console.log("Kicking myself when I'm down...");
+                apiRequest(`dev/kickself`);
+            }
+        });
+    }
 
     const storageToken: string = localStorage.getItem("draaft.token");
     if (storageToken != null) {
