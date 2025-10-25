@@ -122,6 +122,9 @@ def gen_file(w: dhtml.Website, p: dhtml.Page, verbose=noop):
 # dual-pass: gather metadata for filling in on second pass?
 
 def main(log):
+    import subprocess
+    subprocess.run("cd js && tsc && cd ..", shell=True)
+
     here = os.path.relpath(os.path.dirname(__file__)) + '/'
     log(f'Started templater. Location of website file: {here}')
     w = dhtml.Website(here)

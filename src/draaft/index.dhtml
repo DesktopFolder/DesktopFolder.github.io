@@ -3,23 +3,147 @@ page.title=drAAfting Tool
 website.title=Desktop's Website
 page.description=A tool for doing AA drafts
 src=templates/generic.html
-css.extras=/styles/draaft.css
-meta=<link href="https://fonts.cdnfonts.com/css/minecraftia" rel="stylesheet">
+css.extras=/styles/draaft2.css
 page.image=/draaft-logo.png
 ---
 <body class="maxerino">
-<video autoplay muted loop id="bg-video">
+<video autoplay muted loop id="background-video" controls disablePictureInPicture>
   <source src="/assets/draaft/bg.webm" type="video/webm">
 </video>
-<div class="options-div hidden" id="options-div">
-    <h3 id="notice">DOES NOTHING WIP :)</h3>
-<!--    <h3 id="notice">Reload page after configuring!</h3> -->
-    <p><input id="poolrandomizer" class="config-cb ds-small configurer" type="checkbox">Randomize Pools</p>
-    <p><input id="seedhider" class="config-cb ds-small configurer" type="checkbox">Hide Seeds</p>
-    <p><input id="timesetter" class="config-num ds-small configurer" type="text">Seconds per pick</p>
+
+<!-- Login Page ! Let's do this in HTML for funsies. :) -->
+<!-- Login Page Requirements:
+- Link to old drAAft page
+- Link to discord server
+- Link to twitter..?
+- Link to documentation / setup guide (new)
+-->
+<div id="login-page">
+    <!-- Fixed position; doesn't affect layout -->
+
+    <!-- TODO: make this into a minecraft toast? -->
+    <div id="login-response-container">
+        <p id="login-response-text" class="stroke-text-black"></p>
+    </div>
+
+    <img id="login-draaft-logo" src="/draaft-logo.png" />
+
+    <a class="as-button basic-shadow login-main-button" href="https://github.com/memerson12/drAAft/releases">download</a>
+
+    <!-- TODO!! -->
+    <a class="as-button basic-shadow login-main-button" href="/draaft/documentation.html" target="_blank">get started</a>
+
+    <a class="as-button basic-shadow login-main-button" href="https://discord.gg/37Q3KnbeQQ" target="_blank">discord</a>
+
 </div>
-<a id="options-shower" href='#' onclick="document.getElementById('options-div').classList.toggle('hidden');">show / hide options</a>
-<a id="undo-button" href='#' onclick="undefined">undo</a>
+
+<!-- FLOATING FOOTER FOR ALL PAGES (?) -->
+<div class="floating-footer">
+    <a href="https://github.com/memerson12/drAAft/releases" target="_blank">mod download</a>
+
+    <a href="/draaft/documentation.html" target="_blank">get started</a>
+
+    <a href="https://discord.gg/37Q3KnbeQQ" target="_blank">discord</a>
+
+    <a href="https://twitter.com/DesktopFolder" target="_blank">twitter</a>
+
+    <a href="/draaft/old.html" target="_blank">old site</a>
+</div>
+
+<!-- MENU PAGE -->
+<div id="menu-page">
+    <img class="draaft-logo" src="/draaft-logo.png" />
+    <p id="menu-welcome-text" class="generic-welcome-text"></p>
+
+    <div id="menu-rooms" class="full-flex-down">
+        <div id="menu-join-room" class="full-flex-right">
+            <input type="text" class="standard-ui basic-shadow" id="menu-input-roomid" placeholder="room code..." />
+            <button id="menu-roomid-join" class="basic-shadow">join</button>
+        </div>
+        <button class="basic-shadow" id="menu-create-room">create a room</button>
+    </div>
+
+    <!--
+    <div id="menu-helpers">
+        <div class="helper-buttons" id="menu-helper-buttons">
+            <div class="menu-helper-row">
+                <a class="helper-button as-button basic-shadow" href="https://discord.gg/37Q3KnbeQQ" target="_blank">discord</a>
+                <a class="helper-button as-button basic-shadow" href="https://disrespec.tech/draaft/intro.html" target="_blank">help me!</a>
+            </div>
+            <div class="menu-helper-row">
+                <a class="helper-button as-button basic-shadow" href="https://disrespec.tech/draaft/old.html" target="_blank">old site</a>
+                <a class="helper-button as-button basic-shadow" href="https://twitter.com/DesktopFolder" target="_blank">twitter</a>
+            </div>
+        </div>
+    </div>
+    -->
+</div>
+
+<!--
+Room Page. Requirements:
+- Prominent room code
+- Player list -> two lists (top down with buttons, plus top with display of players)
+- Options
+- Spectate / play (can have >4 players, but must reduce to start match)
+- Kick button
+- Leave room! + Start!
+
+Backlog:
+- "Spectator" invite
+-->
+
+<dialog class="confirm-leave basic-modal-dialog" id="confirm-room-destroy-admin" closedby="any">
+    <p>You are the admin of this room. Leaving will destroy it.</p>
+    <p>Are you sure you want to leave?</p>
+    <form method="dialog">
+        <button autofocus class="confirm-button" value="confirm" formmethod="dialog">yes, I want to destroy this room</button>
+        <button class="cancel-button" value="cancel" formmethod="dialog">cancel</button>
+    </form>
+</dialog>
+<dialog class="confirm-leave basic-modal-dialog" id="confirm-room-destroy-user" closedby="any">
+    <p>Are you sure you want to leave?</p>
+    <form method="dialog">
+        <button autofocus class="confirm-button" value="confirm">yes</button>
+        <button class="cancel-button" value="cancel">cancel</button>
+    </form>
+</dialog>
+
+<!-- better flexbox from menx https://codepen.io/me_nx/pen/emJNXrE -->
+<div id="room-page" class="full-flex-down" style="display: none">
+    <div id="room-page-header-container">
+        <div id="room-page-header" class="full-flex-right">
+                        
+        </div>
+    </div>
+
+    <!-- Flex-down, to add in the logo. -->
+    <div id="room-page-main" class="full-flex-right">
+
+        <!-- Gutter -->
+        <div id="room-page-gutter-container">
+            <div id="room-page-gutter">
+                <button id="room-copy-link" class="standard-ui">copy code</button>
+
+                <!-- <img style="display: none;" class="draaft-logo" src="/draaft-logo.png" /> -->
+                <div id="player-gutter">
+                    <!-- Player list goes here, dynamically inserted :) -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Room management! -->
+        <div id="room-page-config-container">
+            <div id="room-page-config">
+                <button id="room-start" class="standard-ui">begin draafting</button>
+
+                <div id="config-area">
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
 <script>var exports = {"__esModule": true};</script>
-<script src="/js/draaft.js" type="module"></script><!--All of our actual logic resides here.-->
+<script src="/js/draaft2.js" type="module"></script><!--All of our actual logic resides here.-->
 </body>
