@@ -297,13 +297,6 @@ function main() {
             }
         });
     }
-    const storageToken = localStorage.getItem("draaft.token");
-    if (storageToken != null) {
-        testAuthToken(storageToken);
-    }
-    document.getElementById("login-page").classList.add("visible");
-    setupLazySecret(document.getElementById("menu-input-roomid"));
-    setupOnClick();
     const url = new URL(window.location.href);
     const urlParams = url.searchParams;
     const authPort = urlParams.get("auth_port");
@@ -315,5 +308,13 @@ function main() {
         window.history.replaceState({}, "", url);
         loginFlow(Number.parseInt(authPort));
     }
+    const storageToken = localStorage.getItem("draaft.token");
+    // Only do this if we aren't doing the login flow already.
+    if (authPort === null && storageToken != null) {
+        testAuthToken(storageToken);
+    }
+    document.getElementById("login-page").classList.add("visible");
+    setupLazySecret(document.getElementById("menu-input-roomid"));
+    setupOnClick();
 }
 document.addEventListener("DOMContentLoaded", main, false);
