@@ -109,8 +109,6 @@ if (LOCAL_TESTING) {
 }
 
 function showMenu(auth: string) {
-    // Basic setup.
-    setMenuClickers();
     // Show just our page.
     displayOnlyPage("menu-page");
 }
@@ -286,17 +284,15 @@ function menuCreateRoom() {
         });
 }
 
-function setMenuClickers() {
-    document.getElementById("menu-roomid-join").addEventListener("click", () => menuJoinRoom());
-    document.getElementById("menu-create-room").addEventListener("click", () => menuCreateRoom());
-}
-
 function startDrafting() {
     console.log("It's drafting time, yo!");
 }
 
 function setupOnClick() {
     // One-time on-click setups.
+    // Main logged in menu.
+    document.getElementById("menu-roomid-join").addEventListener("click", () => menuJoinRoom());
+    document.getElementById("menu-create-room").addEventListener("click", () => menuCreateRoom());
 
     // Room setup menu.
     for (const cb of document.getElementsByClassName("confirm-leave")) {
