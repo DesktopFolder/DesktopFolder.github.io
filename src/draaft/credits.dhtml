@@ -1,0 +1,9 @@
+---
+page.title=drAAft Credits
+website.title=draaft.disrespec.tech
+page.description=Credits for drAAft development.
+page.image=/draaft-logo.png
+---
+<body class="wider">
+{{generators[md][src/draaft/credits.md]}}
+</body>
