@@ -1,6 +1,7 @@
 import { Member } from "./draaft2/member.js";
 import { WS_URI, API_URI, LOCAL_TESTING, apiRequest } from "./draaft2/request.js";
-import { IS_ADMIN, UUID, UpdatingText, fullPageNotification, set_admin, set_token, set_uuid, stored_token, annoy_user_lol } from "./draaft2/util.js";
+import { IS_ADMIN, UUID, UpdatingText, fullPageNotification, set_admin, set_token, set_uuid, stored_token, annoy_user_lol, displayOnlyPage, hideAllPages, } from "./draaft2/util.js";
+import { fetchData, startDrafting } from "./draaft2/draft.js";
 var API_WS = null;
 /**
  * Adds listeners to an input element that turn it into a
@@ -59,6 +60,15 @@ function handlePlayerupdate(d) {
             console.error(`Unhandled player event: ${d.action}`);
     }
 }
+function handleRoomupdate(d) {
+    switch (d.update) {
+        case "commenced":
+            startDrafting();
+            break;
+        default:
+            console.error(`Unhandled room event: ${d.update}`);
+    }
+}
 /* WebSocket Testing */
 export function connect(token) {
     console.log(`Connecting to websocket at ${WS_URI}`);
@@ -78,6 +88,9 @@ export function connect(token) {
             switch (d.variant) {
                 case "playerupdate":
                     handlePlayerupdate(d);
+                    break;
+                case "roomupdate":
+                    handleRoomupdate(d);
                     break;
                 default:
                     console.error(`Unhandled event type ${d.variant}`);
@@ -104,21 +117,6 @@ if (LOCAL_TESTING) {
 function showMenu(auth) {
     // Show just our page.
     displayOnlyPage("menu-page");
-}
-function displayOnlyPage(id) {
-    removeAllPages();
-    document.getElementById(id).style.display = "flex";
-    document.getElementById(id).classList.add("visible");
-}
-function hideAllPages() {
-    document.getElementById("login-page").classList.add("invisible");
-    document.getElementById("menu-page").classList.add("invisible");
-    document.getElementById("room-page").classList.add("invisible");
-}
-function removeAllPages() {
-    document.getElementById("login-page").style.display = "none";
-    document.getElementById("menu-page").style.display = "none";
-    document.getElementById("room-page").style.display = "none";
 }
 function loginSuccess(auth) {
     // Animation, lol.
@@ -230,8 +228,12 @@ function menuJoinRoom(rid) {
     apiRequest(`room/join`, JSON.stringify({ code: rid }), "POST")
         .then(resp => resp.json())
         .then(async (json) => {
-        console.log(`Join room command returned JSON: ${json}`);
-        if (json.code === undefined) {
+        console.log(`Join room command returned JSON: ${JSON.stringify(json)}`);
+        if (json.drafting === true) {
+            console.log('Join room command returned that we are drafting. Fetching draft...');
+            startDrafting();
+        }
+        else if (json.code === undefined) {
             console.error(`Error: Bad data returned from API.`);
             fullPageNotification("error: bad API interaction", "click to reload 🪣", () => window.location.reload());
         }
@@ -256,9 +258,6 @@ function menuCreateRoom() {
         setupRoomPage(json.code, json.members);
     });
 }
-function startDrafting() {
-    console.log("It's drafting time, yo!");
-}
 function setupOnClick() {
     // One-time on-click setups.
     // Main logged in menu.
@@ -279,12 +278,16 @@ function setupOnClick() {
             annoy_user_lol();
         }
         else {
-            fullPageNotification("are you sure you want to start draafting?", "🪣🪣🪣 yes 🪣🪣🪣", startDrafting, true);
+            fullPageNotification("are you sure you want to start draafting?", "🪣🪣🪣 yes 🪣🪣🪣", () => {
+                apiRequest(`room/commence`, undefined, "POST");
+            }, true);
         }
     });
 }
 function main() {
     console.log("Launching drAAft 2 web client...");
+    // non-blocking, probably :)
+    fetchData();
     if (LOCAL_TESTING) {
         addEventListener("keyup", event => {
             if (event.key == "o") {

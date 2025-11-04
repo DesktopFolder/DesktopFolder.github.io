@@ -128,3 +128,20 @@ export function annoy_user_lol() {
     fullPageNotification(msg, but, () => undefined);
     USER_ANNOY_COUNT += 1;
 }
+export function displayOnlyPage(id) {
+    removeAllPages();
+    document.getElementById(id).style.display = "flex";
+    document.getElementById(id).classList.add("visible");
+}
+export function hideAllPages() {
+    document.getElementById("login-page").classList.add("invisible");
+    document.getElementById("menu-page").classList.add("invisible");
+    document.getElementById("room-page").classList.add("invisible");
+    document.getElementById("draft-page").classList.add("invisible");
+}
+export function removeAllPages() {
+    document.getElementById("login-page").style.display = "none";
+    document.getElementById("menu-page").style.display = "none";
+    document.getElementById("room-page").style.display = "none";
+    document.getElementById("draft-page").style.display = "none";
+}

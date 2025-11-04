@@ -1,6 +1,19 @@
 import {Member} from "./draaft2/member.js";
 import {WS_URI, API_URI, LOCAL_TESTING, apiRequest} from "./draaft2/request.js";
-import {IS_ADMIN, UUID, UpdatingText, fullPageNotification, set_admin, set_token, set_uuid, stored_token, annoy_user_lol} from "./draaft2/util.js";
+import {
+    IS_ADMIN,
+    UUID,
+    UpdatingText,
+    fullPageNotification,
+    set_admin,
+    set_token,
+    set_uuid,
+    stored_token,
+    annoy_user_lol,
+    displayOnlyPage,
+    hideAllPages,
+} from "./draaft2/util.js";
+import {fetchData, startDrafting} from "./draaft2/draft.js";
 
 var API_WS: WebSocket | null = null;
 
@@ -45,9 +58,10 @@ function handlePlayerupdate(d) {
         case "leave":
             if (d.uuid === UUID) {
                 console.log("Looks like we are leaving. Bye!");
-                fullPageNotification("You have been removed from the lobby 😭", "Click to reload 🪣", () => window.location.reload());
-            }
-            else {
+                fullPageNotification("You have been removed from the lobby 😭", "Click to reload 🪣", () =>
+                    window.location.reload()
+                );
+            } else {
                 // Delete the member.
                 visitUuid(d.uuid, (m: Member) => {
                     m.destroy();
@@ -63,6 +77,16 @@ function handlePlayerupdate(d) {
             break;
         default:
             console.error(`Unhandled player event: ${d.action}`);
+    }
+}
+
+function handleRoomupdate(d) {
+    switch (d.update) {
+        case "commenced":
+            startDrafting();
+            break;
+        default:
+            console.error(`Unhandled room event: ${d.update}`);
     }
 }
 
@@ -86,6 +110,9 @@ export function connect(token: string) {
             switch (d.variant) {
                 case "playerupdate":
                     handlePlayerupdate(d);
+                    break;
+                case "roomupdate":
+                    handleRoomupdate(d);
                     break;
                 default:
                     console.error(`Unhandled event type ${d.variant}`);
@@ -111,22 +138,6 @@ if (LOCAL_TESTING) {
 function showMenu(auth: string) {
     // Show just our page.
     displayOnlyPage("menu-page");
-}
-
-function displayOnlyPage(id: string) {
-    removeAllPages();
-    document.getElementById(id).style.display = "flex";
-    document.getElementById(id).classList.add("visible");
-}
-function hideAllPages() {
-    document.getElementById("login-page").classList.add("invisible");
-    document.getElementById("menu-page").classList.add("invisible");
-    document.getElementById("room-page").classList.add("invisible");
-}
-function removeAllPages() {
-    document.getElementById("login-page").style.display = "none";
-    document.getElementById("menu-page").style.display = "none";
-    document.getElementById("room-page").style.display = "none";
 }
 
 function loginSuccess(auth: string) {
@@ -257,10 +268,16 @@ function menuJoinRoom(rid?: string) {
     apiRequest(`room/join`, JSON.stringify({code: rid}), "POST")
         .then(resp => resp.json())
         .then(async json => {
-            console.log(`Join room command returned JSON: ${json}`);
-            if (json.code === undefined) {
+            console.log(`Join room command returned JSON: ${JSON.stringify(json)}`);
+            if (json.drafting === true) {
+                console.log('Join room command returned that we are drafting. Fetching draft...');
+                startDrafting();
+            }
+            else if (json.code === undefined) {
                 console.error(`Error: Bad data returned from API.`);
-                fullPageNotification("error: bad API interaction", "click to reload 🪣", () => window.location.reload());
+                fullPageNotification("error: bad API interaction", "click to reload 🪣", () =>
+                    window.location.reload()
+                );
             } else {
                 if (json.state == "rejoined_as_admin") {
                     set_admin(true);
@@ -268,7 +285,7 @@ function menuJoinRoom(rid?: string) {
                 setupRoomPage(json.code, json.members);
             }
         })
-        .catch(async (e) => {
+        .catch(async e => {
             console.error(`Got error rejoining room. Attempting to reload. Error: ${e}`);
             fullPageNotification("error: bad API interaction", "click to reload 🪣", () => window.location.reload());
         });
@@ -282,10 +299,6 @@ function menuCreateRoom() {
             set_admin(true);
             setupRoomPage(json.code, json.members);
         });
-}
-
-function startDrafting() {
-    console.log("It's drafting time, yo!");
 }
 
 function setupOnClick() {
@@ -308,9 +321,15 @@ function setupOnClick() {
     (<HTMLButtonElement>document.getElementById("room-start")).addEventListener("click", _ => {
         if (!IS_ADMIN) {
             annoy_user_lol();
-        }
-        else {
-            fullPageNotification("are you sure you want to start draafting?", "🪣🪣🪣 yes 🪣🪣🪣", startDrafting, true);
+        } else {
+            fullPageNotification(
+                "are you sure you want to start draafting?",
+                "🪣🪣🪣 yes 🪣🪣🪣",
+                () => {
+                    apiRequest(`room/commence`, undefined, "POST");
+                },
+                true
+            );
         }
     });
 }
@@ -318,13 +337,15 @@ function setupOnClick() {
 function main() {
     console.log("Launching drAAft 2 web client...");
 
+    // non-blocking, probably :)
+    fetchData();
+
     if (LOCAL_TESTING) {
         addEventListener("keyup", event => {
             if (event.key == "o") {
                 console.log("Let's add Feinberg...");
                 apiRequest("dev/adduser");
-            }
-            else if (event.key == "k") {
+            } else if (event.key == "k") {
                 console.log("Kicking myself when I'm down...");
                 apiRequest(`dev/kickself`);
             }
@@ -341,7 +362,7 @@ function main() {
         url.search = newQuery;
         window.history.replaceState({}, "", url);
         loginFlow(Number.parseInt(authPort));
-    } 
+    }
 
     const storageToken: string = localStorage.getItem("draaft.token");
     // Only do this if we aren't doing the login flow already.
