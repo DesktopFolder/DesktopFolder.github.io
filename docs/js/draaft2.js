@@ -1,5 +1,5 @@
 import { Member } from "./draaft2/member.js";
-import { WS_URI, API_URI, LOCAL_TESTING, apiRequest } from "./draaft2/request.js";
+import { WS_URI, API_URI, LOCAL_TESTING, apiRequest, resolveUrl } from "./draaft2/request.js";
 import { IS_ADMIN, UUID, UpdatingText, fullPageNotification, set_admin, set_token, set_uuid, stored_token, annoy_user_lol, displayOnlyPage, hideAllPages, } from "./draaft2/util.js";
 import { fetchData, startDrafting } from "./draaft2/draft.js";
 var API_WS = null;
@@ -73,7 +73,7 @@ function handleRoomupdate(d) {
 export function connect(token) {
     console.log(`Connecting to websocket at ${WS_URI}`);
     if (API_WS == null || API_WS == undefined) {
-        API_WS = new WebSocket(`${WS_URI}/listen?token=${token}`);
+        API_WS = new WebSocket(new URL(`listen?token=${token}`, WS_URI));
         API_WS.onerror = function (event) {
             console.warn("WebSocket errored. Must reconnect.");
             API_WS = null;
@@ -127,7 +127,7 @@ function loginSuccess(auth) {
     // Don't forget to save the token, I guess.
     set_token(auth);
     // Then, "race the beam" to get the user information.
-    fetch(`${API_URI}/user`, {
+    fetch(resolveUrl(API_URI, '/user'), {
         headers: {
             token: auth
         }
@@ -152,7 +152,7 @@ function loginSuccess(auth) {
 }
 async function testAuthToken(auth) {
     const interval = new UpdatingText("login-response-text", "contacting drAAft server..", 25, false);
-    await fetch(`${API_URI}/authenticated`, {
+    await fetch(resolveUrl(API_URI, '/authenticated'), {
         headers: {
             token: auth
         }
