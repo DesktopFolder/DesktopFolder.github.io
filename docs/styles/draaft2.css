@@ -552,3 +552,39 @@ div#room-page-gutter #room-copy-link {
 
     overflow: auto;
 }
+
+/* DRAFT PAGE */
+.pick-tooltip {
+    position: relative;
+    cursor: default;
+    visibility: hidden;
+
+    text-align: center;
+    border: none;
+    background-color: rgba(0, 0, 0, 0.5);
+    outline: 2px solid rgba(255, 255, 255, 0.8);
+    color: white !important;
+    font-family: Minecraftia;
+    font-size: 24px;
+    padding: 0.5em;
+}
+
+.draft-pick-container:hover .pick-tooltip {
+    visibility: visible;
+}
+
+.draft-pick-container {
+    text-align: center;
+    border: none;
+    background-color: rgba(0, 0, 0, 0.5);
+    outline: 2px solid rgba(255, 255, 255, 0.8);
+    color: white !important;
+    font-family: Minecraftia;
+    font-size: 24px;
+    padding: 0.5em;
+}
+
+.draft-page {
+    width: 100%;
+    height: 100%;
+}
