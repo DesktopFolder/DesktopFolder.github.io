@@ -341,6 +341,8 @@ function main() {
     fetchData();
 
     if (LOCAL_TESTING) {
+        console.log(`Local testing enabled. Backend URI: ${API_URI}`);
+
         addEventListener("keyup", event => {
             if (event.key == "o") {
                 console.log("Let's add Feinberg...");

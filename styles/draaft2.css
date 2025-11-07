@@ -554,10 +554,68 @@ div#room-page-gutter #room-copy-link {
 }
 
 /* DRAFT PAGE */
+
+/* DRAFT HEADER FIRST */
+div#draft-page-header-container {
+    width: 100%;
+
+    box-sizing: border-box;
+
+    padding: 20px;
+}
+div#draft-page-header {
+    width: 100%;
+    /* height: 100%; */
+
+    box-sizing: border-box;
+
+    display: flex;
+    align-items: center;
+
+    /* Adapted from standard-ui */
+    text-align: center;
+    border: none;
+    background-color: rgba(0, 0, 0, 0.6);
+    outline: 2px solid rgba(255, 255, 255, 0.8);
+    color: white !important;
+    font-family: Minecraftia;
+    font-size: 24px;
+    padding: 0.3em;
+
+    height: 2.4em;
+
+    justify-content: space-around;
+}
+
+
+
+/* draft picks :) */
+
+/* Images */
+.draft-pick-image {
+    height: auto;
+}
+.draft-pick-image.picked {
+    filter: brightness(70%);
+}
+
+.draft-picker-image {
+    height: 1em;
+    width: 1em;
+    position: fixed;
+    visibility:hidden;
+    transform:translateX(-0.1em) translateY(-1.1em);
+}
+.draft-picker-image.picked {
+    visibility: visible;
+}
+
 .pick-tooltip {
-    position: relative;
+    position: fixed;
     cursor: default;
     visibility: hidden;
+    transform:translateX(-1.4em);
+    transform: translateY(1em);
 
     text-align: center;
     border: none;
@@ -567,13 +625,31 @@ div#room-page-gutter #room-copy-link {
     font-family: Minecraftia;
     font-size: 24px;
     padding: 0.5em;
+}
+
+.draft-image-container:hover {
+    /* background-color: rgba(0, 0, 0, 0.7); */
+    padding: 0.1em;
+    transition: 0.04s padding ease-out;
+}
+
+.draft-pick-container {
+    cursor: pointer;
+    height: fit-content;
+}
+
+.draft-image-container {
+    padding: 0.3em;
+    width: 2.8em;
+    height: 2.8em;
 }
 
 .draft-pick-container:hover .pick-tooltip {
     visibility: visible;
+    pointer-events: none;
 }
 
-.draft-pick-container {
+.draft-pool-container {
     text-align: center;
     border: none;
     background-color: rgba(0, 0, 0, 0.5);
@@ -581,10 +657,22 @@ div#room-page-gutter #room-copy-link {
     color: white !important;
     font-family: Minecraftia;
     font-size: 24px;
-    padding: 0.5em;
+    padding: 0.0em;
+    
+    display: flex;
+    min-height: 0;
+    flex-direction: row;
+    height: fit-content;
 }
 
-.draft-page {
+#draft-page {
     width: 100%;
     height: 100%;
 }
+
+#draft-page-main {
+    width: 100%;
+    height: 100%;
+    padding: 20px;
+}
+
