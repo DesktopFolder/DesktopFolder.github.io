@@ -151,8 +151,12 @@ Backlog:
         </div>
     </div>
 
-    <div id="draft-page-main" class="full-flex-right">
+    <div id="draft-page-body" class="full-flex-right">
+        <div id="draft-page-main-container">
+            <div id="draft-page-main" class="full-flex-right">
 
+            </div>
+        </div>
     </div>
 </div>
 

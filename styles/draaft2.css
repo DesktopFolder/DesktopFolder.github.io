@@ -147,7 +147,7 @@ p.generic-welcome-text {
 div.floating-footer {
     position: fixed;
     bottom: 4px;
-    width: 60%;
+    width: 100%;
     text-align: center;
 
     font-size: 1rem;
@@ -593,10 +593,21 @@ div#draft-page-header {
 
 /* Images */
 .draft-pick-image {
-    height: auto;
+    height: 100%;
+    image-rendering: pixelated;
 }
 .draft-pick-image.picked {
-    filter: brightness(70%);
+    filter: brightness(60%);
+}
+
+.draft-image-advancement {
+    width: 100%;
+    height: 100%;
+    background-size: 100%;
+    padding: 0.5rem;
+}
+.draft-image-advancement.picked {
+    filter: brightness(60%);
 }
 
 .draft-picker-image {
@@ -623,8 +634,13 @@ div#draft-page-header {
     outline: 2px solid rgba(255, 255, 255, 0.8);
     color: white !important;
     font-family: Minecraftia;
-    font-size: 24px;
+    font-size: 16px;
     padding: 0.5em;
+    padding-top: 0;
+    padding-bottom: 0;
+    line-height: 1.2em;
+    
+    max-width: calc(4.2rem * 8);
 }
 
 .draft-image-container:hover {
@@ -640,13 +656,21 @@ div#draft-page-header {
 
 .draft-image-container {
     padding: 0.3em;
-    width: 2.8em;
-    height: 2.8em;
+    width: 4.2rem;
+    height: 4.2rem;
 }
 
 .draft-pick-container:hover .pick-tooltip {
     visibility: visible;
     pointer-events: none;
+}
+
+.draft-pick-container img.current-user {
+    box-shadow: 0px 0px 4px #AAA;
+}
+.draft-pick-container img.other-user {
+    /* opacity: 0.8; */
+    filter: brightness(40%);
 }
 
 .draft-pool-container {
@@ -662,7 +686,30 @@ div#draft-page-header {
     display: flex;
     min-height: 0;
     flex-direction: row;
+    justify-content: space-around;
     height: fit-content;
+    flex-wrap: wrap;
+
+    width: calc(4.2rem * 6);
+}
+
+.draft-pool-container#shared-pool {
+    min-height: calc(4.2rem + 1.6em);
+
+    flex-direction: column;
+    width: fit-content;
+    align-items: center;
+}
+
+.draft-pool-container#shared-pool #shared-pool-items {
+    width: fit-content;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.pool-title {
+    width: calc(4.2rem * 6);
 }
 
 #draft-page {
@@ -670,9 +717,39 @@ div#draft-page-header {
     height: 100%;
 }
 
-#draft-page-main {
-    width: 100%;
+#draft-page-body {
     height: 100%;
-    padding: 20px;
+    width: 100%;
+    min-height: 0; /* css sucks?? */
+
+    justify-content: space-around;
+}
+
+#draft-page-main-container {
+    width: max(45%, 4.2rem * 14);
+    height: 100%;
+
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+
+    min-height: 0;
+}
+
+#draft-page-main {
+    height: 100%;
+    width: 100%;
+
+    border: none;
+    background-color: rgba(0, 0, 0, 0.5);
+    outline: 2px solid rgba(255, 255, 255, 0.8);
+    color: white !important;
+
+    overflow: auto;
+
+    flex-wrap: wrap;
+    
+    justify-content: space-evenly;
+    align-items: center;
+    align-content: space-evenly;
 }
 

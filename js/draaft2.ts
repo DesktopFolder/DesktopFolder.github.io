@@ -11,9 +11,9 @@ import {
     stored_token,
     annoy_user_lol,
     displayOnlyPage,
-    hideAllPages,
+    hideAllPages
 } from "./draaft2/util.js";
-import {fetchData, startDrafting} from "./draaft2/draft.js";
+import {fetchData, startDrafting, handleDraftpick} from "./draaft2/draft.js";
 
 var API_WS: WebSocket | null = null;
 
@@ -90,7 +90,6 @@ function handleRoomupdate(d) {
     }
 }
 
-/* WebSocket Testing */
 export function connect(token: string) {
     console.log(`Connecting to websocket at ${WS_URI}`);
     if (API_WS == null || API_WS == undefined) {
@@ -100,7 +99,7 @@ export function connect(token: string) {
             API_WS = null;
         };
         API_WS.onopen = function (event) {
-            console.log("Successfully connected websocket.");
+            console.log("Important: Successfully connected websocket.");
         };
         API_WS.onmessage = function (event) {
             // websocket time!
@@ -113,6 +112,9 @@ export function connect(token: string) {
                     break;
                 case "roomupdate":
                     handleRoomupdate(d);
+                    break;
+                case "draftpick":
+                    handleDraftpick(d);
                     break;
                 default:
                     console.error(`Unhandled event type ${d.variant}`);
@@ -151,7 +153,7 @@ function loginSuccess(auth: string) {
     set_token(auth);
 
     // Then, "race the beam" to get the user information.
-    fetch(resolveUrl(API_URI, '/user'), {
+    fetch(resolveUrl(API_URI, "/user"), {
         headers: {
             token: auth
         }
@@ -176,7 +178,7 @@ function loginSuccess(auth: string) {
 
 async function testAuthToken(auth: string) {
     const interval = new UpdatingText("login-response-text", "contacting drAAft server..", 25, false);
-    await fetch(resolveUrl(API_URI, '/authenticated'), {
+    await fetch(resolveUrl(API_URI, "/authenticated"), {
         headers: {
             token: auth
         }
@@ -206,11 +208,15 @@ async function loginFlow(port: number) {
 
     console.assert(response.status == 200);
 
-    const json = await response.json();
+    try {
+        const json = await response.json();
 
-    console.assert(json.token !== undefined);
+        console.assert(json.token !== undefined);
 
-    return await testAuthToken(json.token);
+        return await testAuthToken(json.token);
+    } catch {
+        console.log(`Bad response from local fetch: ${response.body}`);
+    }
 }
 
 function showRoom(code: string) {
@@ -270,10 +276,10 @@ function menuJoinRoom(rid?: string) {
         .then(async json => {
             console.log(`Join room command returned JSON: ${JSON.stringify(json)}`);
             if (json.drafting === true) {
-                console.log('Join room command returned that we are drafting. Fetching draft...');
+                console.log("Join room command returned that we are drafting. Fetching draft...");
+                connect(stored_token());
                 startDrafting();
-            }
-            else if (json.code === undefined) {
+            } else if (json.code === undefined) {
                 console.error(`Error: Bad data returned from API.`);
                 fullPageNotification("error: bad API interaction", "click to reload 🪣", () =>
                     window.location.reload()
@@ -350,6 +356,15 @@ function main() {
             } else if (event.key == "k") {
                 console.log("Kicking myself when I'm down...");
                 apiRequest(`dev/kickself`);
+            } else if (event.key == "p") {
+                console.log("Becoming a user?!");
+                fetch(resolveUrl(API_URI, `dev/becomeuser`), {
+                    method: "POST"
+                })
+                    .then(resp => resp.json())
+                    .then(async json => {
+                        set_token(json.token);
+                    });
             }
         });
     }
