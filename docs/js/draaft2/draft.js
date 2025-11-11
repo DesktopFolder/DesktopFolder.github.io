@@ -87,7 +87,7 @@ function updateHeader(cur, after) {
         return;
     }
     let com1 = document.createElement("span");
-    com1.innerText = " >";
+    com1.innerText = "&nbsp>";
     com1.classList.add("header-comma");
     rightdiv.appendChild(com1);
     (new Member(next_four[2])).addDiv(rightdiv, true);
@@ -95,7 +95,7 @@ function updateHeader(cur, after) {
         return;
     }
     let com2 = document.createElement("span");
-    com2.innerText = " >";
+    com2.innerText = "&nbsp>";
     com2.classList.add("header-comma");
     rightdiv.appendChild(com2);
     (new Member(next_four[3])).addDiv(rightdiv, true);
@@ -315,20 +315,6 @@ function displayDraftables(p) {
         }
         document.getElementById("draft-page-main").appendChild(pd);
     }
-    if (!SINGLEPLAYER) {
-        let pd = document.createElement("div");
-        let pool_title = document.createElement("span");
-        pool_title.classList.add("pool-title");
-        pool_title.id = poolTitleId("shared-pool-title");
-        pd.appendChild(pool_title);
-        pool_title.innerText = "Shared Picks";
-        pd.id = `shared-pool`;
-        pd.classList.add("draft-pool-container", "draft-page-item");
-        let pool_items = document.createElement("div");
-        pool_items.id = 'shared-pool-items';
-        pd.appendChild(pool_items);
-        document.getElementById("draft-page-main").appendChild(pd);
-    }
     if (LOCAL_TESTING) {
         console.log("Finished building draft pools.");
     }
@@ -341,6 +327,21 @@ function displayDraftables(p) {
         let max_picks_per_pool = (json.players.length < 2) ? 100 : ((json.players.length == 2) ? 4 : json.players.length);
         if (json.players.length == 1) {
             SINGLEPLAYER = true;
+        }
+        // do this now that we know player count
+        else {
+            let pd = document.createElement("div");
+            let pool_title = document.createElement("span");
+            pool_title.classList.add("pool-title");
+            pool_title.id = poolTitleId("shared-pool-title");
+            pd.appendChild(pool_title);
+            pool_title.innerText = "Shared Picks";
+            pd.id = `shared-pool`;
+            pd.classList.add("draft-pool-container", "draft-page-item");
+            let pool_items = document.createElement("div");
+            pool_items.id = 'shared-pool-items';
+            pd.appendChild(pool_items);
+            document.getElementById("draft-page-main").appendChild(pd);
         }
         for (const k of TOTAL_POOL_COUNT.keys()) {
             // logic: max picks per pool is 100 if 1 player,

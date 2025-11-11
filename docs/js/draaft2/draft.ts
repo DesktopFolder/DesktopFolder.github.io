@@ -109,7 +109,7 @@ function updateHeader(cur: Array<string>, after: Array<string>) {
     }
 
     let com1 = document.createElement("span");
-    com1.innerText = " >";
+    com1.innerText = "&nbsp>";
     com1.classList.add("header-comma");
     rightdiv.appendChild(com1);
 
@@ -120,7 +120,7 @@ function updateHeader(cur: Array<string>, after: Array<string>) {
     }
 
     let com2 = document.createElement("span");
-    com2.innerText = " >";
+    com2.innerText = "&nbsp>";
     com2.classList.add("header-comma");
     rightdiv.appendChild(com2);
 
@@ -370,25 +370,6 @@ function displayDraftables(p: Promise<any>) {
         document.getElementById("draft-page-main").appendChild(pd);
     }
 
-    if (!SINGLEPLAYER) {
-        let pd = document.createElement("div");
-
-        let pool_title = document.createElement("span");
-        pool_title.classList.add("pool-title");
-        pool_title.id = poolTitleId("shared-pool-title");
-        pd.appendChild(pool_title);
-        pool_title.innerText = "Shared Picks";
-
-        pd.id = `shared-pool`;
-        pd.classList.add("draft-pool-container", "draft-page-item");
-
-        let pool_items = document.createElement("div");
-        pool_items.id = 'shared-pool-items';
-        pd.appendChild(pool_items);
-
-        document.getElementById("draft-page-main").appendChild(pd);
-    }
-
     if (LOCAL_TESTING) {
         console.log("Finished building draft pools.");
     }
@@ -404,6 +385,26 @@ function displayDraftables(p: Promise<any>) {
         if (json.players.length == 1) {
             SINGLEPLAYER = true;
         }
+        // do this now that we know player count
+        else {
+            let pd = document.createElement("div");
+
+            let pool_title = document.createElement("span");
+            pool_title.classList.add("pool-title");
+            pool_title.id = poolTitleId("shared-pool-title");
+            pd.appendChild(pool_title);
+            pool_title.innerText = "Shared Picks";
+
+            pd.id = `shared-pool`;
+            pd.classList.add("draft-pool-container", "draft-page-item");
+
+            let pool_items = document.createElement("div");
+            pool_items.id = 'shared-pool-items';
+            pd.appendChild(pool_items);
+
+            document.getElementById("draft-page-main").appendChild(pd);
+        }
+
         for (const k of TOTAL_POOL_COUNT.keys()) {
             // logic: max picks per pool is 100 if 1 player,
             // 2 if 2 player,
