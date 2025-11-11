@@ -16,6 +16,15 @@ export function set_uuid(s: string) {
     UUID = s;
 }
 
+let AUDIO_CACHE: Map<string, HTMLAudioElement> = new Map();
+export function play_audio(k: string) {
+    AUDIO_CACHE.get(k).currentTime = 0;
+    AUDIO_CACHE.get(k).play();
+}
+export function cache_audio(k: string, uri: string) {
+    AUDIO_CACHE.set(k, new Audio(uri));
+}
+
 var UPDATING_TEXT_MAP = new Map();
 export class UpdatingText {
     eleID: string;

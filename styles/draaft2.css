@@ -824,12 +824,23 @@ div#draft-page-header .next-players {
     align-content: space-evenly;
 }
 
+#draft-page-log {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: auto;
+    justify-content: start;
+    align-items: start;
+}
 .log-line {
+    color: white;
     font-size: 1rem;
-    height: 1rem;
+    height: 1.4rem;
     display: flex;
     flex-direction: row;
     align-items: center;
+    line-height: 1rem;
+    padding: .2rem;
 }
 .log-line img {
     height: 1rem;
@@ -839,4 +850,9 @@ div#draft-page-header .next-players {
     color: white;
     height: 1rem;
     line-height: 1rem;
+    margin-right: 0.7rem;
+}
+.log-line .draft-pick-image {
+    margin-left: 0.7rem;
+    margin-right: 0.3rem;
 }

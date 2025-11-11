@@ -1,6 +1,6 @@
 import { Member } from "./draaft2/member.js";
 import { WS_URI, API_URI, LOCAL_TESTING, apiRequest, resolveUrl } from "./draaft2/request.js";
-import { IS_ADMIN, UUID, UpdatingText, fullPageNotification, set_admin, set_token, set_uuid, stored_token, annoy_user_lol, displayOnlyPage, hideAllPages } from "./draaft2/util.js";
+import { IS_ADMIN, UUID, UpdatingText, fullPageNotification, set_admin, set_token, set_uuid, stored_token, annoy_user_lol, displayOnlyPage, hideAllPages, cache_audio } from "./draaft2/util.js";
 import { fetchData, startDrafting, handleDraftpick } from "./draaft2/draft.js";
 var API_WS = null;
 /**
@@ -338,5 +338,6 @@ function main() {
     document.getElementById("login-page").classList.add("visible");
     setupLazySecret(document.getElementById("menu-input-roomid"));
     setupOnClick();
+    cache_audio("normal-click", "/assets/draaft/picks/click_stereo.ogg");
 }
 document.addEventListener("DOMContentLoaded", main, false);

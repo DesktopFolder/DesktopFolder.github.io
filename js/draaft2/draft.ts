@@ -1,6 +1,6 @@
 import {Member} from "./member.js";
 import {apiRequest, LOCAL_TESTING} from "./request.js";
-import {displayOnlyPage, fullPageNotification, STEVE, UUID} from "./util.js";
+import {displayOnlyPage, fullPageNotification, play_audio, STEVE, UUID} from "./util.js";
 
 let PICKS_PER_POOL = 0;
 let MAX_PICKS = 0;
@@ -196,15 +196,19 @@ function setAsPicked(key: string, picker: string) {
         }
         let mid_span = document.createElement("span");
         mid_span.innerText = mid_text;
+        mid_span.classList.add("log-joiner");
 
         ctr.appendChild(mid_span)
 
         // now the pick
         let new_node = document.getElementById(iconId(key)).cloneNode(true);
+        (<HTMLElement>new_node).classList.remove("picked");
+        (<HTMLElement>new_node).id = undefined;
         ctr.appendChild(new_node);
 
         let name_span = document.createElement("span");
         name_span.innerText = DRAFTABLES[1][key].name.pretty_name;
+        name_span.classList.add("log-item-name");
         ctr.appendChild(name_span);
 
         lg.appendChild(ctr);
@@ -332,6 +336,7 @@ function displayDraftables(p: Promise<any>) {
                         return;
                     }
                     console.log(`Picking ${pk.key} :)`);
+                    play_audio("normal-click");
                     apiRequest(`draft/pick?key=${pk.key}`).then(_ => {
                         setAsPicked(pk.key, UUID);
                     });

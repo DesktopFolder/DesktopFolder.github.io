@@ -13,6 +13,14 @@ export let UUID;
 export function set_uuid(s) {
     UUID = s;
 }
+let AUDIO_CACHE = new Map();
+export function play_audio(k) {
+    AUDIO_CACHE.get(k).currentTime = 0;
+    AUDIO_CACHE.get(k).play();
+}
+export function cache_audio(k, uri) {
+    AUDIO_CACHE.set(k, new Audio(uri));
+}
 var UPDATING_TEXT_MAP = new Map();
 export class UpdatingText {
     eleID;

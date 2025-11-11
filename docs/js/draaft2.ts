@@ -11,7 +11,8 @@ import {
     stored_token,
     annoy_user_lol,
     displayOnlyPage,
-    hideAllPages
+    hideAllPages,
+    cache_audio
 } from "./draaft2/util.js";
 import {fetchData, startDrafting, handleDraftpick} from "./draaft2/draft.js";
 
@@ -391,6 +392,8 @@ function main() {
 
     setupLazySecret(<HTMLInputElement>document.getElementById("menu-input-roomid"));
     setupOnClick();
+
+    cache_audio("normal-click", "/assets/draaft/picks/click_stereo.ogg");
 }
 
 document.addEventListener("DOMContentLoaded", main, false);
