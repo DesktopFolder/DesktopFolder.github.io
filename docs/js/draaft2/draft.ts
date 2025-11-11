@@ -109,7 +109,7 @@ function updateHeader(cur: Array<string>, after: Array<string>) {
     }
 
     let com1 = document.createElement("span");
-    com1.innerText = "->";
+    com1.innerText = " >";
     com1.classList.add("header-comma");
     rightdiv.appendChild(com1);
 
@@ -120,7 +120,7 @@ function updateHeader(cur: Array<string>, after: Array<string>) {
     }
 
     let com2 = document.createElement("span");
-    com2.innerText = "->";
+    com2.innerText = " >";
     com2.classList.add("header-comma");
     rightdiv.appendChild(com2);
 
