@@ -584,10 +584,81 @@ div#draft-page-header {
 
     height: 2.4em;
 
-    justify-content: space-around;
+    justify-content:start;
+
+    text-overflow: ellipsis;
+    overflow: hidden;
+
+    min-width: 0;
+
+    flex-wrap: nowrap;
 }
 
+#draft-page-header span {
+    text-wrap: nowrap;
+    padding-right: 1rem;
+}
 
+#draft-page-header .next-picks {
+    padding-left: 2rem;
+}
+
+#draft-page-header > * {
+    flex-shrink: 0;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+/*
+div#draft-page-header div span {
+    margin-right: 2rem;
+    font-size: 1.4em;
+}*/
+/*
+div#draft-page-header span.next-picks {
+    margin-left: 6em;
+}
+*/
+
+/*
+div#draft-page-header div span {
+    display: inline-block;
+    white-space:nowrap;
+}
+div#draft-page-header .picking-player {
+    width: fit-content;
+    height: auto;
+    min-height: 100% !important;
+    max-height: 100% !important;
+    display: flex;
+    flex-direction: row;
+}
+
+div#draft-page-header .room-member-container {
+    width: fit-content;
+    height: auto;
+    min-height: 100% !important;
+    max-height: 100% !important;
+
+    display: inline-block;
+}
+
+div#draft-page-header .room-member-container p,div#draft-page-header .room-member-container img {
+    display: inline-block;
+}
+
+div#draft-page-header .next-players {
+    width: fit-content;
+    height: auto;
+    min-height: 100% !important;
+    max-height: 100% !important;
+    display: flex;
+    flex-direction: row;
+
+    overflow: none;
+    text-overflow: ellipsis;
+}
+*/
 
 /* draft picks :) */
 
@@ -753,3 +824,13 @@ div#draft-page-header {
     align-content: space-evenly;
 }
 
+.log-line {
+    font-size: 1rem;
+    height: 1rem;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+.log-line img {
+    height: 1rem;
+}

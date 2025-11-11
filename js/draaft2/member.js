@@ -2,10 +2,14 @@ import { apiRequest } from "./request.js";
 import { STEVE, IS_ADMIN, UUID } from "./util.js";
 const MOJANG_UUID_LOOKUP_URL = "https://api.ashcon.app/mojang/v2/user";
 // const MOJANG_UUID_LOOKUP_URL = "https://api.minecraftservices.com/minecraft/profile/lookup";
+let LOOKUP_CACHE = new Map();
 export async function uuidToUsername(uuid) {
-    let res = await fetch(`${MOJANG_UUID_LOOKUP_URL}/${uuid}`);
-    let json = await res.json();
-    return json.username;
+    if (!LOOKUP_CACHE.has(uuid)) {
+        let res = await fetch(`${MOJANG_UUID_LOOKUP_URL}/${uuid}`);
+        let json = await res.json();
+        LOOKUP_CACHE.set(uuid, json.username);
+    }
+    return LOOKUP_CACHE.get(uuid);
 }
 export class Member {
     uuid;

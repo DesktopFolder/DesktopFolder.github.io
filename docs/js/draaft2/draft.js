@@ -1,7 +1,10 @@
+import { Member } from "./member.js";
 import { apiRequest, LOCAL_TESTING } from "./request.js";
 import { displayOnlyPage, fullPageNotification, STEVE, UUID } from "./util.js";
 let PICKS_PER_POOL = 0;
 let MAX_PICKS = 0;
+let CUR_PICKS = 0;
+let SINGLEPLAYER = false;
 // key -> pool
 let POOL_MAPPING = new Map();
 // pool -> pick count
@@ -15,10 +18,16 @@ let POOL_NAME_MAPPING = new Map();
 function setPickInfo(picks_per_pool, max_picks) {
     PICKS_PER_POOL = picks_per_pool;
     MAX_PICKS = max_picks;
+    if (LOCAL_TESTING) {
+        console.log(`Set picks per pool: ${picks_per_pool} | Set max picks: ${MAX_PICKS}`);
+    }
     for (const k of POOL_MAPPING.keys()) {
         // every key
         let pool_id = POOL_MAPPING.get(k);
-        document.getElementById(poolTitleId(pool_id)).innerText = `${POOL_NAME_MAPPING.get(pool_id)} (0 / ${PICKS_PER_POOL})`;
+        if (!SINGLEPLAYER)
+            document.getElementById(poolTitleId(pool_id)).innerText = `${POOL_NAME_MAPPING.get(pool_id)} (0 / ${PICKS_PER_POOL})`;
+        else
+            document.getElementById(poolTitleId(pool_id)).innerText = `${POOL_NAME_MAPPING.get(pool_id)} (0)`;
     }
 }
 let DRAFT_ALLOWED = false;
@@ -36,6 +45,68 @@ export function startDrafting() {
     // Fill everything in, assuming we have it.
     displayDraftables(p);
 }
+function updateHeader(cur, after) {
+    let next_four = cur.concat(after);
+    if (next_four.length < 4) {
+        next_four = next_four.concat(after.toReversed());
+    }
+    if (next_four.length < 4) {
+        next_four = next_four.concat(after);
+    }
+    let hdr = document.getElementById('draft-page-header');
+    // don't worry about it haha
+    hdr.innerHTML = '';
+    if (CUR_PICKS >= MAX_PICKS) {
+        hdr.style.justifyContent = 'center';
+        let cursp = document.createElement("span");
+        cursp.innerText = "Draft complete. Loading...";
+        hdr.appendChild(cursp);
+        return;
+    }
+    let leftdiv = document.createElement("div");
+    leftdiv.classList.add("picking-player");
+    let cursp = document.createElement("span");
+    cursp.innerText = "Picking:";
+    leftdiv = hdr;
+    leftdiv.appendChild(cursp);
+    (new Member(next_four[0])).addDiv(leftdiv, true);
+    // hdr.appendChild(leftdiv);
+    if (CUR_PICKS + 1 >= MAX_PICKS) {
+        return;
+    }
+    let rightdiv = document.createElement("div");
+    rightdiv.classList.add("next-players");
+    // hdr.appendChild(rightdiv);
+    rightdiv = hdr;
+    let nexsp = document.createElement("span");
+    nexsp.innerText = "Next Picks:";
+    nexsp.classList.add("next-picks");
+    rightdiv.appendChild(nexsp);
+    (new Member(next_four[1])).addDiv(rightdiv, true);
+    if (CUR_PICKS + 2 >= MAX_PICKS) {
+        return;
+    }
+    let com1 = document.createElement("span");
+    com1.innerText = "->";
+    com1.classList.add("header-comma");
+    rightdiv.appendChild(com1);
+    (new Member(next_four[2])).addDiv(rightdiv, true);
+    if (CUR_PICKS + 3 >= MAX_PICKS) {
+        return;
+    }
+    let com2 = document.createElement("span");
+    com2.innerText = "->";
+    com2.classList.add("header-comma");
+    rightdiv.appendChild(com2);
+    (new Member(next_four[3])).addDiv(rightdiv, true);
+    if (CUR_PICKS + 4 >= MAX_PICKS) {
+        return;
+    }
+    let com3 = document.createElement("span");
+    com3.innerText = "...";
+    com3.classList.add("header-comma");
+    rightdiv.appendChild(com3);
+}
 function iconId(key) {
     return `draft-pick-image-${key}`;
 }
@@ -51,6 +122,7 @@ function setAsPicked(key, picker) {
     if (pker.classList.contains("picked")) {
         return;
     }
+    CUR_PICKS += 1;
     pker.src = `https://mineskin.eu/helm/${picker}/100`;
     pker.classList.add("picked");
     let ic = document.getElementById(iconId(key));
@@ -77,6 +149,28 @@ function setAsPicked(key, picker) {
             }
         }
     }
+    {
+        // Add it to the chat log.
+        let lg = document.getElementById("draft-page-log");
+        let ctr = document.createElement("span");
+        ctr.classList.add("log-line");
+        // [Face] Name
+        (new Member(picker)).addDiv(ctr, true);
+        let mid_text = "picked";
+        if (picker == UUID) {
+            mid_text = "(you) picked";
+        }
+        let mid_span = document.createElement("span");
+        mid_span.innerText = mid_text;
+        ctr.appendChild(mid_span);
+        // now the pick
+        let new_node = document.getElementById(iconId(key)).cloneNode(true);
+        ctr.appendChild(new_node);
+        let name_span = document.createElement("span");
+        name_span.innerText = DRAFTABLES[1][key].name.full_name;
+        ctr.appendChild(name_span);
+        lg.appendChild(ctr);
+    }
     if (picker == UUID) {
         pker.classList.add("current-user");
         // also enforce things
@@ -87,7 +181,10 @@ function setAsPicked(key, picker) {
         let cur_count = POOL_COUNT.get(pn) + 1;
         POOL_COUNT.set(pn, cur_count);
         // also update the above text here when it exists
-        document.getElementById(poolTitleId(pool_id)).innerText = `${POOL_NAME_MAPPING.get(pool_id)} (${cur_count} / ${PICKS_PER_POOL})`;
+        if (!SINGLEPLAYER)
+            document.getElementById(poolTitleId(pool_id)).innerText = `${POOL_NAME_MAPPING.get(pool_id)} (${cur_count} / ${PICKS_PER_POOL})`;
+        else
+            document.getElementById(poolTitleId(pool_id)).innerText = `${POOL_NAME_MAPPING.get(pool_id)} (${cur_count})`;
     }
     else {
         pker.classList.add("other-user");
@@ -104,6 +201,7 @@ export function handleDraftpick(e) {
     else {
         DRAFT_ALLOWED = false;
     }
+    updateHeader(e.positions, e.next_positions);
 }
 function displayDraftables(p) {
     if (DRAFTABLES === undefined) {
@@ -236,6 +334,9 @@ function displayDraftables(p) {
         }
         // must come before setAsPicked
         let max_picks_per_pool = (json.players.length < 2) ? 100 : ((json.players.length == 2) ? 4 : json.players.length);
+        if (json.players.length == 1) {
+            SINGLEPLAYER = true;
+        }
         for (const k of TOTAL_POOL_COUNT.keys()) {
             // logic: max picks per pool is 100 if 1 player,
             // 2 if 2 player,
@@ -246,6 +347,7 @@ function displayDraftables(p) {
         for (const pk of json.draft) {
             setAsPicked(pk.key, pk.player);
         }
+        updateHeader(json.position, json.next_positions);
         if (json.position[0] == UUID) {
             DRAFT_ALLOWED = true;
         }
