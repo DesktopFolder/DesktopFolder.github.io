@@ -315,7 +315,7 @@ function displayDraftables(p) {
         }
         document.getElementById("draft-page-main").appendChild(pd);
     }
-    {
+    if (!SINGLEPLAYER) {
         let pd = document.createElement("div");
         let pool_title = document.createElement("span");
         pool_title.classList.add("pool-title");
