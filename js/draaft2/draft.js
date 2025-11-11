@@ -87,7 +87,7 @@ function updateHeader(cur, after) {
         return;
     }
     let com1 = document.createElement("span");
-    com1.innerText = "&nbsp>";
+    com1.innerText = ">";
     com1.classList.add("header-comma");
     rightdiv.appendChild(com1);
     (new Member(next_four[2])).addDiv(rightdiv, true);
@@ -95,7 +95,7 @@ function updateHeader(cur, after) {
         return;
     }
     let com2 = document.createElement("span");
-    com2.innerText = "&nbsp>";
+    com2.innerText = ">";
     com2.classList.add("header-comma");
     rightdiv.appendChild(com2);
     (new Member(next_four[3])).addDiv(rightdiv, true);

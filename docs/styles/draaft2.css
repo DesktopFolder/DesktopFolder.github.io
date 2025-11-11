@@ -598,6 +598,9 @@ div#draft-page-header {
     text-wrap: nowrap;
     padding-right: 1rem;
 }
+#draft-page-header .header-comma {
+    padding-left: 1rem;
+}
 
 #draft-page-header .next-picks {
     padding-left: 2rem;
