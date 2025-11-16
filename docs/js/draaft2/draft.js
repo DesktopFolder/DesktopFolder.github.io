@@ -47,10 +47,8 @@ export function startDrafting() {
 }
 function updateHeader(cur, after) {
     let next_four = cur.concat(after);
-    if (next_four.length < 4) {
+    while (next_four.length < 10) {
         next_four = next_four.concat(after.toReversed());
-    }
-    if (next_four.length < 4) {
         next_four = next_four.concat(after);
     }
     let hdr = document.getElementById('draft-page-header');
@@ -71,39 +69,25 @@ function updateHeader(cur, after) {
     leftdiv.appendChild(cursp);
     (new Member(next_four[0])).addDiv(leftdiv, true);
     // hdr.appendChild(leftdiv);
-    if (CUR_PICKS + 1 >= MAX_PICKS) {
-        return;
-    }
     let rightdiv = document.createElement("div");
     rightdiv.classList.add("next-players");
     // hdr.appendChild(rightdiv);
     rightdiv = hdr;
     let nexsp = document.createElement("span");
-    nexsp.innerText = "Next Picks:";
+    nexsp.innerText = "Next:";
     nexsp.classList.add("next-picks");
     rightdiv.appendChild(nexsp);
-    (new Member(next_four[1])).addDiv(rightdiv, true);
-    if (CUR_PICKS + 2 >= MAX_PICKS) {
-        return;
-    }
-    let com1 = document.createElement("span");
-    com1.innerText = ">";
-    com1.classList.add("header-comma");
-    rightdiv.appendChild(com1);
-    (new Member(next_four[2])).addDiv(rightdiv, true);
-    if (CUR_PICKS + 3 >= MAX_PICKS) {
-        return;
-    }
-    let com2 = document.createElement("span");
-    com2.innerText = ">";
-    com2.classList.add("header-comma");
-    rightdiv.appendChild(com2);
-    (new Member(next_four[3])).addDiv(rightdiv, true);
-    if (CUR_PICKS + 4 >= MAX_PICKS) {
-        return;
+    for (var i = 1; i < next_four.length && CUR_PICKS + i < MAX_PICKS; i++) {
+        // append the member first
+        (new Member(next_four[i])).addDiv(rightdiv, true);
+        // then append the >
+        let com1 = document.createElement("span");
+        com1.innerText = ">";
+        com1.classList.add("header-comma");
+        rightdiv.appendChild(com1);
     }
     let com3 = document.createElement("span");
-    com3.innerText = "...";
+    com3.innerText = "Draft complete";
     com3.classList.add("header-comma");
     rightdiv.appendChild(com3);
 }
@@ -371,5 +355,27 @@ export function fetchData() {
             console.log(json);
         }
         DRAFTABLES = json;
+    });
+}
+export function downloadZip() {
+    apiRequest("draft/download", undefined, "GET")
+        .then(resp => resp.status == 200 ? resp.blob() : Promise.reject('Failed to download draaft datapack'))
+        .then(blob => {
+        // https://stackoverflow.com/questions/3749231/download-file-using-javascript-jquery
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        a.download = 'draaftpack.zip';
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+    });
+}
+export function downloadWorldgen() {
+    apiRequest("draft/worldgen", undefined, "GET")
+        .then(resp => resp.text())
+        .then(async (text) => {
+        console.log(text);
     });
 }

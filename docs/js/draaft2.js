@@ -1,7 +1,7 @@
 import { Member } from "./draaft2/member.js";
 import { WS_URI, API_URI, LOCAL_TESTING, apiRequest, resolveUrl } from "./draaft2/request.js";
 import { IS_ADMIN, UUID, UpdatingText, fullPageNotification, set_admin, set_token, set_uuid, stored_token, annoy_user_lol, displayOnlyPage, hideAllPages, cache_audio } from "./draaft2/util.js";
-import { fetchData, startDrafting, handleDraftpick } from "./draaft2/draft.js";
+import { fetchData, startDrafting, handleDraftpick, downloadZip, downloadWorldgen } from "./draaft2/draft.js";
 var API_WS = null;
 /**
  * Adds listeners to an input element that turn it into a
@@ -115,6 +115,8 @@ export function sendMessage(message) {
 if (LOCAL_TESTING) {
     window.test_connect = connect;
     window.test_message = sendMessage;
+    window.download_zip = downloadZip;
+    window.download_wgo = downloadWorldgen;
 }
 function showMenu(auth) {
     // Show just our page.

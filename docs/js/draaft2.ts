@@ -14,7 +14,7 @@ import {
     hideAllPages,
     cache_audio
 } from "./draaft2/util.js";
-import {fetchData, startDrafting, handleDraftpick} from "./draaft2/draft.js";
+import {fetchData, startDrafting, handleDraftpick, downloadZip, downloadWorldgen} from "./draaft2/draft.js";
 
 var API_WS: WebSocket | null = null;
 
@@ -136,6 +136,8 @@ export function sendMessage(message: string) {
 if (LOCAL_TESTING) {
     (window as any).test_connect = connect;
     (window as any).test_message = sendMessage;
+    (window as any).download_zip = downloadZip;
+    (window as any).download_wgo = downloadWorldgen;
 }
 
 function showMenu(auth: string) {
