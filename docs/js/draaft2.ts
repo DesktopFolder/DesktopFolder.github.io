@@ -15,6 +15,7 @@ import {
     cache_audio
 } from "./draaft2/util.js";
 import {fetchData, startDrafting, handleDraftpick, downloadZip, downloadWorldgen} from "./draaft2/draft.js";
+import {addRoomConfig, configureRoom} from "./draaft2/room.js";
 
 var API_WS: WebSocket | null = null;
 
@@ -85,6 +86,9 @@ function handleRoomupdate(d) {
     switch (d.update) {
         case "commenced":
             startDrafting();
+            break;
+        case "config":
+            configureRoom(d.config);
             break;
         default:
             console.error(`Unhandled room event: ${d.update}`);
@@ -251,6 +255,7 @@ function setupRoomPage(code: string, members) {
         .then(resp => resp.json())
         .then(async json => {
             // document.getElementById("room-welcome-text").innerText = `welcome, ${json.members.length}`;
+            addRoomConfig(json);
         })
         .catch(error => {
             console.error("Error getting room data: ", error);

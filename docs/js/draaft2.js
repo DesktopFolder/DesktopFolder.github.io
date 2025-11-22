@@ -2,6 +2,7 @@ import { Member } from "./draaft2/member.js";
 import { WS_URI, API_URI, LOCAL_TESTING, apiRequest, resolveUrl } from "./draaft2/request.js";
 import { IS_ADMIN, UUID, UpdatingText, fullPageNotification, set_admin, set_token, set_uuid, stored_token, annoy_user_lol, displayOnlyPage, hideAllPages, cache_audio } from "./draaft2/util.js";
 import { fetchData, startDrafting, handleDraftpick, downloadZip, downloadWorldgen } from "./draaft2/draft.js";
+import { addRoomConfig, configureRoom } from "./draaft2/room.js";
 var API_WS = null;
 /**
  * Adds listeners to an input element that turn it into a
@@ -64,6 +65,9 @@ function handleRoomupdate(d) {
     switch (d.update) {
         case "commenced":
             startDrafting();
+            break;
+        case "config":
+            configureRoom(d.config);
             break;
         default:
             console.error(`Unhandled room event: ${d.update}`);
@@ -216,6 +220,7 @@ function setupRoomPage(code, members) {
         .then(resp => resp.json())
         .then(async (json) => {
         // document.getElementById("room-welcome-text").innerText = `welcome, ${json.members.length}`;
+        addRoomConfig(json);
     })
         .catch(error => {
         console.error("Error getting room data: ", error);
