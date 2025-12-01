@@ -1,5 +1,5 @@
 import { apiRequest } from "./request.js";
-import { STEVE, IS_ADMIN, UUID } from "./util.js";
+import { STEVE, IS_ADMIN, UUID, play_audio } from "./util.js";
 const MOJANG_UUID_LOOKUP_URL = "https://api.ashcon.app/mojang/v2/user";
 // const MOJANG_UUID_LOOKUP_URL = "https://api.minecraftservices.com/minecraft/profile/lookup";
 let LOOKUP_CACHE = new Map();
@@ -48,19 +48,24 @@ export class Member {
         this.addElement(i, playerOnly);
         return this;
     }
-    addParagraph(e, playerOnly) {
+    addParagraph(e, playerOnly, str = undefined) {
         let p = document.createElement("p");
         p.classList.add("room-member", "member-name");
-        this.populateUsername(p);
+        if (str != undefined) {
+            p.innerText = str;
+        }
+        else {
+            this.populateUsername(p);
+        }
         e.appendChild(p);
         this.addElement(p, playerOnly);
         return this;
     }
-    addDiv(e, playerOnly) {
+    addDiv(e, playerOnly, str = undefined) {
         let div = document.createElement("div");
         div.classList.add("room-member-container");
         this.addImage(div, playerOnly);
-        this.addParagraph(div, playerOnly);
+        this.addParagraph(div, playerOnly, str);
         e.appendChild(div);
         this.addElement(div, playerOnly);
         return this;
@@ -96,6 +101,7 @@ export class Member {
             button.classList.add("room-member-manager-button", "room-leave-button");
             button.onclick = (_) => {
                 console.log(`Attempted to have player '${this.username}' leave.`);
+                play_audio("normal-click");
                 if (IS_ADMIN) {
                     document.getElementById("confirm-room-destroy-admin").showModal();
                 }
@@ -117,6 +123,7 @@ export class Member {
             kick.onclick = (_) => {
                 console.log(`Attempted to have player '${this.username}' kicked.`);
                 // Shouldn't need to await this.
+                play_audio("normal-click");
                 apiRequest(`room/kick?member=${this.uuid}`);
             };
             kick.innerText = "kick";
@@ -127,6 +134,7 @@ export class Member {
             let swap = document.createElement("button");
             swap.classList.add("room-member-manager-button", "room-swap-button");
             swap.onclick = (_) => {
+                play_audio("normal-click");
                 console.log(`Attempted to have player '${this.username}' change status.`);
                 apiRequest(`room/swapstatus?uuid=${this.uuid}`);
             };

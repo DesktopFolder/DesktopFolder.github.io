@@ -1,6 +1,6 @@
 import {Member} from "./member.js";
 import {apiRequest, LOCAL_TESTING} from "./request.js";
-import {displayOnlyPage, fullPageNotification, play_audio, STEVE, UUID} from "./util.js";
+import {displayOnlyPage, fullPageNotification, play_audio, ROOM_CONFIG, STEVE, UUID} from "./util.js";
 
 let PICKS_PER_POOL = 0;
 let MAX_PICKS = 0;
@@ -36,6 +36,24 @@ function setPickInfo(picks_per_pool: number, max_picks: number) {
     }
 }
 
+let TIMER = undefined;
+function dec(prev: number) {
+    const next = prev - 1;
+    const v = document.getElementById("draft-timer-value");
+    v.innerText = next.toString();
+    if (next != 0) {
+        TIMER = setTimeout(() => dec(next), 1000);
+    }
+}
+function update_pick_timer(additional: number = 0) {
+    // if (ROOM_CONFIG.enforce_timer === false) return;   
+    if (TIMER != undefined) clearTimeout(TIMER);
+    const v = document.getElementById("draft-timer-value");
+    const initial: number = additional + ROOM_CONFIG.pick_time;
+    v.innerText = initial.toString();
+    TIMER = setTimeout(() => dec(initial), 1000);
+}
+
 let DRAFT_ALLOWED = false;
 export let IS_DRAFTING = false;
 export function startDrafting() {
@@ -49,13 +67,25 @@ export function startDrafting() {
     // always just start fetching the data early
     let p = apiRequest("draft/status", undefined, "GET").then(resp => resp.json());
 
+    // config - timer
+    if (ROOM_CONFIG.enforce_timer === true) {
+        console.log("displaying enforced timer");
+        document.getElementById("draft-page-timer").style.display = "flex";
+    }
+    else {
+        console.log("timer is not enforced for this room");
+    }
+    update_pick_timer(10);
+
     displayOnlyPage("draft-page");
 
     // Fill everything in, assuming we have it.
     displayDraftables(p);
 }
 
-function updateHeader(cur: Array<string>, after: Array<string>) {
+function updateHeader(picker: string, cur: Array<string>, after: Array<string>, isLoading: boolean = false) {
+    update_pick_timer();
+
     let next_four = cur.concat(after);
     while (next_four.length < 10) {
         next_four = next_four.concat(after.toReversed());
@@ -74,6 +104,12 @@ function updateHeader(cur: Array<string>, after: Array<string>) {
         hdr.appendChild(cursp);
 
         return;
+    }
+
+    console.log(next_four[0]);
+    console.log(UUID);
+    if (next_four[0] == UUID && !isLoading) {
+        play_audio("your-turn"); 
     }
 
     let leftdiv = <HTMLElement>document.createElement("div");
@@ -122,7 +158,7 @@ function pickerId(key: string) {
 function poolTitleId(key: string) {
     return `pool-title-${key}`;
 }
-function setAsPicked(key: string, picker: string) {
+function setAsPicked(key: string, picker: string, isLoading: boolean = false) {
     let pker = <HTMLImageElement>document.getElementById(pickerId(key));
     // easy peasy
     if (pker.classList.contains("picked")) {
@@ -165,12 +201,14 @@ function setAsPicked(key: string, picker: string) {
         ctr.classList.add("log-line");
 
         // [Face] Name
-        (new Member(picker)).addDiv(ctr, true);
+        if (picker == UUID) {
+            (new Member(picker)).addDiv(ctr, true, "You");
+        }
+        else {
+            (new Member(picker)).addDiv(ctr, true);
+        }
 
         let mid_text = "picked";
-        if (picker == UUID) {
-            mid_text = "(you) picked";
-        }
         let mid_span = document.createElement("span");
         mid_span.innerText = mid_text;
         mid_span.classList.add("log-joiner");
@@ -222,7 +260,7 @@ export function handleDraftpick(e: any) {
     else {
         DRAFT_ALLOWED = false;
     }
-    updateHeader(e.positions, e.next_positions);
+    updateHeader(picker, e.positions, e.next_positions);
 }
 
 function displayDraftables(p: Promise<any>) {
@@ -232,6 +270,7 @@ function displayDraftables(p: Promise<any>) {
     }
     let pools = DRAFTABLES[0];
     let picks = DRAFTABLES[1];
+    let gambits = DRAFTABLES[2];
     
     for (const pool of pools) {
         // let's not worry about preserving information about this stuff
@@ -315,7 +354,7 @@ function displayDraftables(p: Promise<any>) {
                     console.log(`Picking ${pk.key} :)`);
                     play_audio("normal-click");
                     apiRequest(`draft/pick?key=${pk.key}`).then(_ => {
-                        setAsPicked(pk.key, UUID);
+                        setAsPicked(pk.key, UUID, true);
                     });
                 };
 
@@ -345,6 +384,33 @@ function displayDraftables(p: Promise<any>) {
             pd.appendChild(pickd);
         }
         document.getElementById("draft-page-main").appendChild(pd);
+    }
+
+    const gambit_div = document.getElementById("draft-page-gambits");
+    for (const k of Object.keys(gambits)) {
+        let v = gambits[k];
+        if (LOCAL_TESTING) {
+            console.log(v);
+        }
+        
+        let b = document.createElement("button");
+        b.classList.add("standard-ui", "disabled");
+        b.innerText = v.name;
+        b.onclick = () => {
+            if (b.classList.contains("disabled")) {
+                apiRequest(`draft/gambit/enable?key=${k}`).then(_ => {
+                    b.classList.add("enabled");
+                    b.classList.remove("disabled");
+                });
+            }
+            else { // enabled
+                apiRequest(`draft/gambit/disable?key=${k}`).then(_ => {
+                    b.classList.remove("enabled");
+                    b.classList.add("disabled");
+                });
+            }
+        };
+        gambit_div.appendChild(b);
     }
 
     if (LOCAL_TESTING) {
@@ -393,7 +459,7 @@ function displayDraftables(p: Promise<any>) {
         for (const pk of json.draft) {
             setAsPicked(pk.key, pk.player);
         }
-        updateHeader(json.position, json.next_positions);
+        updateHeader(undefined, json.position, json.next_positions, false);
         if (json.position[0] == UUID) {
             DRAFT_ALLOWED = true;
         }

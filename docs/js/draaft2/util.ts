@@ -1,5 +1,10 @@
 export const STEVE = "/assets/steve.png";
 
+export let ROOM_CONFIG = undefined;
+export function set_room_config(rc: any) {
+    ROOM_CONFIG = rc;
+}
+
 export function stored_token() {
     return localStorage.getItem("draaft.token");
 }
@@ -18,11 +23,13 @@ export function set_uuid(s: string) {
 
 let AUDIO_CACHE: Map<string, HTMLAudioElement> = new Map();
 export function play_audio(k: string) {
+    console.log(`Playing audio: ${k}`);
     AUDIO_CACHE.get(k).currentTime = 0;
     AUDIO_CACHE.get(k).play();
 }
 export function cache_audio(k: string, uri: string) {
     AUDIO_CACHE.set(k, new Audio(uri));
+    return AUDIO_CACHE.get(k);
 }
 
 var UPDATING_TEXT_MAP = new Map();

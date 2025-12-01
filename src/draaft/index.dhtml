@@ -108,6 +108,21 @@ Backlog:
     </form>
 </dialog>
 
+<!-- https://gist.github.com/wtho/bcc6e1edd883429b85d081e866607533 -->
+<dialog id="loading-credits" closedby="none">
+    <div id="credits-page">
+    <img src="/draaft-logo.png" class="logo">
+    <span class="loading-text">loAAding...</span>
+    <span class="subtitle-text">drAAft is a competitive AA project by PacManMVC and DesktopFolder</span>
+    <span class="thanks">with thanks to</span>
+    <div class="credits-container">
+        <div><span>me_nx</span><span>Authentication flow, mod improvements, general technical support, seedfinding</span></div>
+        <div><span>memerson</span><span>Mod development, in-game room display, general technical support, seedfinding</span></div>
+        <div><span>Matsenuc</span><span>Enchanting the login bucket</span></div>
+    </div>
+    </div>
+</dialog>
+
 <!-- better flexbox from menx https://codepen.io/me_nx/pen/emJNXrE -->
 <div id="room-page" class="full-flex-down" style="display: none">
     <div id="room-page-header-container">
@@ -156,15 +171,27 @@ Backlog:
     </div>
 
     <div id="draft-page-body" class="full-flex-right">
-        <div id="draft-page-log-container">
-            <div id="draft-page-log" class="full-flex-down">
+        <!-- ?  -->
+        <div id="draft-page-body-main" class="full-flex-down">
+            <div id="draft-page-log-container">
+                <div id="draft-page-log" class="full-flex-down pretty-box">
 
+                </div>
+
+                <div id="draft-page-timer" class="pretty-box full-flex-down" style="display: none">
+                    <header>time remaining</header>
+                    <div class="full-flex-right" style="flex-grow: 1; align-items: center;">
+                        <p id="draft-timer-value">30</p>
+                    </div>
+                </div>
+            </div>
+            <div id="draft-page-main-container">
+                <div id="draft-page-main" class="full-flex-right">
+
+                </div>
             </div>
         </div>
-        <div id="draft-page-main-container">
-            <div id="draft-page-main" class="full-flex-right">
-
-            </div>
+        <div id="draft-page-gambits" class="full-flex-down">
         </div>
     </div>
 </div>

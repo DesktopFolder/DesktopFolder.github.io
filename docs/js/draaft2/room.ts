@@ -1,5 +1,5 @@
 import {apiRequest} from "./request.js";
-import {IS_ADMIN} from "./util.js";
+import {IS_ADMIN, play_audio} from "./util.js";
 
 const MAP = {
     spectators_get_world: "Allow Spectator World Downloads",
@@ -114,6 +114,7 @@ function mAAkeConfig(lAAbel: string, vAAlue: number | string | boolean | null, t
             const key = lAAbel;
             let o = {};
 
+            play_audio("normal-click");
             if (lAAbelInput.classList.contains("yes")) {
                 o[key] = false;
                 lAAbelInput.classList.remove("yes");

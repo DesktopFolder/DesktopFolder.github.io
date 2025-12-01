@@ -1,6 +1,6 @@
 import { Member } from "./member.js";
 import { apiRequest, LOCAL_TESTING } from "./request.js";
-import { displayOnlyPage, fullPageNotification, play_audio, STEVE, UUID } from "./util.js";
+import { displayOnlyPage, fullPageNotification, play_audio, ROOM_CONFIG, STEVE, UUID } from "./util.js";
 let PICKS_PER_POOL = 0;
 let MAX_PICKS = 0;
 let CUR_PICKS = 0;
@@ -30,6 +30,24 @@ function setPickInfo(picks_per_pool, max_picks) {
             document.getElementById(poolTitleId(pool_id)).innerText = `${POOL_NAME_MAPPING.get(pool_id)} (0)`;
     }
 }
+let TIMER = undefined;
+function dec(prev) {
+    const next = prev - 1;
+    const v = document.getElementById("draft-timer-value");
+    v.innerText = next.toString();
+    if (next != 0) {
+        TIMER = setTimeout(() => dec(next), 1000);
+    }
+}
+function update_pick_timer(additional = 0) {
+    // if (ROOM_CONFIG.enforce_timer === false) return;   
+    if (TIMER != undefined)
+        clearTimeout(TIMER);
+    const v = document.getElementById("draft-timer-value");
+    const initial = additional + ROOM_CONFIG.pick_time;
+    v.innerText = initial.toString();
+    TIMER = setTimeout(() => dec(initial), 1000);
+}
 let DRAFT_ALLOWED = false;
 export let IS_DRAFTING = false;
 export function startDrafting() {
@@ -41,11 +59,21 @@ export function startDrafting() {
     document.getElementById("home-button").style.display = "none";
     // always just start fetching the data early
     let p = apiRequest("draft/status", undefined, "GET").then(resp => resp.json());
+    // config - timer
+    if (ROOM_CONFIG.enforce_timer === true) {
+        console.log("displaying enforced timer");
+        document.getElementById("draft-page-timer").style.display = "flex";
+    }
+    else {
+        console.log("timer is not enforced for this room");
+    }
+    update_pick_timer(10);
     displayOnlyPage("draft-page");
     // Fill everything in, assuming we have it.
     displayDraftables(p);
 }
-function updateHeader(cur, after) {
+function updateHeader(picker, cur, after, isLoading = false) {
+    update_pick_timer();
     let next_four = cur.concat(after);
     while (next_four.length < 10) {
         next_four = next_four.concat(after.toReversed());
@@ -60,6 +88,11 @@ function updateHeader(cur, after) {
         cursp.innerText = "Draft complete. Loading...";
         hdr.appendChild(cursp);
         return;
+    }
+    console.log(next_four[0]);
+    console.log(UUID);
+    if (next_four[0] == UUID && !isLoading) {
+        play_audio("your-turn");
     }
     let leftdiv = document.createElement("div");
     leftdiv.classList.add("picking-player");
@@ -100,7 +133,7 @@ function pickerId(key) {
 function poolTitleId(key) {
     return `pool-title-${key}`;
 }
-function setAsPicked(key, picker) {
+function setAsPicked(key, picker, isLoading = false) {
     let pker = document.getElementById(pickerId(key));
     // easy peasy
     if (pker.classList.contains("picked")) {
@@ -139,11 +172,13 @@ function setAsPicked(key, picker) {
         let ctr = document.createElement("span");
         ctr.classList.add("log-line");
         // [Face] Name
-        (new Member(picker)).addDiv(ctr, true);
-        let mid_text = "picked";
         if (picker == UUID) {
-            mid_text = "(you) picked";
+            (new Member(picker)).addDiv(ctr, true, "You");
         }
+        else {
+            (new Member(picker)).addDiv(ctr, true);
+        }
+        let mid_text = "picked";
         let mid_span = document.createElement("span");
         mid_span.innerText = mid_text;
         mid_span.classList.add("log-joiner");
@@ -189,7 +224,7 @@ export function handleDraftpick(e) {
     else {
         DRAFT_ALLOWED = false;
     }
-    updateHeader(e.positions, e.next_positions);
+    updateHeader(picker, e.positions, e.next_positions);
 }
 function displayDraftables(p) {
     if (DRAFTABLES === undefined) {
@@ -198,6 +233,7 @@ function displayDraftables(p) {
     }
     let pools = DRAFTABLES[0];
     let picks = DRAFTABLES[1];
+    let gambits = DRAFTABLES[2];
     for (const pool of pools) {
         // let's not worry about preserving information about this stuff
         let pd = document.createElement("div");
@@ -271,7 +307,7 @@ function displayDraftables(p) {
                     console.log(`Picking ${pk.key} :)`);
                     play_audio("normal-click");
                     apiRequest(`draft/pick?key=${pk.key}`).then(_ => {
-                        setAsPicked(pk.key, UUID);
+                        setAsPicked(pk.key, UUID, true);
                     });
                 };
                 let picker = document.createElement("img");
@@ -298,6 +334,31 @@ function displayDraftables(p) {
             pd.appendChild(pickd);
         }
         document.getElementById("draft-page-main").appendChild(pd);
+    }
+    const gambit_div = document.getElementById("draft-page-gambits");
+    for (const k of Object.keys(gambits)) {
+        let v = gambits[k];
+        if (LOCAL_TESTING) {
+            console.log(v);
+        }
+        let b = document.createElement("button");
+        b.classList.add("standard-ui", "disabled");
+        b.innerText = v.name;
+        b.onclick = () => {
+            if (b.classList.contains("disabled")) {
+                apiRequest(`draft/gambit/enable?key=${k}`).then(_ => {
+                    b.classList.add("enabled");
+                    b.classList.remove("disabled");
+                });
+            }
+            else { // enabled
+                apiRequest(`draft/gambit/disable?key=${k}`).then(_ => {
+                    b.classList.remove("enabled");
+                    b.classList.add("disabled");
+                });
+            }
+        };
+        gambit_div.appendChild(b);
     }
     if (LOCAL_TESTING) {
         console.log("Finished building draft pools.");
@@ -337,7 +398,7 @@ function displayDraftables(p) {
         for (const pk of json.draft) {
             setAsPicked(pk.key, pk.player);
         }
-        updateHeader(json.position, json.next_positions);
+        updateHeader(undefined, json.position, json.next_positions, false);
         if (json.position[0] == UUID) {
             DRAFT_ALLOWED = true;
         }

@@ -3,6 +3,8 @@ import {WS_URI, API_URI, LOCAL_TESTING, apiRequest, resolveUrl} from "./draaft2/
 import {
     IS_ADMIN,
     UUID,
+    ROOM_CONFIG,
+    set_room_config,
     UpdatingText,
     fullPageNotification,
     set_admin,
@@ -12,7 +14,8 @@ import {
     annoy_user_lol,
     displayOnlyPage,
     hideAllPages,
-    cache_audio
+    cache_audio,
+    play_audio,
 } from "./draaft2/util.js";
 import {fetchData, startDrafting, handleDraftpick, downloadZip, downloadWorldgen} from "./draaft2/draft.js";
 import {addRoomConfig, configureRoom} from "./draaft2/room.js";
@@ -85,6 +88,7 @@ function handlePlayerupdate(d) {
 function handleRoomupdate(d) {
     switch (d.update) {
         case "commenced":
+            set_room_config(d.config);
             startDrafting();
             break;
         case "config":
@@ -270,7 +274,13 @@ function setupRoomPage(code: string, members) {
         );
     }
 
-    document.getElementById("room-copy-link").onclick = _ => navigator.clipboard.writeText(code);
+    const copybutton = document.getElementById("room-copy-link");
+    copybutton.onclick = _ => {
+        play_audio("normal-click");
+        navigator.clipboard.writeText(code);
+        copybutton.innerText = "copied";
+        setTimeout(() => copybutton.innerText = "copy code", 3000);
+    }
 }
 
 function menuJoinRoom(rid?: string) {
@@ -283,8 +293,9 @@ function menuJoinRoom(rid?: string) {
         .then(resp => resp.json())
         .then(async json => {
             console.log(`Join room command returned JSON: ${JSON.stringify(json)}`);
-            if (json.drafting === true) {
+            if (json.drafting === true || json.playing === true) {
                 console.log("Join room command returned that we are drafting. Fetching draft...");
+                set_room_config(json.room.config);
                 connect(stored_token());
                 startDrafting();
             } else if (json.code === undefined) {
@@ -333,6 +344,7 @@ function setupOnClick() {
     }
 
     (<HTMLButtonElement>document.getElementById("room-start")).addEventListener("click", _ => {
+        play_audio("normal-click");
         if (!IS_ADMIN) {
             annoy_user_lol();
         } else {
@@ -340,6 +352,7 @@ function setupOnClick() {
                 "are you sure you want to start draafting?",
                 "🪣🪣🪣 yes 🪣🪣🪣",
                 () => {
+                    play_audio("normal-click");
                     apiRequest(`room/commence`, undefined, "POST");
                 },
                 true
@@ -400,7 +413,9 @@ function main() {
     setupLazySecret(<HTMLInputElement>document.getElementById("menu-input-roomid"));
     setupOnClick();
 
-    cache_audio("normal-click", "/assets/draaft/picks/click_stereo.ogg");
+    cache_audio("normal-click", "/assets/draaft/sounds/click_stereo.ogg").volume = 0.4;
+    cache_audio("low-sound", "/assets/draaft/sounds/note_block.ogg").volume = 0.6;
+    cache_audio("your-turn", "/assets/draaft/sounds/Successful_hit.ogg").volume = 0.5;
 }
 
 document.addEventListener("DOMContentLoaded", main, false);

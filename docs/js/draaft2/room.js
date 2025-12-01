@@ -1,5 +1,5 @@
 import { apiRequest } from "./request.js";
-import { IS_ADMIN } from "./util.js";
+import { IS_ADMIN, play_audio } from "./util.js";
 const MAP = {
     spectators_get_world: "Allow Spectator World Downloads",
     enforce_timer: "Enforce Pick Timer",
@@ -112,6 +112,7 @@ function mAAkeConfig(lAAbel, vAAlue, type) {
         lAAbelInput.addEventListener("click", _ => {
             const key = lAAbel;
             let o = {};
+            play_audio("normal-click");
             if (lAAbelInput.classList.contains("yes")) {
                 o[key] = false;
                 lAAbelInput.classList.remove("yes");

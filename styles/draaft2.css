@@ -121,6 +121,8 @@ button, .as-button, .standard-ui {
 button:hover, .as-button:hover  {
     cursor: pointer;
     background-color: rgba(0, 0, 0, 0.7);
+
+    outline: 2px solid rgba(255, 255, 255, 1);
 }
 
 a.as-button {
@@ -139,6 +141,106 @@ p.generic-welcome-text {
     width: 100%;
     top: 56px;
     z-index: -1;
+}
+
+/**********************************************************
+ * Credits / loading screen
+ **********************************************************/
+#loading-credits::backdrop {
+    background-color: rgba(0,0,0,0.5);
+}
+
+#loading-credits #credits-page {
+    background-color: rgba(0,0,0,0.8);
+    color: white;
+    height: 100%;
+    width: 100%;
+    border: none;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    padding: 10%;
+    overflow: auto;
+}
+
+#loading-credits {
+    height: 100%;
+    width: 100%;
+    border: none;
+    background-color: transparent;
+    padding: 0;
+    margin: 0;
+}
+
+@keyframes pulseright {
+    0%, 100% {
+        -webkit-filter: drop-shadow(6px 6px 6px #fff); 
+        filter: drop-shadow(6px 6px 6px #fff );
+    }
+    50% {
+        -webkit-filter: drop-shadow(10px 10px 10px #fff); 
+        filter: drop-shadow(10px 10px 10px #fff );
+    }
+    /*0%, 100% { box-shadow: 6px 6px 6px #fff, 16px 16px 16px #fff; }
+    50% { box-shadow: 8px 8px 8px #fff, 8px 8px 8px #fff; }*/
+}
+@keyframes pulseglow {
+    /* https://codersblock.com/blog/creating-glow-effects-with-css/ */
+    0%, 100% {
+        -webkit-filter: drop-shadow(0px 0px 6px #fff); 
+        filter: drop-shadow(0px 0px 6px #fff );
+    }
+    50% {
+        -webkit-filter: drop-shadow(0px 0px 10px #fff); 
+        filter: drop-shadow(0px 0px 10px #fff );
+    }
+    /*0%, 100% { box-shadow: 6px 6px 6px #fff, 16px 16px 16px #fff; }
+    50% { box-shadow: 8px 8px 8px #fff, 8px 8px 8px #fff; }*/
+}
+
+#loading-credits .logo {
+    width: 10rem;
+    animation: pulseglow 2s infinite;
+}
+
+#loading-credits .loading-text {
+    margin: 1rem;
+    font-size: 3rem;
+    line-height: 3rem;
+}
+
+#loading-credits .subtitle-text {
+    line-height: 2rem;
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    margin-top: 2rem;
+}
+
+#loading-credits .thanks {
+    font-size: 1.5rem;
+}
+
+#loading-credits .credits-container {
+    margin-top: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.credits-container > div {
+    width: 80%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-bottom: 0.6rem;
+}
+.credits-container > div > span {
+    margin-left: 3rem;
+    margin-right: 3rem;
+    text-align: right;
+    line-height: 1em;
 }
 
 /**********************************************************
@@ -175,6 +277,8 @@ div.floating-footer > a:hover {
  **********************************************************/
 :root {
     --login-draaft-height: 216px;
+
+    --draft-main-section-width: max(45%, 4.2rem * 14);
 }
 div#login-page {
     width: min(100vw, 300px);
@@ -570,7 +674,8 @@ div#room-page-gutter #room-copy-link {
     flex-direction: row;
     justify-content: space-between;
 
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
+    margin-top: 1rem;
 }
 
 .cf-container span, .cf-container input.standard-ui {
@@ -590,11 +695,11 @@ div#room-page-gutter #room-copy-link {
     padding: 0.25rem;
     width: 17rem;
 }
-.cf-container input.standard-ui:hover {
+.cf-container input:enabled.standard-ui:hover {
     outline: 2px solid rgba(255, 255, 255, 1);
     background-color: rgba(0, 0, 0, 0.85);
 }
-.cf-container input[type="button"].standard-ui:hover {
+.cf-container input:enabled[type="button"].standard-ui:hover {
     cursor: pointer;
 }
 .cf-container input[type="button"].standard-ui.yes {
@@ -752,11 +857,12 @@ div#draft-page-header .next-players {
     visibility: hidden;
     transform:translateX(-1.4em);
     transform: translateY(1em);
+    z-index: 3;
 
     text-align: center;
     border: none;
-    background-color: rgba(0, 0, 0, 0.5);
-    outline: 2px solid rgba(255, 255, 255, 0.8);
+    background-color: rgba(0, 0, 0, 0.8);
+    outline: 2px solid rgba(255, 255, 255, 0.9);
     color: white !important;
     font-family: Minecraftia;
     font-size: 16px;
@@ -851,13 +957,26 @@ div#draft-page-header .next-players {
 }
 
 #draft-page-main-container {
-    width: max(45%, 4.2rem * 14);
+    width: var(--draft-main-section-width);
     height: 100%;
 
-    padding-top: 4rem;
+    padding-top: 20px;
     padding-bottom: 4rem;
 
     min-height: 0;
+}
+
+.pretty-box {
+    border: none;
+
+    background-color: rgba(0, 0, 0, 0.5);
+    outline: 2px solid rgba(255, 255, 255, 0.8);
+
+    color: white;
+}
+
+#draft-page-body-main {
+    justify-content: space-around;
 }
 
 #draft-page-main {
@@ -878,13 +997,30 @@ div#draft-page-header .next-players {
     align-content: space-evenly;
 }
 
+#draft-page-log-container {
+    width: var(--draft-main-section-width);
+
+    height: 15%;
+    max-height: 15%;
+
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+
+    display: flex;
+    flex-direction: row;
+    align-items: space-between;
+}
 #draft-page-log {
+    flex-grow: 1;
     display: flex;
     flex-direction: column;
     height: 100%;
     overflow: auto;
     justify-content: start;
     align-items: start;
+
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.7);
 }
 .log-line {
     color: white;
@@ -909,4 +1045,19 @@ div#draft-page-header .next-players {
 .log-line .draft-pick-image {
     margin-left: 0.7rem;
     margin-right: 0.3rem;
+}
+
+#draft-page-timer {
+    margin-left: calc(1rem + 20px);
+    padding: 0.4rem;
+}
+#draft-page-timer header {
+    font-size: 1rem;
+}
+#draft-page-timer p {
+    font-size: 2.2rem;
+    margin: 0;
+    flex-grow: 1;
+    text-align: center;
+    line-height: 1rem;
 }
