@@ -171,7 +171,7 @@ export function annoy_user_lol() {
 export function displayOnlyPage(id: string) {
     removeAllPages();
     document.getElementById(id).style.display = "flex";
-    document.getElementById(id).classList.add("visible");
+    document.getElementById(id).classList.add("visible", "fade");
 }
 export function hideAllPages() {
     document.getElementById("login-page").classList.add("invisible");

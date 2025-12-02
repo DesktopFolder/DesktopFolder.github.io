@@ -1,6 +1,6 @@
 import {Member} from "./member.js";
 import {apiRequest, LOCAL_TESTING} from "./request.js";
-import {displayOnlyPage, fullPageNotification, play_audio, ROOM_CONFIG, STEVE, UUID} from "./util.js";
+import {displayOnlyPage, fullPageNotification, play_audio, removeAllPages, ROOM_CONFIG, STEVE, UUID} from "./util.js";
 
 let PICKS_PER_POOL = 0;
 let MAX_PICKS = 0;
@@ -90,6 +90,9 @@ export function startDrafting() {
     // ensure we do this no matter what lol
     document.getElementById("home-button").style.display = "none";
 
+    removeAllPages();
+    (<HTMLDialogElement>document.getElementById("loading-credits")).show();
+
     // always just start fetching the data early
     let p = apiRequest("draft/status", undefined, "GET").then(resp => resp.json());
 
@@ -102,8 +105,6 @@ export function startDrafting() {
     else {
         console.log("timer is not enforced for this room");
     }
-
-    displayOnlyPage("draft-page");
 
     // Fill everything in, assuming we have it.
     displayDraftables(p);
@@ -577,6 +578,15 @@ function displayDraftables(p: Promise<any>) {
         if (json.position[0] == UUID) {
             DRAFT_ALLOWED = true;
         }
+
+        // FULLY LOADED!
+        setTimeout(() => {
+            (<HTMLDialogElement>document.getElementById("loading-credits")).classList.add("fade");
+
+            displayOnlyPage("draft-page");
+
+            setTimeout(() => {(<HTMLDialogElement>document.getElementById("loading-credits")).close();}, 1000);
+        }, 1000);
     }).catch(_ => {
         fullPageNotification("There was an error loading the in-progress draft.", "reload page", () =>
             window.location.reload()
