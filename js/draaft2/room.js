@@ -22,7 +22,9 @@ const ENABLECONFIGS = {
     nether_seed: "number",
     end_seed: "number",
     enforce_timer: "button",
-    pick_time: "number"
+    pick_time: "number",
+    enable_gambits: "button",
+    max_gambits: "number",
 };
 export function configureRoom(o) {
     for (const k of Object.keys(o)) {
@@ -96,7 +98,8 @@ function mAAkeConfig(lAAbel, vAAlue, type) {
             const key = lAAbel;
             let o = {};
             if (type === "number") {
-                o[key] = parseInt(lAAbelInput.value) || null;
+                // still a string haha welcome to the wonderful world of js
+                o[key] = lAAbelInput.value;
             }
             else if (type === "text") {
                 o[key] = lAAbelInput.value;

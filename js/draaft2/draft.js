@@ -30,11 +30,16 @@ function setPickInfo(picks_per_pool, max_picks) {
             document.getElementById(poolTitleId(pool_id)).innerText = `${POOL_NAME_MAPPING.get(pool_id)} (0)`;
     }
 }
+let IS_YOU = false;
 let TIMER = undefined;
 function dec(prev) {
     const next = prev - 1;
     const v = document.getElementById("draft-timer-value");
     v.innerText = next.toString();
+    if (next == 5 && IS_YOU) {
+        play_audio("low-sound");
+        setTimeout(() => play_audio("low-sound"), 270);
+    }
     if (next != 0) {
         TIMER = setTimeout(() => dec(next), 1000);
     }
@@ -44,9 +49,27 @@ function update_pick_timer(additional = 0) {
     if (TIMER != undefined)
         clearTimeout(TIMER);
     const v = document.getElementById("draft-timer-value");
-    const initial = additional + ROOM_CONFIG.pick_time;
+    const initial = additional + parseInt(ROOM_CONFIG.pick_time);
     v.innerText = initial.toString();
+    console.log(`INITIAL PICK TIME: ${initial}`);
     TIMER = setTimeout(() => dec(initial), 1000);
+}
+function stop_timer() {
+    if (TIMER != undefined)
+        clearTimeout(TIMER);
+    TIMER = undefined;
+    const v = document.getElementById("draft-timer-value");
+    v.innerText = '0';
+}
+function stop_drafting() {
+    console.log("Stopping drafting.");
+    stop_timer();
+    // disable gambits
+    for (const g of document.getElementsByClassName("gambit-button")) {
+        console.log(`Disabling gambit button: ${g.id}`);
+        let b = g;
+        b.classList.add("noclick");
+    }
 }
 let DRAFT_ALLOWED = false;
 export let IS_DRAFTING = false;
@@ -63,17 +86,18 @@ export function startDrafting() {
     if (ROOM_CONFIG.enforce_timer === true) {
         console.log("displaying enforced timer");
         document.getElementById("draft-page-timer").style.display = "flex";
+        update_pick_timer(10);
     }
     else {
         console.log("timer is not enforced for this room");
     }
-    update_pick_timer(10);
     displayOnlyPage("draft-page");
     // Fill everything in, assuming we have it.
     displayDraftables(p);
 }
 function updateHeader(picker, cur, after, isLoading = false) {
-    update_pick_timer();
+    if (!isLoading && ROOM_CONFIG.enforce_timer === true)
+        update_pick_timer();
     let next_four = cur.concat(after);
     while (next_four.length < 10) {
         next_four = next_four.concat(after.toReversed());
@@ -87,12 +111,19 @@ function updateHeader(picker, cur, after, isLoading = false) {
         let cursp = document.createElement("span");
         cursp.innerText = "Draft complete. Loading...";
         hdr.appendChild(cursp);
+        stop_drafting();
         return;
     }
     console.log(next_four[0]);
     console.log(UUID);
-    if (next_four[0] == UUID && !isLoading) {
-        play_audio("your-turn");
+    if (next_four[0] == UUID) {
+        IS_YOU = true;
+        if (!isLoading) {
+            play_audio("your-turn");
+        }
+    }
+    else {
+        IS_YOU = false;
     }
     let leftdiv = document.createElement("div");
     leftdiv.classList.add("picking-player");
@@ -123,6 +154,14 @@ function updateHeader(picker, cur, after, isLoading = false) {
     com3.innerText = "Draft complete";
     com3.classList.add("header-comma");
     rightdiv.appendChild(com3);
+}
+function makeLogLine() {
+    // Add it to the chat log.
+    let lg = document.getElementById("draft-page-log");
+    let ctr = document.createElement("span");
+    ctr.classList.add("log-line");
+    lg.appendChild(ctr);
+    return ctr;
 }
 function iconId(key) {
     return `draft-pick-image-${key}`;
@@ -167,10 +206,7 @@ function setAsPicked(key, picker, isLoading = false) {
         }
     }
     {
-        // Add it to the chat log.
-        let lg = document.getElementById("draft-page-log");
-        let ctr = document.createElement("span");
-        ctr.classList.add("log-line");
+        let ctr = makeLogLine();
         // [Face] Name
         if (picker == UUID) {
             (new Member(picker)).addDiv(ctr, true, "You");
@@ -192,7 +228,6 @@ function setAsPicked(key, picker, isLoading = false) {
         name_span.innerText = DRAFTABLES[1][key].name.pretty_name;
         name_span.classList.add("log-item-name");
         ctr.appendChild(name_span);
-        lg.appendChild(ctr);
     }
     if (picker == UUID) {
         pker.classList.add("current-user");
@@ -226,6 +261,7 @@ export function handleDraftpick(e) {
     }
     updateHeader(picker, e.positions, e.next_positions);
 }
+let SELECTED_GAMBITS = 0;
 function displayDraftables(p) {
     if (DRAFTABLES === undefined) {
         setTimeout(displayDraftables, 200);
@@ -335,30 +371,82 @@ function displayDraftables(p) {
         }
         document.getElementById("draft-page-main").appendChild(pd);
     }
-    const gambit_div = document.getElementById("draft-page-gambits");
-    for (const k of Object.keys(gambits)) {
-        let v = gambits[k];
-        if (LOCAL_TESTING) {
-            console.log(v);
+    /* GAMBITS! WOOHOO */
+    const gambit_title = document.createElement("span");
+    const NUM_GAMBITS = Object.keys(gambits).length;
+    const MAX_GAMBITS = ROOM_CONFIG.max_gambits;
+    const update_gambits = (num) => {
+        if (NUM_GAMBITS > MAX_GAMBITS) {
+            gambit_title.innerText = `Gambits (${num} / ${MAX_GAMBITS})`;
         }
-        let b = document.createElement("button");
-        b.classList.add("standard-ui", "disabled");
-        b.innerText = v.name;
-        b.onclick = () => {
-            if (b.classList.contains("disabled")) {
-                apiRequest(`draft/gambit/enable?key=${k}`).then(_ => {
-                    b.classList.add("enabled");
-                    b.classList.remove("disabled");
-                });
+    };
+    const gambit_div = document.getElementById("draft-page-gambits");
+    if (ROOM_CONFIG.enable_gambits) {
+        gambit_title.innerText = 'Gambits';
+        gambit_div.appendChild(gambit_title);
+        update_gambits(0);
+        for (const k of Object.keys(gambits)) {
+            let v = gambits[k];
+            if (LOCAL_TESTING) {
+                console.log(v);
             }
-            else { // enabled
-                apiRequest(`draft/gambit/disable?key=${k}`).then(_ => {
-                    b.classList.remove("enabled");
-                    b.classList.add("disabled");
-                });
+            let b = document.createElement("button");
+            b.classList.add("standard-ui", "gambit-button", "disabled");
+            b.id = `gambit-${v.key}`;
+            let nm = document.createElement("span");
+            let nmt = document.createElement("p");
+            let img = document.createElement("img");
+            img.src = "/assets/draaft/ui/cancel.png";
+            nmt.innerText = v.name;
+            nm.appendChild(nmt);
+            nm.appendChild(img);
+            b.appendChild(nm);
+            let desc = document.createElement("span");
+            desc.classList.add("full-flex-down");
+            for (const d of v.description.split("/")) {
+                const p = document.createElement("p");
+                p.innerText = d;
+                desc.appendChild(p);
             }
-        };
-        gambit_div.appendChild(b);
+            desc.classList.add("tooltip");
+            b.appendChild(desc);
+            b.onclick = () => {
+                // disallowed if we can't select more gambits
+                if (b.classList.contains("noclick") || (b.classList.contains("disabled") && SELECTED_GAMBITS >= MAX_GAMBITS)) {
+                    play_audio("low-sound");
+                    return;
+                }
+                play_audio("normal-click");
+                var req = undefined;
+                if (b.classList.contains("disabled")) {
+                    req = apiRequest(`draft/gambit/enable?key=${k}`).then(resp => {
+                        if (!resp.ok) {
+                            throw new Error('Failed toggle gambit');
+                        }
+                        SELECTED_GAMBITS += 1;
+                        update_gambits(SELECTED_GAMBITS);
+                        b.classList.add("enabled");
+                        b.classList.remove("disabled");
+                    });
+                }
+                else { // enabled
+                    req = apiRequest(`draft/gambit/disable?key=${k}`).then(resp => {
+                        if (!resp.ok) {
+                            throw new Error('Failed toggle gambit');
+                        }
+                        SELECTED_GAMBITS -= 1;
+                        update_gambits(SELECTED_GAMBITS);
+                        b.classList.remove("enabled");
+                        b.classList.add("disabled");
+                    });
+                }
+                req.catch(() => play_audio("low-sound"));
+            };
+            gambit_div.appendChild(b);
+        }
+    }
+    else {
+        gambit_div.style.display = 'none';
     }
     if (LOCAL_TESTING) {
         console.log("Finished building draft pools.");
@@ -367,6 +455,24 @@ function displayDraftables(p) {
         if (LOCAL_TESTING) {
             console.log("Current draft status:");
             console.log(json);
+        }
+        let ctr = makeLogLine();
+        let starter = document.createElement("span");
+        starter.innerText = `The drAAft has started. First pick: `;
+        starter.classList.add("starter-log");
+        ctr.appendChild(starter);
+        (new Member(json.players[0])).addDiv(ctr, true);
+        // fix gambits
+        if (json.gambits != undefined) {
+            if (json.gambits[UUID] != undefined) {
+                console.log("Enabling from server");
+                for (const g of json.gambits[UUID]) {
+                    document.getElementById(`gambit-${g}`).classList.remove("disabled");
+                    document.getElementById(`gambit-${g}`).classList.add("enabled");
+                    SELECTED_GAMBITS += 1;
+                }
+                update_gambits(SELECTED_GAMBITS);
+            }
         }
         // must come before setAsPicked
         let max_picks_per_pool = (json.players.length < 2) ? 100 : ((json.players.length == 2) ? 4 : json.players.length);
@@ -398,7 +504,7 @@ function displayDraftables(p) {
         for (const pk of json.draft) {
             setAsPicked(pk.key, pk.player);
         }
-        updateHeader(undefined, json.position, json.next_positions, false);
+        updateHeader(undefined, json.position, json.next_positions, true);
         if (json.position[0] == UUID) {
             DRAFT_ALLOWED = true;
         }

@@ -3,11 +3,17 @@ import { STEVE, IS_ADMIN, UUID, play_audio } from "./util.js";
 const MOJANG_UUID_LOOKUP_URL = "https://api.ashcon.app/mojang/v2/user";
 // const MOJANG_UUID_LOOKUP_URL = "https://api.minecraftservices.com/minecraft/profile/lookup";
 let LOOKUP_CACHE = new Map();
+let LOOKING_UP_CACHE = new Map();
 export async function uuidToUsername(uuid) {
     if (!LOOKUP_CACHE.has(uuid)) {
-        let res = await fetch(`${MOJANG_UUID_LOOKUP_URL}/${uuid}`);
-        let json = await res.json();
-        LOOKUP_CACHE.set(uuid, json.username);
+        if (!LOOKING_UP_CACHE.has(uuid)) {
+            LOOKING_UP_CACHE.set(uuid, fetch(`${MOJANG_UUID_LOOKUP_URL}/${uuid}`)
+                .then(body => body.json())
+                .then(async (json) => {
+                LOOKUP_CACHE.set(uuid, json.username);
+            }));
+        }
+        await LOOKING_UP_CACHE.get(uuid);
     }
     return LOOKUP_CACHE.get(uuid);
 }

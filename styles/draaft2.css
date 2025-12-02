@@ -1022,6 +1022,10 @@ div#draft-page-header .next-players {
     scrollbar-width: thin;
     scrollbar-color: rgba(0, 0, 0, 0.7);
 }
+.starter-log {
+    box-sizing: border-box;
+    margin-right: 1rem;
+}
 .log-line {
     color: white;
     font-size: 1rem;
@@ -1031,6 +1035,8 @@ div#draft-page-header .next-players {
     align-items: center;
     line-height: 1rem;
     padding: .2rem;
+    box-sizing: border-box;
+    margin-left: 0.5rem;
 }
 .log-line img {
     height: 1rem;
@@ -1060,4 +1066,70 @@ div#draft-page-header .next-players {
     flex-grow: 1;
     text-align: center;
     line-height: 1rem;
+}
+
+#draft-page-gambits {
+    min-width: calc(var(--draft-main-section-width) / 1.5);
+
+    /* 1rem from top 4rem from bottom */
+    height: calc(100% - 1rem - 4rem);
+    margin-top: 1rem;
+    margin-right: 20px;
+
+    padding: 1rem;
+
+    overflow: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.7);
+}
+
+.gambit-button {
+    box-sizing: border-box;
+    width: 100%;
+    font-size: 1.7rem;
+    margin-bottom: 0.5rem;
+}
+
+.gambit-button .tooltip {
+    display: none;
+
+    font-size: 1rem;
+}
+
+.gambit-button:hover .tooltip {
+    display: block;
+}
+
+.gambit-button span {
+    min-height: 0;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.gambit-button p {
+    margin: 0;
+    display: inline;
+    margin-right: 1rem;
+}
+
+.gambit-button span.tooltip p {
+    display: block;
+}
+
+.gambit-button img {
+    height: 2rem;
+    
+    image-rendering: pixelated;
+    box-sizing: border-box;
+    display: inline;
+}
+
+.gambit-button.disabled, .gambit-button.noclick {
+    filter: brightness(75%);
+}
+.gambit-button.disabled img {
+    content: url("/assets/draaft/ui/cancel.png");
+}
+.gambit-button.enabled img {
+    content: url("/assets/draaft/ui/confirm.png");
 }
