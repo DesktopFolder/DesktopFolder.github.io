@@ -2,10 +2,97 @@ import {apiRequest} from "./request.js";
 import { STEVE, IS_ADMIN, UUID, play_audio } from "./util.js";
 
 const MOJANG_UUID_LOOKUP_URL = "https://api.ashcon.app/mojang/v2/user";
+// no cors lol
 // const MOJANG_UUID_LOOKUP_URL = "https://api.minecraftservices.com/minecraft/profile/lookup";
+
+// UUID -> USERNAME
 let LOOKUP_CACHE: Map<string, string> = new Map();
+// USERNAME -> UUID
+let USERNAME_TO_UUID: Map<string, string> = new Map();
+
 let LOOKING_UP_CACHE = new Map();
 
+export function isValidPlayerNameOrUUID(pn: string) {
+    return /^[a-zA-Z_0-9]{2,32}$/.test(pn);
+}
+
+export async function lookupMojangIdentifier(uuidOrUsername: string) {
+    // normalize
+    uuidOrUsername = uuidOrUsername.replaceAll("-", "");
+    if (!isValidPlayerNameOrUUID(uuidOrUsername)) {
+        return { name: uuidOrUsername, id: "InvalidIdentifier" };
+    }
+
+    // todo - dedupe this
+    // == 32 is a uuid
+    if (uuidOrUsername.length == 32) {
+        // check if it's cached
+        const uuid = uuidOrUsername;
+        try {
+            if (!LOOKUP_CACHE.has(uuid)) {
+                // it's not cached, check if we're looking it up
+                if (!LOOKING_UP_CACHE.has(uuid)) {
+                    // not looking it up, look it up (username -> uuid)
+                    LOOKING_UP_CACHE.set(uuid, fetch(`${MOJANG_UUID_LOOKUP_URL}/${uuid}`)
+                                         .then(body => body.json())
+                                         .then(async json => {
+                                            // set both for later efficiency (don't repeat lookups)
+                                            LOOKUP_CACHE.set(uuid, json.username);
+                                            USERNAME_TO_UUID.set(json.username.toLowerCase(), uuid);
+                                        }).catch((_) => {
+                                            // this username is fake
+                                            console.log(`Setting ${uuid} as not being a real UUID.`);
+                                            LOOKUP_CACHE.set(uuid, uuid);
+                                        }));
+                }
+                await LOOKING_UP_CACHE.get(uuid);
+                if (LOOKING_UP_CACHE.has(uuid)) {
+                    LOOKING_UP_CACHE.delete(uuid);
+                }
+            }
+        } catch {
+            LOOKUP_CACHE.set(uuid, uuid);
+        }
+        return { name: LOOKUP_CACHE.get(uuid), id: uuid };
+    } // otherwise, it is a username (theoretically haha ^^)
+    else {
+        // THIS IS CODE FOR IF WE WERE GIVEN A USERNAME. NOT A UUID. !!!
+        const username = uuidOrUsername;
+        // check if it's cached
+        try {
+            if (!USERNAME_TO_UUID.has(username.toLowerCase())) {
+                // it's not cached, check if we're looking it up
+                if (!LOOKING_UP_CACHE.has(username)) {
+                    // not looking it up, look it up (username -> uuid)
+                    LOOKING_UP_CACHE.set(username, fetch(`${MOJANG_UUID_LOOKUP_URL}/${username}`)
+                                         .then(body => body.json())
+                                         .then(async json => {
+                                            // set both for later efficiency (don't repeat lookups)
+                                            const uuid = json.uuid.replaceAll("-", "");
+                                            console.log(`Making mapping of ${uuid} = ${json.username}`);
+                                            console.log(`Making mapping of ${username.toLowerCase()} = ${uuid}`);
+                                            LOOKUP_CACHE.set(uuid, json.username);
+                                            USERNAME_TO_UUID.set(username.toLowerCase(), uuid);
+                                        }).catch((_) => {
+                                            // this username is fake
+                                            console.log(`Setting ${username} as not being a real username.`);
+                                            USERNAME_TO_UUID.set(username.toLowerCase(), username);
+                                        }));
+                }
+                await LOOKING_UP_CACHE.get(username);
+                if (LOOKING_UP_CACHE.has(username)) {
+                    LOOKING_UP_CACHE.delete(username);
+                }
+            }
+        } catch {
+            USERNAME_TO_UUID.set(username.toLowerCase(), username);
+        }
+        // todo - should we return canonical name?
+        return { name: username, id: USERNAME_TO_UUID.get(username.toLowerCase()) };
+    }
+}
+
+// DEPRECATED
 export async function uuidToUsername(uuid: string) {
     if (!LOOKUP_CACHE.has(uuid)) {
         if (!LOOKING_UP_CACHE.has(uuid)) {
@@ -13,6 +100,9 @@ export async function uuidToUsername(uuid: string) {
                                  .then(body => body.json())
                                  .then(async json => {
                                     LOOKUP_CACHE.set(uuid, json.username);
+                                }).catch((_) => {
+                                    console.log(`Setting ${uuid} as not being a real uuid.`);
+                                    LOOKUP_CACHE.set(uuid, uuid);
                                 }));
         }
         await LOOKING_UP_CACHE.get(uuid);

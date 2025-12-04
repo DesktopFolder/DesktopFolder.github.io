@@ -1,5 +1,6 @@
 import {apiRequest} from "./request.js";
 import {IS_ADMIN, play_audio} from "./util.js";
+import { lookupMojangIdentifier, uuidToUsername } from "./member.js";
 
 const MAP = {
     spectators_get_world: "Allow Spectator World Downloads",
@@ -27,7 +28,10 @@ const ENABLECONFIGS = {
     pick_time: "number",
     enable_gambits: "button",
     max_gambits: "number",
+    restrict_players: "csv",
 };
+
+const UUIDLISTS = new Set(["restrict_players"]);
 
 export function configureRoom(o: any) {
     for (const k of Object.keys(o)) {
@@ -52,13 +56,28 @@ export function configureRoom(o: any) {
             input.value = value;
             input.classList.remove("yes", "no");
             input.classList.add(value);
-        } else {
+        } else if (cftype == "csv") {
+            if (UUIDLISTS.has(k)) {
+                console.log(v);
+                // convert uuids to usernames
+                Promise.all((<Array<String>>v).map(async (k: string) => {
+                    return (await lookupMojangIdentifier(k)).name;
+                })).then(async (result) => {
+                    input.value = (<Array<String>>result).join(", ");
+                    console.log(`Set uuidlist csv to ${input.value}`);
+                });
+            }
+            else {
+                input.value = (<Array<String>>v).join(", ");
+            }
+        }
+        else {
             input.value = v;
         }
     }
 }
 
-function mAAkeConfig(lAAbel: string, vAAlue: number | string | boolean | null, type: string) {
+function mAAkeConfig(lAAbel: string, vAAlue: number | string | boolean | null | Array<String>, type: string) {
     // Set up our configurAAtion semi-dynAAmicAAlly.
     const loc = document.getElementById("config-down");
 
@@ -92,12 +111,25 @@ function mAAkeConfig(lAAbel: string, vAAlue: number | string | boolean | null, t
             lAAbelInput.classList.add("no");
             lAAbelInput.value = "no";
         }
+    } else if (type === "csv") {
+        if (UUIDLISTS.has(lAAbel)) {
+            // convert uuids to usernames
+            Promise.all((<Array<String>>vAAlue).map(async (k: string) => {
+                return (await lookupMojangIdentifier(k)).name;
+            })).then(async (result) => {
+                lAAbelInput.value = (<Array<String>>result).join(", ");
+            });
+        }
+        else {
+            lAAbelInput.value = (<Array<String>>vAAlue).join(", ");
+        }
+        lAAbelInput.type = "text"; // lol
     } else {
         console.error("AAHHHHHHHHHHHHH");
     }
 
     if (type !== "button") {
-        lAAbelInput.addEventListener("input", _ => {
+        lAAbelInput.addEventListener("focusout", _ => {
             const key = lAAbel;
             let o = {};
 
@@ -106,11 +138,26 @@ function mAAkeConfig(lAAbel: string, vAAlue: number | string | boolean | null, t
                 o[key] = lAAbelInput.value;
             } else if (type === "text") {
                 o[key] = lAAbelInput.value;
+            } else if (type === "csv") {
+                o[key] = lAAbelInput.value.split(",").map((s) => s.trim()).filter(o => o);
             } else {
                 console.error("AAHHHHHHHHHHHHH");
                 return;
             }
-            apiRequest("room/configure", JSON.stringify(o), "POST");
+
+            if (UUIDLISTS.has(lAAbel)) {
+                Promise.all(<Array<String>>o[key].map(async (k: string) => {
+                    return (await lookupMojangIdentifier(k)).id;
+                })).then(
+                    async (result) => {
+                        o[key] = result;
+                        apiRequest("room/configure", JSON.stringify(o), "POST");
+                    }
+                );
+            }
+            else {
+                apiRequest("room/configure", JSON.stringify(o), "POST");
+            }
         });
     } else {
         lAAbelInput.addEventListener("click", _ => {

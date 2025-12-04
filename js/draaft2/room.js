@@ -1,5 +1,6 @@
 import { apiRequest } from "./request.js";
 import { IS_ADMIN, play_audio } from "./util.js";
+import { lookupMojangIdentifier } from "./member.js";
 const MAP = {
     spectators_get_world: "Allow Spectator World Downloads",
     enforce_timer: "Enforce Pick Timer",
@@ -25,7 +26,9 @@ const ENABLECONFIGS = {
     pick_time: "number",
     enable_gambits: "button",
     max_gambits: "number",
+    restrict_players: "csv",
 };
+const UUIDLISTS = new Set(["restrict_players"]);
 export function configureRoom(o) {
     for (const k of Object.keys(o)) {
         const v = o[k];
@@ -48,6 +51,21 @@ export function configureRoom(o) {
             input.value = value;
             input.classList.remove("yes", "no");
             input.classList.add(value);
+        }
+        else if (cftype == "csv") {
+            if (UUIDLISTS.has(k)) {
+                console.log(v);
+                // convert uuids to usernames
+                Promise.all(v.map(async (k) => {
+                    return (await lookupMojangIdentifier(k)).name;
+                })).then(async (result) => {
+                    input.value = result.join(", ");
+                    console.log(`Set uuidlist csv to ${input.value}`);
+                });
+            }
+            else {
+                input.value = v.join(", ");
+            }
         }
         else {
             input.value = v;
@@ -90,11 +108,25 @@ function mAAkeConfig(lAAbel, vAAlue, type) {
             lAAbelInput.value = "no";
         }
     }
+    else if (type === "csv") {
+        if (UUIDLISTS.has(lAAbel)) {
+            // convert uuids to usernames
+            Promise.all(vAAlue.map(async (k) => {
+                return (await lookupMojangIdentifier(k)).name;
+            })).then(async (result) => {
+                lAAbelInput.value = result.join(", ");
+            });
+        }
+        else {
+            lAAbelInput.value = vAAlue.join(", ");
+        }
+        lAAbelInput.type = "text"; // lol
+    }
     else {
         console.error("AAHHHHHHHHHHHHH");
     }
     if (type !== "button") {
-        lAAbelInput.addEventListener("input", _ => {
+        lAAbelInput.addEventListener("focusout", _ => {
             const key = lAAbel;
             let o = {};
             if (type === "number") {
@@ -104,11 +136,24 @@ function mAAkeConfig(lAAbel, vAAlue, type) {
             else if (type === "text") {
                 o[key] = lAAbelInput.value;
             }
+            else if (type === "csv") {
+                o[key] = lAAbelInput.value.split(",").map((s) => s.trim()).filter(o => o);
+            }
             else {
                 console.error("AAHHHHHHHHHHHHH");
                 return;
             }
-            apiRequest("room/configure", JSON.stringify(o), "POST");
+            if (UUIDLISTS.has(lAAbel)) {
+                Promise.all(o[key].map(async (k) => {
+                    return (await lookupMojangIdentifier(k)).id;
+                })).then(async (result) => {
+                    o[key] = result;
+                    apiRequest("room/configure", JSON.stringify(o), "POST");
+                });
+            }
+            else {
+                apiRequest("room/configure", JSON.stringify(o), "POST");
+            }
         });
     }
     else {
