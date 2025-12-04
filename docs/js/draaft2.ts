@@ -200,7 +200,7 @@ async function testAuthToken(auth: string) {
 
             interval.cancel();
             if (text != "true") {
-                new UpdatingText("login-response-text", "login token was incorrect, try logging in again", 20, true);
+                new UpdatingText("login-response-text", "login expired, please log in again", 20, true);
             } else {
                 loginSuccess(auth);
             }
