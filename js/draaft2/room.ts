@@ -24,11 +24,17 @@ const ENABLECONFIGS = {
     overworld_seed: "number",
     nether_seed: "number",
     end_seed: "number",
+
     enforce_timer: "button",
     pick_time: "number",
+
     enable_gambits: "button",
     max_gambits: "number",
+
     restrict_players: "csv",
+
+    // disable: doesn't do anything yet
+    // countdown_timer: "number",
 };
 
 const UUIDLISTS = new Set(["restrict_players"]);

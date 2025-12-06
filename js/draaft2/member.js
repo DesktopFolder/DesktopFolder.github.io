@@ -165,7 +165,9 @@ export class Member {
     }
     setIsPlayer(value) {
         this.isPlayer = value;
-        this.swapButton.innerText = this.isPlayer ? "make spectator" : "make player";
+        if (this.swapButton != undefined) {
+            this.swapButton.innerText = this.isPlayer ? "make spectator" : "make player";
+        }
         console.log(`Updating ${this.playerOnly.length} objects to reflect isPlayer of ${this.isPlayer}`);
         for (const e of this.playerOnly) {
             if (this.isPlayer) {

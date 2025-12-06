@@ -35,7 +35,9 @@
 <a href="/" id="home-button" style="position:absolute;left:7px;top:12px;margin:0;font-size:60%;line-height:0;">home</a>
 
 <body class="maxerino">
-<video autoplay muted loop id="background-video" controls disablePictureInPicture style="pointer-events: none">
+
+<!-- controls disablePictureInPicture - disabled to try and fix ugly, ugly chrome...-->
+<video autoplay muted loop disablePictureInPicture id="background-video" style="pointer-events: none">
   <source src="/assets/draaft/bg.webm" type="video/webm">
 </video>
 
@@ -226,6 +228,13 @@ Backlog:
         <div id="draft-page-gambits" class="full-flex-down pretty-box">
         </div>
     </div>
+
+    <button id="draft-page-exit" class="ingame-exit-button">leave</button>
+</div>
+
+<div id="ingame-page" class="full-flex-down" style="display: none">
+    
+    <button id="game-page-exit" class="ingame-exit-button">leave</button>
 </div>
 
 <script>var exports = {"__esModule": true};</script>

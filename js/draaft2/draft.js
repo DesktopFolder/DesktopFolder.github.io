@@ -1,6 +1,6 @@
 import { Member } from "./member.js";
 import { apiRequest, LOCAL_TESTING } from "./request.js";
-import { displayOnlyPage, fullPageNotification, play_audio, removeAllPages, ROOM_CONFIG, STEVE, UUID } from "./util.js";
+import { displayOnlyPage, fullPageNotification, play_audio, removeAllPages, ROOM_CONFIG, STEVE, UUID, set_draft_info } from "./util.js";
 let PICKS_PER_POOL = 0;
 let MAX_PICKS = 0;
 let CUR_PICKS = 0;
@@ -61,6 +61,7 @@ function stop_timer() {
     const v = document.getElementById("draft-timer-value");
     v.innerText = '0';
 }
+// do all logic for post-draft in here
 function stop_drafting() {
     console.log("Stopping drafting.");
     stop_timer();
@@ -70,6 +71,8 @@ function stop_drafting() {
         let b = g;
         b.classList.add("noclick");
     }
+    // we're basically waiting for the server to give us the OK
+    // to run the timer now
 }
 let DRAFT_ALLOWED = false;
 export let IS_DRAFTING = false;
@@ -111,6 +114,7 @@ function updateHeader(picker, cur, after, isLoading = false) {
         hdr.style.justifyContent = 'center';
         let cursp = document.createElement("span");
         cursp.innerText = "Draft complete. Loading...";
+        cursp.id = "visible-header-text";
         hdr.appendChild(cursp);
         stop_drafting();
         return;
@@ -163,6 +167,13 @@ function makeLogLine() {
     ctr.classList.add("log-line");
     lg.appendChild(ctr);
     return ctr;
+}
+export function draft_disconnect_player(uuid) {
+    let cl = makeLogLine();
+    (new Member(uuid)).addDiv(cl, true);
+    let mid_span = document.createElement("span");
+    mid_span.innerText = "left the draft";
+    cl.appendChild(mid_span);
 }
 function iconId(key) {
     return `draft-pick-image-${key}`;
@@ -457,6 +468,7 @@ function displayDraftables(p) {
             console.log("Current draft status:");
             console.log(json);
         }
+        set_draft_info(json);
         let ctr = makeLogLine();
         let starter = document.createElement("span");
         starter.innerText = `The drAAft has started. First pick: `;

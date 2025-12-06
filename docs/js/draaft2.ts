@@ -5,8 +5,10 @@ import {
     UUID,
     ROOM_CONFIG,
     set_room_config,
+    set_draft_info,
     UpdatingText,
     fullPageNotification,
+    reloadNotification,
     set_admin,
     set_token,
     set_uuid,
@@ -16,8 +18,9 @@ import {
     hideAllPages,
     cache_audio,
     play_audio,
+    PLAYER_SET,
 } from "./draaft2/util.js";
-import {fetchData, startDrafting, handleDraftpick, downloadZip, downloadWorldgen} from "./draaft2/draft.js";
+import {fetchData, startDrafting, handleDraftpick, downloadZip, downloadWorldgen, draft_disconnect_player} from "./draaft2/draft.js";
 import {addRoomConfig, configureRoom} from "./draaft2/room.js";
 
 var API_WS: WebSocket | null = null;
@@ -63,15 +66,17 @@ function handlePlayerupdate(d) {
         case "leave":
             if (d.uuid === UUID) {
                 console.log("Looks like we are leaving. Bye!");
-                fullPageNotification("You have been removed from the lobby 😭", "Click to reload 🪣", () =>
-                    window.location.reload()
-                );
+                reloadNotification("You have been removed from the lobby 😭");
             } else {
                 // Delete the member.
                 visitUuid(d.uuid, (m: Member) => {
                     m.destroy();
                 });
                 ROOM_MEMBERS = ROOM_MEMBERS.filter(m => m.uuid != d.uuid);
+
+                if (PLAYER_SET.has(d.uuid)) {
+                    draft_disconnect_player(d.uuid);
+                }
             }
             break;
         case "spectate":
@@ -93,6 +98,12 @@ function handleRoomupdate(d) {
             break;
         case "config":
             configureRoom(d.config);
+            break;
+        case "closed":
+            reloadNotification("this room has been deleted");
+            break;
+        case "loading_complete":
+            // displayIngame();
             break;
         default:
             console.error(`Unhandled room event: ${d.update}`);
@@ -295,14 +306,16 @@ function menuJoinRoom(rid?: string) {
             console.log(`Join room command returned JSON: ${JSON.stringify(json)}`);
             if (json.drafting === true || json.playing === true) {
                 console.log("Join room command returned that we are drafting. Fetching draft...");
+
                 set_room_config(json.room.config);
+
+                set_draft_info(json.room.draft);
+
                 connect(stored_token());
                 startDrafting();
             } else if (json.code === undefined) {
                 console.error(`Error: Bad data returned from API.`);
-                fullPageNotification("error: bad API interaction", "click to reload 🪣", () =>
-                    window.location.reload()
-                );
+                reloadNotification("error: bad API interaction");
             } else {
                 if (json.state == "rejoined_as_admin") {
                     set_admin(true);
@@ -312,7 +325,7 @@ function menuJoinRoom(rid?: string) {
         })
         .catch(async e => {
             console.error(`Got error rejoining room. Attempting to reload. Error: ${e}`);
-            fullPageNotification("error: bad API interaction", "click to reload 🪣", () => window.location.reload());
+            reloadNotification("error: bad API interaction");
         });
 }
 
@@ -341,6 +354,25 @@ function setupOnClick() {
                 apiRequest(`room/leave`, undefined, "POST").finally(() => window.location.reload());
             }
         });
+    }
+
+    for (const cb of document.getElementsByClassName("ingame-exit-button")) {
+        console.log(`Setting up callback for id: ${cb.id}`);
+        if (cb instanceof HTMLButtonElement) {
+            cb.onclick = () => {
+                console.log(`Attempted to leave the room.`);
+                play_audio("normal-click");
+                if (IS_ADMIN) {
+                    (<HTMLDialogElement>document.getElementById("confirm-room-destroy-admin")).showModal();
+                }
+                else {
+                    (<HTMLDialogElement>document.getElementById("confirm-room-destroy-user")).showModal();
+                }
+            };
+        }
+        else {
+            console.warn(`${cb.id} is not a button!`);
+        }
     }
 
     (<HTMLButtonElement>document.getElementById("room-start")).addEventListener("click", _ => {

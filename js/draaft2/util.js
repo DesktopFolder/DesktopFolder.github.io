@@ -3,6 +3,17 @@ export let ROOM_CONFIG = undefined;
 export function set_room_config(rc) {
     ROOM_CONFIG = rc;
 }
+export let IS_PLAYER = false;
+export let PLAYER_SET = new Set();
+export function set_draft_info(rc) {
+    for (const p of rc.players) {
+        if (p === UUID) {
+            console.log("-> Set draft info: We are a player");
+            IS_PLAYER = true;
+        }
+        PLAYER_SET.add(p);
+    }
+}
 export function stored_token() {
     return localStorage.getItem("draaft.token");
 }
@@ -71,6 +82,39 @@ export class UpdatingText {
         console.log(`Created interval ID: ${this.intervalID}`);
         UPDATING_TEXT_MAP.set(id, this);
     }
+}
+export function reloadNotification(text) {
+    console.log(`Creating a full page notification with text: ${text}`);
+    const no = document.createElement("dialog");
+    no.classList.add("notify-require-interact", "basic-modal-dialog");
+    const pr = document.createElement("p");
+    pr.innerText = text;
+    pr.classList.add("notify-require-interact-text");
+    const fm = document.createElement("form");
+    fm.method = "dialog";
+    const bu = document.createElement("button");
+    bu.autofocus = true;
+    bu.classList.add("confirm-button", "notify-require-interact-button");
+    bu.value = "confirm";
+    // haha
+    const bp = document.createElement("p");
+    bp.classList.add("button-inline-text", "button-inline");
+    bp.innerText = "click to reload";
+    const bucket = document.createElement("img");
+    bucket.classList.add("button-inline-image", "button-inline");
+    bucket.src = "/assets/draaft/picks/bucket.png";
+    bu.appendChild(bp);
+    bu.appendChild(bucket);
+    fm.appendChild(bu);
+    no.appendChild(pr);
+    no.appendChild(fm);
+    bu.addEventListener("click", _ => {
+        window.location.reload();
+        // no.close();
+        // document.body.removeChild(no);
+    });
+    document.body.appendChild(no);
+    no.showModal();
 }
 export function fullPageNotification(text, buttontext, callback, cancelable = false) {
     console.log(`Creating a full page notification with text: ${text}`);

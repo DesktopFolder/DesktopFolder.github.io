@@ -1163,3 +1163,34 @@ div#draft-page-header .next-players {
 .gambit-button.enabled img {
     content: url("/assets/draaft/ui/confirm.png");
 }
+
+button.ingame-exit-button {
+    position: fixed;
+
+    bottom: 0.7rem;
+    left: 0.7rem;
+
+    font-size: 12px;
+    line-height: 10px;
+}
+
+video::-webkit-media-controls {
+  display: none;
+}
+video::-moz-media-controls {
+  display: none;
+}
+
+.button-inline {
+    height: 32px;
+    display: inline-block;
+    margin: 0;
+}
+
+p.button-inline {
+    margin-right: 4px;
+}
+
+img.button-inline {
+    padding-top: 10px;
+}

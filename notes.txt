@@ -1,1 +1,9 @@
+Game start flow:
+
+1. Draft completes!
+2. We send draft complete notification. Clients download stuff.
+3. Clients report they're done to the server.
+4. We send game start notification. Clients queue countdown.
+5. SPECATATORS go to ingame page. PlAYERS stay in the room page.
+
 https://htmlcolorcodes.com/ always useful
