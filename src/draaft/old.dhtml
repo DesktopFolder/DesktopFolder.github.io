@@ -1,7 +1,7 @@
 ---
-page.title=drAAfting Tool
-website.title=Desktop's Website
-page.description=A tool for doing AA drafts
+page.title=drAAft
+website.title=drAAft
+page.description=the drAAft application
 src=templates/generic.html
 css.extras=/styles/draaft.css
 meta=<link href="https://fonts.cdnfonts.com/css/minecraftia" rel="stylesheet">

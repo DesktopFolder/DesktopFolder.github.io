@@ -1,13 +1,15 @@
 ---
 page.title=drAAfting Tool
-website.title=Desktop's Website
+website.title=draaft.disrespec.tech
 page.description=A tool for doing AA drafts
 src=templates/generic.html
 css.extras=/styles/draaft2.css
 page.image=/draaft-logo.png
 ---
 <body class="maxerino">
-<video autoplay muted loop id="background-video" controls disablePictureInPicture style="pointer-events: none">
+
+<!-- controls disablePictureInPicture - disabled to try and fix ugly, ugly chrome...-->
+<video autoplay muted loop id="background-video" style="pointer-events: none" disablePictureInPicture>
   <source src="/assets/draaft/bg.webm" type="video/webm">
 </video>
 
@@ -108,6 +110,43 @@ Backlog:
     </form>
 </dialog>
 
+<!-- https://gist.github.com/wtho/bcc6e1edd883429b85d081e866607533 -->
+<dialog id="loading-credits" closedby="none">
+    <div id="credits-page">
+    <img src="/draaft-logo.png" class="logo">
+    <span class="loading-text">loAAding...</span>
+    <span class="subtitle-text">drAAft is a competitive AA project by PacManMVC and DesktopFolder</span>
+    <!--<span class="thanks">with thanks to</span>-->
+    <div class="credits-container">
+        <div><span>me_nx</span><span>Authentication flow, mod improvements, general technical support, seedfinding</span></div>
+        <div><span>memerson</span><span>Mod development, in-game room display, general technical support, seedfinding</span></div>
+        <div><span>Matsenuc</span><span>Enchanting the login bucket</span></div>
+        <div><span>DesktopFolder</span><span>Web design and development</span></div>
+        <div><span>PacManMVC</span><span>Mod development, design</span></div>
+    </div>
+    <span>with additional thanks to totorewa, crazysmc, and all others who gave advice during development</span>
+    <span>thank you for playing and testing. we hope you enjoy</span>
+    </div>
+</dialog>
+
+
+<dialog class="basic-modal-dialog settings-dialog" id="user-settings-dialog" closedby="any">
+
+<div class="full-flex-down">
+<div id="user-settings-wrapper" class="full-flex-down">
+    <p id="settings-title">user settings</p>
+    <div id="user-settings" class="basic-config-down">
+        <div id="settings-hidden" autofocus="autofocus" style="height:0px;overflow:hidden;">
+            <span>hidden text</span>
+            <input type="text" autofocus="autofocus" />
+        </div>
+    </div>
+</div>
+</div>
+
+</dialog>
+
+
 <!-- better flexbox from menx https://codepen.io/me_nx/pen/emJNXrE -->
 <div id="room-page" class="full-flex-down" style="display: none">
     <div id="room-page-header-container">
@@ -136,12 +175,60 @@ Backlog:
             <div id="room-page-config">
                 <button id="room-start" class="standard-ui">begin draafting</button>
 
+                <!-- Outer area for padding :) -->
                 <div id="config-area">
+                    <!-- Room configuration! -->
+                    <div id="config-down" class="basic-config-down">
+                    </div>
                 </div>
             </div>
         </div>
 
     </div>
+    <button class="settings-button">[s]ettings</button>
+</div>
+
+<!-- missing react -->
+<div id="draft-page" class="full-flex-down" style="display: none">
+    <div id="draft-page-header-container">
+        <div id="draft-page-header" class="full-flex-right">
+        </div>
+    </div>
+
+    <div id="draft-page-body" class="full-flex-right">
+        <!-- ?  -->
+        <div id="draft-page-body-main" class="full-flex-down">
+            <div id="draft-page-log-container">
+                <div id="draft-page-log" class="full-flex-down pretty-box">
+
+                </div>
+
+                <div id="draft-page-timer" class="pretty-box full-flex-down" style="display: none">
+                    <header>time remaining</header>
+                    <div class="full-flex-right" style="flex-grow: 1; align-items: center;">
+                        <p id="draft-timer-value">30</p>
+                    </div>
+                </div>
+            </div>
+            <div id="draft-page-main-container">
+                <div id="draft-page-main" class="full-flex-right">
+
+                </div>
+            </div>
+        </div>
+        <div id="draft-page-gambits" class="full-flex-down pretty-box">
+        </div>
+    </div>
+
+    <button id="draft-page-exit" class="ingame-exit-button">leave</button>
+    <button id="download-zip" style="display:none;">download datapack zip</button>
+    <button class="settings-button">[s]ettings</button>
+</div>
+
+<div id="ingame-page" class="full-flex-down" style="display: none">
+    
+    <button id="game-page-exit" class="ingame-exit-button">leave</button>
+    <button class="settings-button">[s]ettings</button>
 </div>
 
 <script>var exports = {"__esModule": true};</script>

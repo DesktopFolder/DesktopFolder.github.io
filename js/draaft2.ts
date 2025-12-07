@@ -1,6 +1,29 @@
 import {Member} from "./draaft2/member.js";
-import {WS_URI, API_URI, LOCAL_TESTING, apiRequest} from "./draaft2/request.js";
-import {IS_ADMIN, UUID, UpdatingText, fullPageNotification, set_admin, set_token, set_uuid, stored_token, annoy_user_lol} from "./draaft2/util.js";
+import {WS_URI, API_URI, LOCAL_TESTING, apiRequest, resolveUrl} from "./draaft2/request.js";
+import {setupSettings} from "./draaft2/settings.js";
+import {
+    IS_ADMIN,
+    UUID,
+    ROOM_CONFIG,
+    set_room_config,
+    set_draft_info,
+    UpdatingText,
+    fullPageNotification,
+    reloadNotification,
+    set_admin,
+    set_token,
+    set_uuid,
+    stored_token,
+    annoy_user_lol,
+    displayOnlyPage,
+    hideAllPages,
+    cache_audio,
+    play_audio,
+    PLAYER_SET,
+    onlogin,
+} from "./draaft2/util.js";
+import {fetchData, startDrafting, handleDraftpick, downloadZip, downloadWorldgen, draft_disconnect_player} from "./draaft2/draft.js";
+import {addRoomConfig, configureRoom} from "./draaft2/room.js";
 
 var API_WS: WebSocket | null = null;
 
@@ -45,14 +68,17 @@ function handlePlayerupdate(d) {
         case "leave":
             if (d.uuid === UUID) {
                 console.log("Looks like we are leaving. Bye!");
-                fullPageNotification("You have been removed from the lobby 😭", "Click to reload 🪣", () => window.location.reload());
-            }
-            else {
+                reloadNotification("You have been removed from the lobby 😭");
+            } else {
                 // Delete the member.
                 visitUuid(d.uuid, (m: Member) => {
                     m.destroy();
                 });
                 ROOM_MEMBERS = ROOM_MEMBERS.filter(m => m.uuid != d.uuid);
+
+                if (PLAYER_SET.has(d.uuid)) {
+                    draft_disconnect_player(d.uuid);
+                }
             }
             break;
         case "spectate":
@@ -66,17 +92,36 @@ function handlePlayerupdate(d) {
     }
 }
 
-/* WebSocket Testing */
+function handleRoomupdate(d) {
+    switch (d.update) {
+        case "commenced":
+            set_room_config(d.config);
+            startDrafting();
+            break;
+        case "config":
+            configureRoom(d.config);
+            break;
+        case "closed":
+            reloadNotification("this room has been deleted");
+            break;
+        case "loading_complete":
+            // displayIngame();
+            break;
+        default:
+            console.error(`Unhandled room event: ${d.update}`);
+    }
+}
+
 export function connect(token: string) {
     console.log(`Connecting to websocket at ${WS_URI}`);
     if (API_WS == null || API_WS == undefined) {
-        API_WS = new WebSocket(`${WS_URI}/listen?token=${token}`);
+        API_WS = new WebSocket(new URL(`listen?token=${token}`, WS_URI));
         API_WS.onerror = function (event) {
             console.warn("WebSocket errored. Must reconnect.");
             API_WS = null;
         };
         API_WS.onopen = function (event) {
-            console.log("Successfully connected websocket.");
+            console.log("Important: Successfully connected websocket.");
         };
         API_WS.onmessage = function (event) {
             // websocket time!
@@ -86,6 +131,12 @@ export function connect(token: string) {
             switch (d.variant) {
                 case "playerupdate":
                     handlePlayerupdate(d);
+                    break;
+                case "roomupdate":
+                    handleRoomupdate(d);
+                    break;
+                case "draftpick":
+                    handleDraftpick(d);
                     break;
                 default:
                     console.error(`Unhandled event type ${d.variant}`);
@@ -106,6 +157,8 @@ export function sendMessage(message: string) {
 if (LOCAL_TESTING) {
     (window as any).test_connect = connect;
     (window as any).test_message = sendMessage;
+    (window as any).download_zip = downloadZip;
+    (window as any).download_wgo = downloadWorldgen;
 }
 
 function showMenu(auth: string) {
@@ -113,26 +166,16 @@ function showMenu(auth: string) {
     displayOnlyPage("menu-page");
 }
 
-function displayOnlyPage(id: string) {
-    removeAllPages();
-    document.getElementById(id).style.display = "flex";
-    document.getElementById(id).classList.add("visible");
-}
-function hideAllPages() {
-    document.getElementById("login-page").classList.add("invisible");
-    document.getElementById("menu-page").classList.add("invisible");
-    document.getElementById("room-page").classList.add("invisible");
-}
-function removeAllPages() {
-    document.getElementById("login-page").style.display = "none";
-    document.getElementById("menu-page").style.display = "none";
-    document.getElementById("room-page").style.display = "none";
-}
-
 function loginSuccess(auth: string) {
     // Animation, lol.
     // First, start to fade out the page.
     hideAllPages();
+
+    // fire all our onlogin callbacks
+    for (const p of onlogin) {
+        p();
+    }
+
     // Then, add a timeout to show our menu page.
     const menuShowTimeout = window.setTimeout(() => showMenu(auth), 500);
 
@@ -140,7 +183,7 @@ function loginSuccess(auth: string) {
     set_token(auth);
 
     // Then, "race the beam" to get the user information.
-    fetch(`${API_URI}/user`, {
+    fetch(resolveUrl(API_URI, "/user"), {
         headers: {
             token: auth
         }
@@ -165,7 +208,7 @@ function loginSuccess(auth: string) {
 
 async function testAuthToken(auth: string) {
     const interval = new UpdatingText("login-response-text", "contacting drAAft server..", 25, false);
-    await fetch(`${API_URI}/authenticated`, {
+    await fetch(resolveUrl(API_URI, "/authenticated"), {
         headers: {
             token: auth
         }
@@ -176,7 +219,7 @@ async function testAuthToken(auth: string) {
 
             interval.cancel();
             if (text != "true") {
-                new UpdatingText("login-response-text", "login token was incorrect, try logging in again", 20, true);
+                new UpdatingText("login-response-text", "login expired, please log in again", 20, true);
             } else {
                 loginSuccess(auth);
             }
@@ -195,11 +238,15 @@ async function loginFlow(port: number) {
 
     console.assert(response.status == 200);
 
-    const json = await response.json();
+    try {
+        const json = await response.json();
 
-    console.assert(json.token !== undefined);
+        console.assert(json.token !== undefined);
 
-    return await testAuthToken(json.token);
+        return await testAuthToken(json.token);
+    } catch {
+        console.log(`Bad response from local fetch: ${response.body}`);
+    }
 }
 
 function showRoom(code: string) {
@@ -231,6 +278,7 @@ function setupRoomPage(code: string, members) {
         .then(resp => resp.json())
         .then(async json => {
             // document.getElementById("room-welcome-text").innerText = `welcome, ${json.members.length}`;
+            addRoomConfig(json);
         })
         .catch(error => {
             console.error("Error getting room data: ", error);
@@ -245,7 +293,13 @@ function setupRoomPage(code: string, members) {
         );
     }
 
-    document.getElementById("room-copy-link").onclick = _ => navigator.clipboard.writeText(code);
+    const copybutton = document.getElementById("room-copy-link");
+    copybutton.onclick = _ => {
+        play_audio("normal-click");
+        navigator.clipboard.writeText(code);
+        copybutton.innerText = "copied";
+        setTimeout(() => copybutton.innerText = "copy code", 3000);
+    }
 }
 
 function menuJoinRoom(rid?: string) {
@@ -257,10 +311,19 @@ function menuJoinRoom(rid?: string) {
     apiRequest(`room/join`, JSON.stringify({code: rid}), "POST")
         .then(resp => resp.json())
         .then(async json => {
-            console.log(`Join room command returned JSON: ${json}`);
-            if (json.code === undefined) {
+            console.log(`Join room command returned JSON: ${JSON.stringify(json)}`);
+            if (json.drafting === true || json.playing === true) {
+                console.log("Join room command returned that we are drafting. Fetching draft...");
+
+                set_room_config(json.room.config);
+
+                set_draft_info(json.room.draft);
+
+                connect(stored_token());
+                startDrafting();
+            } else if (json.code === undefined) {
                 console.error(`Error: Bad data returned from API.`);
-                fullPageNotification("error: bad API interaction", "click to reload 🪣", () => window.location.reload());
+                reloadNotification("error: bad API interaction");
             } else {
                 if (json.state == "rejoined_as_admin") {
                     set_admin(true);
@@ -268,9 +331,9 @@ function menuJoinRoom(rid?: string) {
                 setupRoomPage(json.code, json.members);
             }
         })
-        .catch(async (e) => {
+        .catch(async e => {
             console.error(`Got error rejoining room. Attempting to reload. Error: ${e}`);
-            fullPageNotification("error: bad API interaction", "click to reload 🪣", () => window.location.reload());
+            reloadNotification("error: bad API interaction");
         });
 }
 
@@ -282,10 +345,6 @@ function menuCreateRoom() {
             set_admin(true);
             setupRoomPage(json.code, json.members);
         });
-}
-
-function startDrafting() {
-    console.log("It's drafting time, yo!");
 }
 
 function setupOnClick() {
@@ -305,12 +364,52 @@ function setupOnClick() {
         });
     }
 
-    (<HTMLButtonElement>document.getElementById("room-start")).addEventListener("click", _ => {
-        if (!IS_ADMIN) {
-            annoy_user_lol();
+    for (const cb of document.getElementsByClassName("settings-button")) {
+        console.log(`Setting up callback for id: ${cb.id}`);
+        if (cb instanceof HTMLButtonElement) {
+            cb.onclick = () => {
+                play_audio("normal-click");
+                (<HTMLDialogElement>document.getElementById("user-settings-dialog")).showModal();
+            };
         }
         else {
-            fullPageNotification("are you sure you want to start draafting?", "🪣🪣🪣 yes 🪣🪣🪣", startDrafting, true);
+            console.warn(`${cb.id} is not a button!`);
+        }
+    }
+
+    for (const cb of document.getElementsByClassName("ingame-exit-button")) {
+        console.log(`Setting up callback for id: ${cb.id}`);
+        if (cb instanceof HTMLButtonElement) {
+            cb.onclick = () => {
+                console.log(`Attempted to leave the room.`);
+                play_audio("normal-click");
+                if (IS_ADMIN) {
+                    (<HTMLDialogElement>document.getElementById("confirm-room-destroy-admin")).showModal();
+                }
+                else {
+                    (<HTMLDialogElement>document.getElementById("confirm-room-destroy-user")).showModal();
+                }
+            };
+        }
+        else {
+            console.warn(`${cb.id} is not a button!`);
+        }
+    }
+
+    (<HTMLButtonElement>document.getElementById("room-start")).addEventListener("click", _ => {
+        play_audio("normal-click");
+        if (!IS_ADMIN) {
+            annoy_user_lol();
+        } else {
+            fullPageNotification(
+                "are you sure you want to start draafting?",
+                "🪣🪣🪣 yes 🪣🪣🪣",
+                () => {
+                    play_audio("normal-click");
+                    apiRequest(`room/commence`, undefined, "POST");
+                },
+                true
+            );
         }
     });
 }
@@ -318,18 +417,48 @@ function setupOnClick() {
 function main() {
     console.log("Launching drAAft 2 web client...");
 
+    // non-blocking, probably :)
+    fetchData();
+
     if (LOCAL_TESTING) {
+        console.log(`Local testing enabled. Backend URI: ${API_URI}`);
+
         addEventListener("keyup", event => {
+            // don't do random stuff if we are in a ui element
+            if (document.activeElement instanceof HTMLInputElement) {
+                const ae = document.activeElement;
+                if (ae.classList.contains("standard-ui")) return;
+            }
             if (event.key == "o") {
                 console.log("Let's add Feinberg...");
                 apiRequest("dev/adduser");
-            }
-            else if (event.key == "k") {
+            } else if (event.key == "k") {
                 console.log("Kicking myself when I'm down...");
                 apiRequest(`dev/kickself`);
+            } else if (event.key == "p") {
+                console.log("Becoming a user?!");
+                fetch(resolveUrl(API_URI, `dev/becomeuser`), {
+                    method: "POST"
+                })
+                    .then(resp => resp.json())
+                    .then(async json => {
+                        set_token(json.token);
+                    });
             }
         });
     }
+
+    addEventListener("keyup", event => {
+        if (event.key == "s") {
+            if (document.activeElement instanceof HTMLInputElement) {
+                const ae = document.activeElement;
+                if (ae.classList.contains("standard-ui")) return;
+            }
+            const hde = (<HTMLDialogElement>document.getElementById("user-settings-dialog"));
+            if (hde.open) { hde.close(); }
+            else { hde.showModal(); }
+        }
+    });
 
     const url = new URL(window.location.href);
     const urlParams = url.searchParams;
@@ -341,7 +470,7 @@ function main() {
         url.search = newQuery;
         window.history.replaceState({}, "", url);
         loginFlow(Number.parseInt(authPort));
-    } 
+    }
 
     const storageToken: string = localStorage.getItem("draaft.token");
     // Only do this if we aren't doing the login flow already.
@@ -353,6 +482,11 @@ function main() {
 
     setupLazySecret(<HTMLInputElement>document.getElementById("menu-input-roomid"));
     setupOnClick();
+    setupSettings();
+
+    cache_audio("normal-click", "/assets/draaft/sounds/click_stereo.ogg").volume = 0.4;
+    cache_audio("low-sound", "/assets/draaft/sounds/note_block.ogg").volume = 0.6;
+    cache_audio("your-turn", "/assets/draaft/sounds/Successful_hit.ogg").volume = 0.5;
 }
 
 document.addEventListener("DOMContentLoaded", main, false);

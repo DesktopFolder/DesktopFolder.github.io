@@ -1,4 +1,36 @@
+import { CONFIG } from "./settings.js";
+
 export const STEVE = "/assets/steve.png";
+
+export let ROOM_CONFIG = undefined;
+export function set_room_config(rc: any) {
+    ROOM_CONFIG = rc;
+}
+
+export let IS_PLAYER = false;
+export let PLAYER_SET = new Set();
+export function set_draft_info(rc: any) {
+    for (const p of rc.players) {
+        if (p === UUID) {
+            console.log("-> Set draft info: We are a player");
+            IS_PLAYER = true;
+        }
+        PLAYER_SET.add(p);
+    }
+}
+
+const MAP = { };
+export function keyToLabel(label: string) {
+    // hehe
+    let /* pacman */ mvc = MAP[label];
+    if (mvc == undefined) {
+        return label
+            .split("_")
+            .map(s => s[0].toUpperCase() + s.slice(1))
+            .join(" ");
+    }
+    return mvc;
+}
 
 export function stored_token() {
     return localStorage.getItem("draaft.token");
@@ -14,6 +46,20 @@ export function set_admin(b: boolean) {
 export let UUID: string;
 export function set_uuid(s: string) {
     UUID = s;
+}
+
+export let onlogin: Array<() => Promise<void>> = new Array();
+
+let AUDIO_CACHE: Map<string, HTMLAudioElement> = new Map();
+export function play_audio(k: string) {
+    if (CONFIG.disable_audio.get() === true) return;
+    console.log(`Playing audio: ${k}`);
+    AUDIO_CACHE.get(k).currentTime = 0;
+    AUDIO_CACHE.get(k).play();
+}
+export function cache_audio(k: string, uri: string) {
+    AUDIO_CACHE.set(k, new Audio(uri));
+    return AUDIO_CACHE.get(k);
 }
 
 var UPDATING_TEXT_MAP = new Map();
@@ -69,6 +115,49 @@ export class UpdatingText {
         console.log(`Created interval ID: ${this.intervalID}`);
         UPDATING_TEXT_MAP.set(id, this);
     }
+}
+
+export function reloadNotification(text: string) {
+    console.log(`Creating a full page notification with text: ${text}`);
+    const no = document.createElement("dialog");
+    no.classList.add("notify-require-interact", "basic-modal-dialog");
+
+    const pr = document.createElement("p");
+    pr.innerText = text;
+    pr.classList.add("notify-require-interact-text");
+
+    const fm = document.createElement("form");
+    fm.method = "dialog";
+
+    const bu = document.createElement("button");
+    bu.autofocus = true;
+    bu.classList.add("confirm-button", "notify-require-interact-button");
+    bu.value = "confirm";
+
+    // haha
+    const bp = document.createElement("p");
+    bp.classList.add("button-inline-text", "button-inline");
+    bp.innerText = "click to reload";
+
+    const bucket = document.createElement("img");
+    bucket.classList.add("button-inline-image", "button-inline");
+    bucket.src = "/assets/draaft/picks/bucket.png";
+    
+    bu.appendChild(bp);
+    bu.appendChild(bucket);
+
+    fm.appendChild(bu);
+    no.appendChild(pr);
+    no.appendChild(fm);
+
+    bu.addEventListener("click", _ => {
+        window.location.reload();
+        // no.close();
+        // document.body.removeChild(no);
+    });
+
+    document.body.appendChild(no);
+    no.showModal();
 }
 
 export function fullPageNotification(text: string, buttontext: string, callback: () => void, cancelable: boolean = false) {
@@ -151,3 +240,22 @@ export function annoy_user_lol() {
     fullPageNotification(msg, but, () => undefined);
     USER_ANNOY_COUNT += 1;
 }
+
+export function displayOnlyPage(id: string) {
+    removeAllPages();
+    document.getElementById(id).style.display = "flex";
+    document.getElementById(id).classList.add("visible", "fade");
+}
+export function hideAllPages() {
+    document.getElementById("login-page").classList.add("invisible");
+    document.getElementById("menu-page").classList.add("invisible");
+    document.getElementById("room-page").classList.add("invisible");
+    document.getElementById("draft-page").classList.add("invisible");
+}
+export function removeAllPages() {
+    document.getElementById("login-page").style.display = "none";
+    document.getElementById("menu-page").style.display = "none";
+    document.getElementById("room-page").style.display = "none";
+    document.getElementById("draft-page").style.display = "none";
+}
+
