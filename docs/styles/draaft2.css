@@ -683,15 +683,13 @@ div#room-page-gutter #room-copy-link {
     font-family: Minecraftia;
     font-size: 24px;
     padding: 0.3em;
-    padding-left: 6rem;
-    padding-right: 6rem;
 
     overflow: auto;
 
     align-items: center;
 }
 
-#config-down {
+.basic-config-down {
     display: flex;
     flex-direction: column;
     overflow: auto;
@@ -1174,6 +1172,26 @@ button.ingame-exit-button {
     line-height: 10px;
 }
 
+button.settings-button {
+    position: fixed;
+
+    bottom: 0.7rem;
+    right: 0.7rem;
+
+    font-size: 12px;
+    line-height: 10px;
+}
+
+#download-zip {
+    position: fixed;
+
+    bottom: 0.7rem;
+    left: 8rem;
+
+    font-size: 12px;
+    line-height: 10px;
+}
+
 video::-webkit-media-controls {
   display: none;
 }
@@ -1193,4 +1211,13 @@ p.button-inline {
 
 img.button-inline {
     padding-top: 10px;
+}
+
+#user-settings-dialog {
+    width: 50%;
+    height: 50%;
+}
+
+#user-settings-wrapper {
+    max-width: 32rem;
 }

@@ -1,5 +1,6 @@
 import {Member} from "./draaft2/member.js";
 import {WS_URI, API_URI, LOCAL_TESTING, apiRequest, resolveUrl} from "./draaft2/request.js";
+import {setupSettings} from "./draaft2/settings.js";
 import {
     IS_ADMIN,
     UUID,
@@ -19,6 +20,7 @@ import {
     cache_audio,
     play_audio,
     PLAYER_SET,
+    onlogin,
 } from "./draaft2/util.js";
 import {fetchData, startDrafting, handleDraftpick, downloadZip, downloadWorldgen, draft_disconnect_player} from "./draaft2/draft.js";
 import {addRoomConfig, configureRoom} from "./draaft2/room.js";
@@ -168,6 +170,12 @@ function loginSuccess(auth: string) {
     // Animation, lol.
     // First, start to fade out the page.
     hideAllPages();
+
+    // fire all our onlogin callbacks
+    for (const p of onlogin) {
+        p();
+    }
+
     // Then, add a timeout to show our menu page.
     const menuShowTimeout = window.setTimeout(() => showMenu(auth), 500);
 
@@ -356,6 +364,19 @@ function setupOnClick() {
         });
     }
 
+    for (const cb of document.getElementsByClassName("settings-button")) {
+        console.log(`Setting up callback for id: ${cb.id}`);
+        if (cb instanceof HTMLButtonElement) {
+            cb.onclick = () => {
+                play_audio("normal-click");
+                (<HTMLDialogElement>document.getElementById("user-settings-dialog")).showModal();
+            };
+        }
+        else {
+            console.warn(`${cb.id} is not a button!`);
+        }
+    }
+
     for (const cb of document.getElementsByClassName("ingame-exit-button")) {
         console.log(`Setting up callback for id: ${cb.id}`);
         if (cb instanceof HTMLButtonElement) {
@@ -403,6 +424,11 @@ function main() {
         console.log(`Local testing enabled. Backend URI: ${API_URI}`);
 
         addEventListener("keyup", event => {
+            // don't do random stuff if we are in a ui element
+            if (document.activeElement instanceof HTMLInputElement) {
+                const ae = document.activeElement;
+                if (ae.classList.contains("standard-ui")) return;
+            }
             if (event.key == "o") {
                 console.log("Let's add Feinberg...");
                 apiRequest("dev/adduser");
@@ -421,6 +447,18 @@ function main() {
             }
         });
     }
+
+    addEventListener("keyup", event => {
+        if (event.key == "s") {
+            if (document.activeElement instanceof HTMLInputElement) {
+                const ae = document.activeElement;
+                if (ae.classList.contains("standard-ui")) return;
+            }
+            const hde = (<HTMLDialogElement>document.getElementById("user-settings-dialog"));
+            if (hde.open) { hde.close(); }
+            else { hde.showModal(); }
+        }
+    });
 
     const url = new URL(window.location.href);
     const urlParams = url.searchParams;
@@ -444,6 +482,7 @@ function main() {
 
     setupLazySecret(<HTMLInputElement>document.getElementById("menu-input-roomid"));
     setupOnClick();
+    setupSettings();
 
     cache_audio("normal-click", "/assets/draaft/sounds/click_stereo.ogg").volume = 0.4;
     cache_audio("low-sound", "/assets/draaft/sounds/note_block.ogg").volume = 0.6;

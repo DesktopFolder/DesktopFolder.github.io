@@ -9,7 +9,7 @@ page.image=/draaft-logo.png
 <body class="maxerino">
 
 <!-- controls disablePictureInPicture - disabled to try and fix ugly, ugly chrome...-->
-<video autoplay muted loop disablePictureInPicture id="background-video" style="pointer-events: none">
+<video autoplay muted loop id="background-video" style="pointer-events: none" disablePictureInPicture>
   <source src="/assets/draaft/bg.webm" type="video/webm">
 </video>
 
@@ -129,6 +129,24 @@ Backlog:
     </div>
 </dialog>
 
+
+<dialog class="basic-modal-dialog settings-dialog" id="user-settings-dialog" closedby="any">
+
+<div class="full-flex-down">
+<div id="user-settings-wrapper" class="full-flex-down">
+    <p id="settings-title">user settings</p>
+    <div id="user-settings" class="basic-config-down">
+        <div id="settings-hidden" autofocus="autofocus" style="height:0px;overflow:hidden;">
+            <span>hidden text</span>
+            <input type="text" autofocus="autofocus" />
+        </div>
+    </div>
+</div>
+</div>
+
+</dialog>
+
+
 <!-- better flexbox from menx https://codepen.io/me_nx/pen/emJNXrE -->
 <div id="room-page" class="full-flex-down" style="display: none">
     <div id="room-page-header-container">
@@ -160,13 +178,14 @@ Backlog:
                 <!-- Outer area for padding :) -->
                 <div id="config-area">
                     <!-- Room configuration! -->
-                    <div id="config-down">
+                    <div id="config-down" class="basic-config-down">
                     </div>
                 </div>
             </div>
         </div>
 
     </div>
+    <button class="settings-button">[s]ettings</button>
 </div>
 
 <!-- missing react -->
@@ -202,11 +221,14 @@ Backlog:
     </div>
 
     <button id="draft-page-exit" class="ingame-exit-button">leave</button>
+    <button id="download-zip" style="display:none;">download datapack zip</button>
+    <button class="settings-button">[s]ettings</button>
 </div>
 
 <div id="ingame-page" class="full-flex-down" style="display: none">
     
     <button id="game-page-exit" class="ingame-exit-button">leave</button>
+    <button class="settings-button">[s]ettings</button>
 </div>
 
 <script>var exports = {"__esModule": true};</script>

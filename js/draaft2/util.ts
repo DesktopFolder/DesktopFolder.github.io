@@ -1,3 +1,5 @@
+import { CONFIG } from "./settings.js";
+
 export const STEVE = "/assets/steve.png";
 
 export let ROOM_CONFIG = undefined;
@@ -17,6 +19,19 @@ export function set_draft_info(rc: any) {
     }
 }
 
+const MAP = { };
+export function keyToLabel(label: string) {
+    // hehe
+    let /* pacman */ mvc = MAP[label];
+    if (mvc == undefined) {
+        return label
+            .split("_")
+            .map(s => s[0].toUpperCase() + s.slice(1))
+            .join(" ");
+    }
+    return mvc;
+}
+
 export function stored_token() {
     return localStorage.getItem("draaft.token");
 }
@@ -33,8 +48,11 @@ export function set_uuid(s: string) {
     UUID = s;
 }
 
+export let onlogin: Array<() => Promise<void>> = new Array();
+
 let AUDIO_CACHE: Map<string, HTMLAudioElement> = new Map();
 export function play_audio(k: string) {
+    if (CONFIG.disable_audio.get() === true) return;
     console.log(`Playing audio: ${k}`);
     AUDIO_CACHE.get(k).currentTime = 0;
     AUDIO_CACHE.get(k).play();

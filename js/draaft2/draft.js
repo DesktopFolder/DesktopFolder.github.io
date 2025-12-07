@@ -1,6 +1,6 @@
 import { Member } from "./member.js";
 import { apiRequest, LOCAL_TESTING } from "./request.js";
-import { displayOnlyPage, fullPageNotification, play_audio, removeAllPages, ROOM_CONFIG, STEVE, UUID, set_draft_info } from "./util.js";
+import { displayOnlyPage, fullPageNotification, play_audio, removeAllPages, ROOM_CONFIG, STEVE, UUID, set_draft_info, IS_PLAYER } from "./util.js";
 let PICKS_PER_POOL = 0;
 let MAX_PICKS = 0;
 let CUR_PICKS = 0;
@@ -70,6 +70,14 @@ function stop_drafting() {
         console.log(`Disabling gambit button: ${g.id}`);
         let b = g;
         b.classList.add("noclick");
+    }
+    if (IS_PLAYER) {
+        let zipDownload = document.getElementById("download-zip");
+        zipDownload.onclick = () => {
+            play_audio("normal-click");
+            downloadZip();
+        };
+        zipDownload.style.display = "block";
     }
     // we're basically waiting for the server to give us the OK
     // to run the timer now

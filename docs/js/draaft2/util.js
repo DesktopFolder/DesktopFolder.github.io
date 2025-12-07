@@ -1,3 +1,4 @@
+import { CONFIG } from "./settings.js";
 export const STEVE = "/assets/steve.png";
 export let ROOM_CONFIG = undefined;
 export function set_room_config(rc) {
@@ -14,6 +15,18 @@ export function set_draft_info(rc) {
         PLAYER_SET.add(p);
     }
 }
+const MAP = {};
+export function keyToLabel(label) {
+    // hehe
+    let /* pacman */ mvc = MAP[label];
+    if (mvc == undefined) {
+        return label
+            .split("_")
+            .map(s => s[0].toUpperCase() + s.slice(1))
+            .join(" ");
+    }
+    return mvc;
+}
 export function stored_token() {
     return localStorage.getItem("draaft.token");
 }
@@ -28,8 +41,11 @@ export let UUID;
 export function set_uuid(s) {
     UUID = s;
 }
+export let onlogin = new Array();
 let AUDIO_CACHE = new Map();
 export function play_audio(k) {
+    if (CONFIG.disable_audio.get() === true)
+        return;
     console.log(`Playing audio: ${k}`);
     AUDIO_CACHE.get(k).currentTime = 0;
     AUDIO_CACHE.get(k).play();
