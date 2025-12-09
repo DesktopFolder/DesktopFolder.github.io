@@ -160,6 +160,7 @@ if (LOCAL_TESTING) {
     (window as any).download_zip = downloadZip;
     (window as any).download_wgo = downloadWorldgen;
 }
+(window as any).debugDownloadWorldGenSettings = downloadWorldgen;
 
 function showMenu(auth: string) {
     // Show just our page.

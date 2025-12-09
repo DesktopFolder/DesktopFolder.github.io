@@ -133,6 +133,7 @@ if (LOCAL_TESTING) {
     window.download_zip = downloadZip;
     window.download_wgo = downloadWorldgen;
 }
+window.debugDownloadWorldGenSettings = downloadWorldgen;
 function showMenu(auth) {
     // Show just our page.
     displayOnlyPage("menu-page");
