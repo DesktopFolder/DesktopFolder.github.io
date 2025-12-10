@@ -179,6 +179,10 @@ function loginSuccess(auth: string) {
     // First, start to fade out the page.
     hideAllPages();
 
+    // Don't forget to save the token, I guess.
+    // SAVE IT BEFORE CALLING THE ONLOGIN CALLBACKS? HELLO?
+    set_token(auth);
+
     // fire all our onlogin callbacks
     for (const p of onlogin) {
         p();
@@ -186,9 +190,6 @@ function loginSuccess(auth: string) {
 
     // Then, add a timeout to show our menu page.
     const menuShowTimeout = window.setTimeout(() => showMenu(auth), 500);
-
-    // Don't forget to save the token, I guess.
-    set_token(auth);
 
     // Then, "race the beam" to get the user information.
     fetch(resolveUrl(API_URI, "/user"), {
