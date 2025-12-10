@@ -114,14 +114,15 @@ Backlog:
 <dialog id="loading-credits" closedby="none">
     <div id="credits-page">
     <img src="/draaft-logo.png" class="logo">
-    <span class="loading-text">loAAding...</span>
+    <span class="loading-text" id="credits-title">loAAding...</span>
     <span class="subtitle-text">drAAft is a competitive AA project by PacManMVC and DesktopFolder</span>
     <!--<span class="thanks">with thanks to</span>-->
     <div class="credits-container">
-        <div><span>me_nx</span><span>Authentication flow, mod improvements, general technical support, seedfinding</span></div>
+        <div><span>me_nx</span><span>Authentication flow, mod development, world-importer developer, general technical support, seedfinding</span></div>
         <div><span>memerson</span><span>Mod development, in-game room display, general technical support, seedfinding</span></div>
         <div><span>Matsenuc</span><span>Enchanting the login bucket</span></div>
-        <div><span>DesktopFolder</span><span>Web design and development</span></div>
+        <div><span>Gregor0410</span><span>Providing source code for limiting inventory slots</span></div>
+        <div><span>DesktopFolder</span><span>Web design and development, mod development</span></div>
         <div><span>PacManMVC</span><span>Mod development, design</span></div>
     </div>
     <span>with additional thanks to totorewa, crazysmc, and all others who gave advice during development</span>
