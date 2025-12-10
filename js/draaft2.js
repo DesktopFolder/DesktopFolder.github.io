@@ -1,7 +1,7 @@
 import { Member } from "./draaft2/member.js";
 import { WS_URI, API_URI, LOCAL_TESTING, apiRequest, resolveUrl } from "./draaft2/request.js";
 import { setupSettings } from "./draaft2/settings.js";
-import { IS_ADMIN, UUID, set_room_config, set_draft_info, UpdatingText, fullPageNotification, reloadNotification, set_admin, set_token, set_uuid, stored_token, annoy_user_lol, displayOnlyPage, hideAllPages, cache_audio, play_audio, PLAYER_SET, onlogin, } from "./draaft2/util.js";
+import { IS_ADMIN, UUID, set_room_config, set_draft_info, UpdatingText, fullPageNotification, reloadNotification, set_admin, set_token, set_uuid, stored_token, annoy_user_lol, displayOnlyPage, hideAllPages, cache_audio, play_audio, PLAYER_SET, onlogin } from "./draaft2/util.js";
 import { fetchData, startDrafting, handleDraftpick, downloadZip, downloadWorldgen, draft_disconnect_player } from "./draaft2/draft.js";
 import { addRoomConfig, configureRoom } from "./draaft2/room.js";
 var API_WS = null;
@@ -252,7 +252,7 @@ function setupRoomPage(code, members) {
         play_audio("normal-click");
         navigator.clipboard.writeText(code);
         copybutton.innerText = "copied";
-        setTimeout(() => copybutton.innerText = "copy code", 3000);
+        setTimeout(() => (copybutton.innerText = "copy code"), 3000);
     };
 }
 function menuJoinRoom(rid) {
@@ -358,7 +358,12 @@ function setupOnClick() {
 function main() {
     console.log("Launching drAAft 2 web client...");
     // non-blocking, probably :)
-    fetchData();
+    // we can't do this until we're logged in lol
+    onlogin.push(() => {
+        return fetchData();
+    });
+    // also adds onlogin things
+    setupSettings();
     if (LOCAL_TESTING) {
         console.log(`Local testing enabled. Backend URI: ${API_URI}`);
         addEventListener("keyup", event => {
@@ -423,7 +428,6 @@ function main() {
     document.getElementById("login-page").classList.add("visible");
     setupLazySecret(document.getElementById("menu-input-roomid"));
     setupOnClick();
-    setupSettings();
     cache_audio("normal-click", "/assets/draaft/sounds/click_stereo.ogg").volume = 0.4;
     cache_audio("low-sound", "/assets/draaft/sounds/note_block.ogg").volume = 0.6;
     cache_audio("your-turn", "/assets/draaft/sounds/Successful_hit.ogg").volume = 0.5;

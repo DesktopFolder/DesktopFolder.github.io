@@ -20,9 +20,16 @@ import {
     cache_audio,
     play_audio,
     PLAYER_SET,
-    onlogin,
+    onlogin
 } from "./draaft2/util.js";
-import {fetchData, startDrafting, handleDraftpick, downloadZip, downloadWorldgen, draft_disconnect_player} from "./draaft2/draft.js";
+import {
+    fetchData,
+    startDrafting,
+    handleDraftpick,
+    downloadZip,
+    downloadWorldgen,
+    draft_disconnect_player
+} from "./draaft2/draft.js";
 import {addRoomConfig, configureRoom} from "./draaft2/room.js";
 
 var API_WS: WebSocket | null = null;
@@ -299,8 +306,8 @@ function setupRoomPage(code: string, members) {
         play_audio("normal-click");
         navigator.clipboard.writeText(code);
         copybutton.innerText = "copied";
-        setTimeout(() => copybutton.innerText = "copy code", 3000);
-    }
+        setTimeout(() => (copybutton.innerText = "copy code"), 3000);
+    };
 }
 
 function menuJoinRoom(rid?: string) {
@@ -372,8 +379,7 @@ function setupOnClick() {
                 play_audio("normal-click");
                 (<HTMLDialogElement>document.getElementById("user-settings-dialog")).showModal();
             };
-        }
-        else {
+        } else {
             console.warn(`${cb.id} is not a button!`);
         }
     }
@@ -386,13 +392,11 @@ function setupOnClick() {
                 play_audio("normal-click");
                 if (IS_ADMIN) {
                     (<HTMLDialogElement>document.getElementById("confirm-room-destroy-admin")).showModal();
-                }
-                else {
+                } else {
                     (<HTMLDialogElement>document.getElementById("confirm-room-destroy-user")).showModal();
                 }
             };
-        }
-        else {
+        } else {
             console.warn(`${cb.id} is not a button!`);
         }
     }
@@ -419,7 +423,12 @@ function main() {
     console.log("Launching drAAft 2 web client...");
 
     // non-blocking, probably :)
-    fetchData();
+    // we can't do this until we're logged in lol
+    onlogin.push(() => {
+        return fetchData();
+    });
+    // also adds onlogin things
+    setupSettings();
 
     if (LOCAL_TESTING) {
         console.log(`Local testing enabled. Backend URI: ${API_URI}`);
@@ -455,9 +464,12 @@ function main() {
                 const ae = document.activeElement;
                 if (ae.classList.contains("standard-ui")) return;
             }
-            const hde = (<HTMLDialogElement>document.getElementById("user-settings-dialog"));
-            if (hde.open) { hde.close(); }
-            else { hde.showModal(); }
+            const hde = <HTMLDialogElement>document.getElementById("user-settings-dialog");
+            if (hde.open) {
+                hde.close();
+            } else {
+                hde.showModal();
+            }
         }
     });
 
@@ -483,7 +495,6 @@ function main() {
 
     setupLazySecret(<HTMLInputElement>document.getElementById("menu-input-roomid"));
     setupOnClick();
-    setupSettings();
 
     cache_audio("normal-click", "/assets/draaft/sounds/click_stereo.ogg").volume = 0.4;
     cache_audio("low-sound", "/assets/draaft/sounds/note_block.ogg").volume = 0.6;

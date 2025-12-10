@@ -99,6 +99,8 @@ function setConfig(type, lAAbel, lAAbelInput, settingsObject) {
                 setConfigValue(type, lAAbelInput, v);
                 settingsObject.set(v);
             }
+        }).catch(() => {
+            console.error("Could not contact server at /usersettings!");
         }));
     }
 }

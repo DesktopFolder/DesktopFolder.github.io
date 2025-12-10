@@ -1,5 +1,5 @@
 import { Member } from "./member.js";
-import { apiRequest, LOCAL_TESTING } from "./request.js";
+import { apiRequest, LOCAL_TESTING, requiredJsonGETRequest } from "./request.js";
 import { displayOnlyPage, fullPageNotification, play_audio, removeAllPages, ROOM_CONFIG, STEVE, UUID, set_draft_info, IS_PLAYER } from "./util.js";
 let PICKS_PER_POOL = 0;
 let MAX_PICKS = 0;
@@ -284,7 +284,8 @@ export function handleDraftpick(e) {
 let SELECTED_GAMBITS = 0;
 function displayDraftables(p) {
     if (DRAFTABLES === undefined) {
-        setTimeout(displayDraftables, 200);
+        console.log("Do not have draftables yet. Calling back to displayDraftables in 500ms.");
+        setTimeout(() => { displayDraftables(p); }, 500);
         return;
     }
     let pools = DRAFTABLES[0];
@@ -364,7 +365,7 @@ function displayDraftables(p) {
                     play_audio("normal-click");
                     apiRequest(`draft/pick?key=${pk.key}`).then(_ => {
                         setAsPicked(pk.key, UUID, true);
-                    });
+                    }).catch(() => `draft/pick?key=${pk.key} failed`);
                 };
                 let picker = document.createElement("img");
                 picker.classList.add("draft-picker-image");
@@ -530,6 +531,7 @@ function displayDraftables(p) {
             DRAFT_ALLOWED = true;
         }
         // FULLY LOADED!
+        console.log("Successfully loaded the draft. Fading out credits.");
         setTimeout(() => {
             document.getElementById("loading-credits").classList.add("fade");
             displayOnlyPage("draft-page");
@@ -541,9 +543,7 @@ function displayDraftables(p) {
 }
 export let DRAFTABLES = undefined;
 export function fetchData() {
-    apiRequest("draft/draftables", undefined, "GET")
-        .then(resp => resp.json())
-        .then(async (json) => {
+    return requiredJsonGETRequest("draft/draftables", (json) => {
         console.log("Successfully downloaded draftables.");
         if (LOCAL_TESTING) {
             console.log(json);

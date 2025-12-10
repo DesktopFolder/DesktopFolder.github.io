@@ -105,7 +105,9 @@ function setConfig(type: string, lAAbel: string, lAAbelInput: any, settingsObjec
                              settingsObject.set(v);
                          }
                      }
-        ));
+        ).catch(() => {
+            console.error("Could not contact server at /usersettings!");
+        }));
     }
 }
 
