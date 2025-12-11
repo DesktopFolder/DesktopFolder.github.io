@@ -113,7 +113,7 @@ Backlog:
 </dialog>
 
 <!-- https://gist.github.com/wtho/bcc6e1edd883429b85d081e866607533 -->
-<dialog id="loading-credits" closedby="none">
+<dialog id="loading-credits" closedby="none" open>
     <div id="credits-page">
     <img src="/draaft-logo.png" class="logo">
     <span class="loading-text" id="credits-title">loAAding...</span>

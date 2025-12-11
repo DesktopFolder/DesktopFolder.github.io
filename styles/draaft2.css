@@ -162,6 +162,8 @@ p.generic-welcome-text {
     align-items: center;
 
     padding: 10%;
+    padding-top: 5%;
+    padding-bottom: 3rem;
     overflow: auto;
 }
 
