@@ -106,7 +106,7 @@ button, .as-button, .standard-ui {
     background-color: rgba(0, 0, 0, 0.5);
     outline: 2px solid rgba(255, 255, 255, 0.8);
     color: white !important;
-    font-family: Minecraftia;
+    font-family: inherit;
     font-size: 24px;
     padding: 0.5em;
 }
@@ -279,8 +279,9 @@ p.generic-welcome-text {
 div.floating-footer {
     position: fixed;
     bottom: 4px;
-    width: 100%;
+    width: auto; /* WARNING: Don't mess with this. otherwise z-index issues with buttons. */
     text-align: center;
+    z-index: 1;
 
     font-size: 1rem;
     color: white;
@@ -346,7 +347,7 @@ div.helper-buttons {
 }
 
 div.helper-button-row {
-    width: min(100vw, 500px);
+    width: min(100vw, 600px);
 
     display: flex;
     flex-direction: row;
@@ -497,7 +498,7 @@ div#room-page-header {
     background-color: rgba(0, 0, 0, 0.6);
     outline: 2px solid rgba(255, 255, 255, 0.8);
     color: white !important;
-    font-family: Minecraftia;
+    font-family: inherit;
     font-size: 24px;
     padding: 0.3em;
 
@@ -559,7 +560,7 @@ div#room-page-gutter {
     background-color: rgba(0, 0, 0, 0.6);
     outline: 2px solid rgba(255, 255, 255, 0.8);
     color: white !important;
-    font-family: Minecraftia;
+    font-family: inherit;
     font-size: 24px;
     padding: 0.3em;
 
@@ -680,7 +681,7 @@ div#room-page-gutter #room-copy-link {
     width: 100%;
     display: flex;
     flex-direction: column;
-    font-family: Minecraftia;
+    font-family: inherit;
     font-size: 24px;
     padding: 0.3em;
 
@@ -762,7 +763,7 @@ div#draft-page-header {
     background-color: rgba(0, 0, 0, 0.6);
     outline: 2px solid rgba(255, 255, 255, 0.8);
     color: white !important;
-    font-family: Minecraftia;
+    font-family: inherit;
     font-size: 24px;
     padding: 0.3em;
 
@@ -892,7 +893,7 @@ div#draft-page-header .next-players {
     background-color: rgba(0, 0, 0, 0.8);
     outline: 2px solid rgba(255, 255, 255, 0.9);
     color: white !important;
-    font-family: Minecraftia;
+    font-family: inherit;
     font-size: 16px;
     padding: 0.5em;
     padding-top: 0;
@@ -938,7 +939,7 @@ div#draft-page-header .next-players {
     background-color: rgba(0, 0, 0, 0.5);
     outline: 2px solid rgba(255, 255, 255, 0.8);
     color: white !important;
-    font-family: Minecraftia;
+    font-family: inherit;
     font-size: 24px;
     padding: 0.0em;
     
@@ -1219,5 +1220,65 @@ img.button-inline {
 }
 
 #user-settings-wrapper {
-    max-width: 32rem;
+    max-width: 48rem;
+}
+
+.nice-autoscroll {
+    overflow: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.7);
+}
+
+#documentation-dialog {
+    background-color: rgba(0,0,0,0.9);
+    width: 95%;
+    height: 95%;
+    z-index: 2;
+}
+
+.documentation-title {
+    font-size: 32px;
+}
+
+.documentation-line {
+    font-size: 24px;
+    width: 70%;
+}
+
+.doc-pool-title {
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.docs-pick-div {
+    outline: 1px solid rgba(255, 255, 255, 0.8);
+    padding-right: 1rem;
+    margin-bottom: 1rem;
+}
+
+span.docs-pick-div > div.full-flex-down {
+    align-items: flex-end;
+}
+span.docs-pick-div > span.full-flex-down {
+    align-items: flex-end;
+}
+
+div#documentation-gambits > span.docs-pick-div > p {
+    margin-left: 1rem;
+}
+
+span.docs-pick-div > div.draft-image-container {
+    margin-right: 2rem;
+}
+
+span.docs-pick-div > div.full-flex-down > p {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    text-align: right;
+}
+
+span.docs-pick-div > span.full-flex-down > p {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    text-align: right;
 }

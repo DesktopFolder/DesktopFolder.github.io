@@ -31,6 +31,13 @@
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
     <link rel="manifest" href="/site.webmanifest">
 
+
+    
+<!-- Atkinson Hyperlegible -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+
 </head>
 <a href="/" id="home-button" style="position:absolute;left:7px;top:12px;margin:0;font-size:60%;line-height:0;">home</a>
 
@@ -61,7 +68,7 @@
     <a class="as-button basic-shadow login-main-button" href="https://github.com/memerson12/drAAft/releases">download</a>
 
     <!-- TODO!! -->
-    <a class="as-button basic-shadow login-main-button" href="/draaft/documentation.html" target="_blank">get started</a>
+    <a class="learn-to-play as-button basic-shadow login-main-button" href="#">learn to play</a>
 
     <a class="as-button basic-shadow login-main-button" href="https://discord.gg/37Q3KnbeQQ" target="_blank">discord</a>
 
@@ -91,6 +98,7 @@
             <button id="menu-roomid-join" class="basic-shadow">join</button>
         </div>
         <button class="basic-shadow" id="menu-create-room">create a room</button>
+        <button class="learn-to-play basic-shadow" style="width: 100%;margin-top:24px;">learn to play</a>
     </div>
 
     <!--
@@ -154,7 +162,8 @@ Backlog:
         <div><span>PacManMVC</span><span>Mod development, design</span></div>
     </div>
     <span>with additional thanks to totorewa, crazysmc, and all others who gave advice during development</span>
-    <span>thank you for playing and testing. we hope you enjoy</span>
+    <span>and to all beta testers, especially Snakezy</span>
+    <span>thank you for playing. we hope you enjoy</span>
     </div>
 </dialog>
 
@@ -259,6 +268,41 @@ Backlog:
     <button id="game-page-exit" class="ingame-exit-button">leave</button>
     <button class="settings-button">[s]ettings</button>
 </div>
+
+<dialog class="basic-modal-dialog nice-autoscroll" id="documentation-dialog" closedby="any">
+
+<div class="full-flex-down">
+<div id="documentation-wrapper" class="full-flex-down">
+    <p class="documentation-title">How to Play drAAft</p>
+    <p class="documentation-line">
+    drAAft is a competitive All Advancements mod for 1-4 players. In a game of drAAft, each player uses the <b>web drafting tool</b> (that's where you are right now!) to draft bonuses from a set of pooled choices. If gambits are enabled, players can also optionally select from a pool of risky bonuses with downsides. <b>These are not actual draft picks</b>, and can be selected or deselected freely until the draft ends, at which point choices are locked in.
+    </p>
+    <p class="documentation-line">
+    Playing drAAft requires a mod, as well as a datapack (<b>until automated datapack downloading is implemented</b>). For mod setup instructions, please see <a href="/draaft/documentation.html" target="_blank">the basic setup page</a>.
+    </p>
+    <p class="documentation-line">
+    There are 6 pools of picks. Each player can pick infinitely if it is a single-player draft, can take 2 picks per pool if it is a 2-player draft, and can take 1 pick per pool in 3- and 4-player drafts.
+    </p>
+    <p class="documentation-line">
+    Initial pick order is random for the first round, and snake order for following rounds. For example, in a draft with Snakezy, Feinberg, and CroPro, the initial random draft order could be Feinberg > CroPro > Snakezy. In this case, the 4th pick would be Snakezy, then CroPro, and then Feinberg would pick twice, and then CroPro would pick again, and so forth.
+    </p>
+    <p class="documentation-line">
+    The available picks are as follows (gambits are listed after):
+    </p>
+
+    <div id="documentation-picks">
+    </div>
+
+    <p class="documentation-line">
+    Additionally, the gambits that are available are as follows. Note that <b>gambits can be selected at any time, except after the draft finishes</b>, and that they do not count as draft picks.
+    </p>
+
+    <div id="documentation-gambits">
+    </div>
+</div>
+</div>
+
+</dialog>
 
 <script>var exports = {"__esModule": true};</script>
 <script src="/js/draaft2.js" type="module"></script><!--All of our actual logic resides here.-->

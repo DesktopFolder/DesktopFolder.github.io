@@ -2,7 +2,7 @@ import { Member } from "./draaft2/member.js";
 import { WS_URI, API_URI, LOCAL_TESTING, apiRequest, resolveUrl } from "./draaft2/request.js";
 import { setupSettings } from "./draaft2/settings.js";
 import { IS_ADMIN, UUID, set_room_config, set_draft_info, UpdatingText, fullPageNotification, reloadNotification, set_admin, set_token, set_uuid, stored_token, annoy_user_lol, displayOnlyPage, hideAllPages, cache_audio, play_audio, PLAYER_SET, onlogin } from "./draaft2/util.js";
-import { fetchData, startDrafting, handleDraftpick, downloadZip, downloadWorldgen, draft_disconnect_player } from "./draaft2/draft.js";
+import { fetchData, startDrafting, handleDraftpick, downloadZip, downloadWorldgen, draft_disconnect_player, fetchPublicData } from "./draaft2/draft.js";
 import { addRoomConfig, configureRoom } from "./draaft2/room.js";
 var API_WS = null;
 /**
@@ -365,6 +365,7 @@ function main() {
     });
     // also adds onlogin things
     setupSettings();
+    fetchPublicData();
     if (LOCAL_TESTING) {
         console.log(`Local testing enabled. Backend URI: ${API_URI}`);
         addEventListener("keyup", event => {
@@ -409,7 +410,16 @@ function main() {
                 hde.showModal();
             }
         }
+        else if (event.key == "Escape") {
+            const docDialog = document.getElementById("documentation-dialog");
+            if (docDialog.open) {
+                docDialog.close();
+            }
+        }
     });
+    for (const e of document.getElementsByClassName("learn-to-play")) {
+        e.onclick = () => { document.getElementById("documentation-dialog").showModal(); };
+    }
     const url = new URL(window.location.href);
     const urlParams = url.searchParams;
     const authPort = urlParams.get("auth_port");

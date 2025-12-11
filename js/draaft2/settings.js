@@ -11,7 +11,12 @@ export let CONFIG = {
         networked: false,
         default: false,
         type: "button",
-    }
+    },
+    use_hyperlegible_font: {
+        networked: false,
+        default: false,
+        type: "button",
+    },
 };
 export function stored_token() {
     return localStorage.getItem("draaft.token");
@@ -122,6 +127,14 @@ function mAAkeConfig(lAAbel, vAAlue, type, settingsObject) {
     div.appendChild(lAAbelInput);
     loc.appendChild(div);
 }
+function updateFont() {
+    if (CONFIG.use_hyperlegible_font.get()) {
+        document.body.style.fontFamily = "Atkinson Hyperlegible";
+    }
+    else {
+        document.body.style.fontFamily = "Minecraftia";
+    }
+}
 export function setupSettings() {
     for (const k of Object.keys(CONFIG)) {
         // Set up the config getter for outside usage
@@ -133,4 +146,9 @@ export function setupSettings() {
         };
         mAAkeConfig(k, CONFIG[k].get(), CONFIG[k].type, CONFIG[k]);
     }
+    const font_button = document.getElementById("settings-use_hyperlegible_font");
+    font_button.addEventListener("click", () => {
+        updateFont();
+    });
+    updateFont();
 }

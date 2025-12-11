@@ -28,7 +28,8 @@ import {
     handleDraftpick,
     downloadZip,
     downloadWorldgen,
-    draft_disconnect_player
+    draft_disconnect_player,
+    fetchPublicData
 } from "./draaft2/draft.js";
 import {addRoomConfig, configureRoom} from "./draaft2/room.js";
 
@@ -431,6 +432,8 @@ function main() {
     // also adds onlogin things
     setupSettings();
 
+    fetchPublicData();
+
     if (LOCAL_TESTING) {
         console.log(`Local testing enabled. Backend URI: ${API_URI}`);
 
@@ -471,8 +474,17 @@ function main() {
             } else {
                 hde.showModal();
             }
+        } else if (event.key == "Escape") {
+            const docDialog = <HTMLDialogElement>document.getElementById("documentation-dialog");
+            if (docDialog.open) {
+                docDialog.close();
+            }
         }
     });
+
+    for (const e of document.getElementsByClassName("learn-to-play")) {
+        (<HTMLAnchorElement>e).onclick = () => { (<HTMLDialogElement>document.getElementById("documentation-dialog")).showModal(); };
+    }
 
     const url = new URL(window.location.href);
     const urlParams = url.searchParams;

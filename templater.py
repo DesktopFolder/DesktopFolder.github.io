@@ -30,6 +30,12 @@ FAVICON = """
     <link rel="manifest" href="/site.webmanifest">
 """
 
+ATKINSON = """
+<!-- Atkinson Hyperlegible -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+"""
 
 def css(l):
     if len(l) == 0:
@@ -76,18 +82,28 @@ def gen_file(w: dhtml.Website, p: dhtml.Page, verbose=noop):
         "favicon": FAVICON,
         "show-card": "false",
         "css-extras": "",
+        "hyperlegible": "",
         "meta": "",
     }
     after = {
         "css-extras": css,
     }
+    booleans = {
+        "hyperlegible": ATKINSON
+    }
     omerge(defaults, p.meta)
     for b in bools:
         if b in defaults:
             defaults[b] = defaults[b].lower() == "true"
-    for d in defaults:
-        if d in after:
+    for d in defaults: # for each key
+        if d in after: # if it's in after, set default[key] = the result of calling a function on the value
             defaults[d] = after[d](defaults[d])
+        elif d in booleans:
+            if defaults[d].lower().strip() == 'true':
+                defaults[d] = booleans[d] 
+            else:
+                defaults[d] = ''
+
 
     page_content = oh_yes(oh_no(p.data).format(**defaults))
     if 'timestamp_url' in defaults:

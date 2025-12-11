@@ -625,6 +625,105 @@ function displayDraftables(p: Promise<any>) {
     });
 }
 
+function setupHelpPage(pools, picks, gambits) {
+    console.log("Setting up help page.");
+    for (const pool of pools) {
+        let pool_name = pool.name.full_name;
+
+        // update this asap
+
+        let pool_title = document.createElement("span");
+        pool_title.classList.add("pool-title", "doc-pool-title");
+        pool_title.innerText = `Draft Pool: ${pool_name}`;
+        document.getElementById("documentation-picks").appendChild(pool_title);
+
+        for (const k of pool.contains) {
+            let pk = picks[k];
+
+            let pickd = document.createElement("span");
+
+            let imgdiv = document.createElement("div");
+            imgdiv.classList.add("draft-image-container");
+
+            // the innermost image
+            let ic = document.createElement("img");
+            ic.src = `/assets/draaft/picks/${pk.image_uri}`;
+            ic.classList.add("draft-pick-image");
+
+            if (pk.advancement != null) {
+                // we will append a div instead of an image haha
+                let ctnr = document.createElement("div");
+                ic.classList.add("is-advancement");
+                ctnr.classList.add("draft-image-advancement");
+                ctnr.id = `draft-advancement-bg-${pk.key}`;
+                ctnr.style.backgroundImage = `url(/assets/draaft/picks/${pk.advancement})`;
+                imgdiv.classList.add("is-advancement");
+
+                ctnr.appendChild(ic);
+                imgdiv.appendChild(ctnr);
+            }
+            else {
+                imgdiv.appendChild(ic);
+            }
+
+            pickd.appendChild(imgdiv);
+            pickd.classList.add("full-flex-right", "docs-pick-div");
+
+            let desc = document.createElement("div");
+            for (const ptx of picks[k].description.split("\n")) {
+                let ptxp = document.createElement("p");
+                ptxp.innerText = ptx;
+                desc.appendChild(ptxp);
+            }
+            desc.classList.add("full-flex-down");
+            pickd.appendChild(desc);
+
+            document.getElementById("documentation-picks").appendChild(pickd);
+        }
+    }
+    const gambit_div = document.getElementById("documentation-gambits");
+
+        for (const k of Object.keys(gambits)) {
+            let v = gambits[k];
+
+            let gambitname = document.createElement("p");
+            gambitname.innerText = v.name;
+
+            let gambitd = document.createElement("span");
+            gambitd.appendChild(gambitname);
+            gambitd.classList.add("full-flex-right", "docs-pick-div");
+            
+            let desc = document.createElement("span");
+            desc.classList.add("full-flex-down");
+            for (const d of v.description.split("/")) {
+                const p = document.createElement("p");
+                p.innerText = d;
+                desc.appendChild(p);
+            }
+
+            gambitd.appendChild(desc);
+            
+            gambit_div.appendChild(gambitd);
+        }
+}
+
+// TODO - can this just be draftables?
+export let PUBLIC_DRAFTABLES = undefined;
+export function fetchPublicData(): Promise<void> {
+    return requiredJsonGETRequest("draft/external/draftables", (json) => {
+            console.log("Successfully downloaded external draftables.");
+            if (LOCAL_TESTING) {
+                console.log(json);
+            }
+            PUBLIC_DRAFTABLES = json;
+            try {
+                setupHelpPage(json[0], json[1], json[2])
+            } catch (e) {
+                console.error(e);
+            }
+        });
+}
+
 export let DRAFTABLES = undefined;
 export function fetchData(): Promise<void> {
     return requiredJsonGETRequest("draft/draftables", (json) => {

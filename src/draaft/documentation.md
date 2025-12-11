@@ -8,7 +8,7 @@ To download the drAAft mod, get the latest jar file from [the Releases page](htt
 
 ![](/assets/draaft/mod-download.jpg)
 
-**Todo: There may be other dependencies. For now, the best approach is to just [use ModCheck](https://github.com/tildejustin/modcheck/releases) to ensure you have all the relevant Minecraft speedrunning mods. If you're unfamiliar with Minecraft speedrunning and want to play drAAft, you should probably uncheck the mod "StandardSettings". All other mods should be fine.**
+**Todo: There may be other dependencies. For now, the best approach is to just [use ModCheck](https://github.com/tildejustin/modcheck/releases) to ensure you have all the relevant Minecraft speedrunning mods, EXCEPT SEEDQUEUE. If you're unfamiliar with Minecraft speedrunning and want to play drAAft, you should probably also uncheck the mod "StandardSettings". All other mods should be fine. NOT SEEDQUEUE THOUGH :)**
 
 Once you have installed all required mods and launched the game, you can log in to drAAft by clicking on the enchanted golden bucket in the main menu:
 
