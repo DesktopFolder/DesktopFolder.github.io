@@ -504,6 +504,9 @@ function main() {
     const otp = urlParams.get("otp");
     if (otp != null) {
         urlParams.delete("otp");
+        const newQuery = urlParams.toString();
+        url.search = newQuery;
+        window.history.replaceState({}, "", url);
         // get the token!
         otpLoginFlow(otp);
     }
