@@ -399,7 +399,7 @@ function main() {
         if (event.key == "s") {
             if (document.activeElement instanceof HTMLInputElement) {
                 const ae = document.activeElement;
-                if (ae.classList.contains("standard-ui"))
+                if (ae.classList.contains("standard-ui") && !(ae instanceof HTMLButtonElement || (ae instanceof HTMLInputElement && ae.type == "button")))
                     return;
             }
             const hde = document.getElementById("user-settings-dialog");
