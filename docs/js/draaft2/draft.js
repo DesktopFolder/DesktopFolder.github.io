@@ -395,7 +395,7 @@ function displayDraftables(p) {
     /* GAMBITS! WOOHOO */
     const gambit_title = document.createElement("span");
     const NUM_GAMBITS = Object.keys(gambits).length;
-    const MAX_GAMBITS = ROOM_CONFIG.max_gambits;
+    const MAX_GAMBITS = (ROOM_CONFIG.max_gambits === undefined || ROOM_CONFIG.max_gambits === '') ? 10000 : parseInt(ROOM_CONFIG.max_gambits);
     const update_gambits = (num) => {
         if (NUM_GAMBITS > MAX_GAMBITS) {
             gambit_title.innerText = `Gambits (${num} / ${MAX_GAMBITS})`;
