@@ -17,6 +17,13 @@ export function request_headers() {
     };
 }
 
+export function externalAPIRequest(endpoint: string, body?: BodyInit, method = "GET") {
+    return fetch(resolveUrl(API_URI, endpoint), {
+        method: method,
+        body: body
+    });
+}
+
 export function apiRequest(endpoint: string, body?: BodyInit, method = "POST") {
     return fetch(resolveUrl(API_URI, endpoint), {
         headers: request_headers(),

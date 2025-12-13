@@ -1,5 +1,5 @@
 import {Member} from "./draaft2/member.js";
-import {WS_URI, API_URI, LOCAL_TESTING, apiRequest, resolveUrl} from "./draaft2/request.js";
+import {WS_URI, API_URI, LOCAL_TESTING, apiRequest, resolveUrl, externalAPIRequest} from "./draaft2/request.js";
 import {setupSettings} from "./draaft2/settings.js";
 import {
     IS_ADMIN,
@@ -259,6 +259,18 @@ async function loginFlow(port: number) {
     }
 }
 
+async function otpLoginFlow(otp: string) {
+    console.log("Attempting OTP login...");
+
+    const resp = await externalAPIRequest(`otplogin?otp=${otp}`);
+    
+    console.assert(resp.status == 200);
+
+    const token = (await resp.text()).trim();
+
+    return await testAuthToken(token)
+}
+
 function showRoom(code: string) {
     displayOnlyPage("room-page");
     console.log("- Showing created room");
@@ -489,12 +501,20 @@ function main() {
     const url = new URL(window.location.href);
     const urlParams = url.searchParams;
     const authPort = urlParams.get("auth_port");
-    if (authPort !== null) {
+    const otp = urlParams.get("otp");
+    if (otp != null) {
+        urlParams.delete("otp");
+        // get the token!
+        otpLoginFlow(otp);
+    }
+    else if (authPort !== null) {
         // Remove the token param from the URL
         urlParams.delete("auth_port");
         const newQuery = urlParams.toString();
         url.search = newQuery;
         window.history.replaceState({}, "", url);
+        // TODO. should we return here? no, right?
+        // but then why do we test auth token twice?
         loginFlow(Number.parseInt(authPort));
     }
 

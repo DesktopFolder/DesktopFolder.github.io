@@ -9,6 +9,12 @@ export function request_headers() {
         "Content-Type": "application/json"
     };
 }
+export function externalAPIRequest(endpoint, body, method = "GET") {
+    return fetch(resolveUrl(API_URI, endpoint), {
+        method: method,
+        body: body
+    });
+}
 export function apiRequest(endpoint, body, method = "POST") {
     return fetch(resolveUrl(API_URI, endpoint), {
         headers: request_headers(),

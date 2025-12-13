@@ -1,5 +1,5 @@
 import { Member } from "./draaft2/member.js";
-import { WS_URI, API_URI, LOCAL_TESTING, apiRequest, resolveUrl } from "./draaft2/request.js";
+import { WS_URI, API_URI, LOCAL_TESTING, apiRequest, resolveUrl, externalAPIRequest } from "./draaft2/request.js";
 import { setupSettings } from "./draaft2/settings.js";
 import { IS_ADMIN, UUID, set_room_config, set_draft_info, UpdatingText, fullPageNotification, reloadNotification, set_admin, set_token, set_uuid, stored_token, annoy_user_lol, displayOnlyPage, hideAllPages, cache_audio, play_audio, PLAYER_SET, onlogin } from "./draaft2/util.js";
 import { fetchData, startDrafting, handleDraftpick, downloadZip, downloadWorldgen, draft_disconnect_player, fetchPublicData } from "./draaft2/draft.js";
@@ -212,6 +212,13 @@ async function loginFlow(port) {
         console.log(`Bad response from local fetch: ${response.body}`);
     }
 }
+async function otpLoginFlow(otp) {
+    console.log("Attempting OTP login...");
+    const resp = await externalAPIRequest(`otplogin?otp=${otp}`);
+    console.assert(resp.status == 200);
+    const token = (await resp.text()).trim();
+    return await testAuthToken(token);
+}
 function showRoom(code) {
     displayOnlyPage("room-page");
     console.log("- Showing created room");
@@ -423,12 +430,20 @@ function main() {
     const url = new URL(window.location.href);
     const urlParams = url.searchParams;
     const authPort = urlParams.get("auth_port");
-    if (authPort !== null) {
+    const otp = urlParams.get("otp");
+    if (otp != null) {
+        urlParams.delete("otp");
+        // get the token!
+        otpLoginFlow(otp);
+    }
+    else if (authPort !== null) {
         // Remove the token param from the URL
         urlParams.delete("auth_port");
         const newQuery = urlParams.toString();
         url.search = newQuery;
         window.history.replaceState({}, "", url);
+        // TODO. should we return here? no, right?
+        // but then why do we test auth token twice?
         loginFlow(Number.parseInt(authPort));
     }
     const storageToken = localStorage.getItem("draaft.token");

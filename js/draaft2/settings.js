@@ -1,4 +1,4 @@
-import { keyToLabel, play_audio, onlogin } from "./util.js";
+import { keyToLabel, play_audio, onlogin, fullPageNotification } from "./util.js";
 import { apiRequest } from "./request.js";
 export let CONFIG = {
     pronouns: {
@@ -151,4 +151,18 @@ export function setupSettings() {
         updateFont();
     });
     updateFont();
+    const settings = document.getElementById("user-settings");
+    let button = document.createElement("input");
+    button.classList.add("standard-ui", "as-button");
+    button.type = "button";
+    button.innerText = "log out";
+    button.value = "log out";
+    button.style.margin = "5px";
+    button.onclick = () => {
+        fullPageNotification("are you sure you want to log out?", "log me out", () => {
+            localStorage.removeItem("draaft.token");
+            window.location.reload();
+        }, true);
+    };
+    settings.appendChild(button);
 }
