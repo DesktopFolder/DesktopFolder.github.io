@@ -1,7 +1,7 @@
 import {apiRequest} from "./request.js";
 import { STEVE, IS_ADMIN, UUID, play_audio } from "./util.js";
 
-const MOJANG_UUID_LOOKUP_URL = "https://api.ashcon.app/mojang/v2/user";
+// const MOJANG_UUID_LOOKUP_URL = "https://api.ashcon.app/mojang/v2/user";
 // no cors lol
 // const MOJANG_UUID_LOOKUP_URL = "https://api.minecraftservices.com/minecraft/profile/lookup";
 
@@ -33,7 +33,7 @@ export async function lookupMojangIdentifier(uuidOrUsername: string) {
                 // it's not cached, check if we're looking it up
                 if (!LOOKING_UP_CACHE.has(uuid)) {
                     // not looking it up, look it up (username -> uuid)
-                    LOOKING_UP_CACHE.set(uuid, fetch(`${MOJANG_UUID_LOOKUP_URL}/${uuid}`)
+                    LOOKING_UP_CACHE.set(uuid, apiRequest(`lookup/${uuid}`, undefined, "GET")
                                          .then(body => body.json())
                                          .then(async json => {
                                             // set both for later efficiency (don't repeat lookups)
@@ -64,7 +64,7 @@ export async function lookupMojangIdentifier(uuidOrUsername: string) {
                 // it's not cached, check if we're looking it up
                 if (!LOOKING_UP_CACHE.has(username)) {
                     // not looking it up, look it up (username -> uuid)
-                    LOOKING_UP_CACHE.set(username, fetch(`${MOJANG_UUID_LOOKUP_URL}/${username}`)
+                    LOOKING_UP_CACHE.set(username, apiRequest(`lookup/${username}`, undefined, "GET")
                                          .then(body => body.json())
                                          .then(async json => {
                                             // set both for later efficiency (don't repeat lookups)
@@ -96,7 +96,7 @@ export async function lookupMojangIdentifier(uuidOrUsername: string) {
 export async function uuidToUsername(uuid: string) {
     if (!LOOKUP_CACHE.has(uuid)) {
         if (!LOOKING_UP_CACHE.has(uuid)) {
-            LOOKING_UP_CACHE.set(uuid, fetch(`${MOJANG_UUID_LOOKUP_URL}/${uuid}`)
+            LOOKING_UP_CACHE.set(uuid, apiRequest(`lookup/${uuid}`, undefined, "GET")
                                  .then(body => body.json())
                                  .then(async json => {
                                     LOOKUP_CACHE.set(uuid, json.username);
