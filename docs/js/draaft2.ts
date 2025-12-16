@@ -67,6 +67,13 @@ function setupLazySecret(element: HTMLInputElement) {
 function handlePlayerupdate(d) {
     switch (d.action) {
         case "joined":
+            const uuid = d.uuid;
+            for (const m of ROOM_MEMBERS) {
+                if (m.uuid == uuid) {
+                    // ignore the same uuid we already have.
+                    return;
+                }
+            }
             ROOM_MEMBERS.push(
                 new Member(d.uuid)
                     .addDiv(document.getElementById("room-page-header"), true)
