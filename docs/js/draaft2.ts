@@ -29,7 +29,8 @@ import {
     downloadZip,
     downloadWorldgen,
     draft_disconnect_player,
-    fetchPublicData
+    fetchPublicData,
+    stop_drafting
 } from "./draaft2/draft.js";
 import {addRoomConfig, configureRoom} from "./draaft2/room.js";
 
@@ -114,6 +115,9 @@ function handleRoomupdate(d) {
             break;
         case "loading_complete":
             // displayIngame();
+            break;
+        case "draft_complete":
+            stop_drafting();
             break;
         default:
             console.error(`Unhandled room event: ${d.update}`);

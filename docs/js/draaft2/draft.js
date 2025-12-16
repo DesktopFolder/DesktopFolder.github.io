@@ -62,8 +62,9 @@ function stop_timer() {
     v.innerText = '0';
 }
 // do all logic for post-draft in here
-function stop_drafting() {
+export function stop_drafting() {
     console.log("Stopping drafting.");
+    DRAFT_ALLOWED = false;
     stop_timer();
     // disable gambits
     for (const g of document.getElementsByClassName("gambit-button")) {
@@ -478,6 +479,10 @@ function displayDraftables(p) {
             console.log(json);
         }
         set_draft_info(json);
+        document.getElementById("end-draft-button").onclick = () => {
+            play_audio("normal-click");
+            apiRequest("draft/finish");
+        };
         let ctr = makeLogLine();
         let starter = document.createElement("span");
         starter.innerText = `The drAAft has started. First pick: `;
@@ -527,8 +532,11 @@ function displayDraftables(p) {
             setAsPicked(pk.key, pk.player);
         }
         updateHeader(undefined, json.position, json.next_positions, true);
-        if (json.position[0] == UUID) {
+        if (json.position[0] == UUID && !json.complete) {
             DRAFT_ALLOWED = true;
+        }
+        if (json.complete) {
+            stop_drafting();
         }
         // FULLY LOADED!
         console.log("Successfully loaded the draft. Fading out credits.");

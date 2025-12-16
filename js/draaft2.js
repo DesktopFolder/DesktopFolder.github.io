@@ -2,7 +2,7 @@ import { Member } from "./draaft2/member.js";
 import { WS_URI, API_URI, LOCAL_TESTING, apiRequest, resolveUrl, externalAPIRequest } from "./draaft2/request.js";
 import { setupSettings } from "./draaft2/settings.js";
 import { IS_ADMIN, UUID, set_room_config, set_draft_info, UpdatingText, fullPageNotification, reloadNotification, set_admin, set_token, set_uuid, stored_token, annoy_user_lol, displayOnlyPage, hideAllPages, cache_audio, play_audio, PLAYER_SET, onlogin } from "./draaft2/util.js";
-import { fetchData, startDrafting, handleDraftpick, downloadZip, downloadWorldgen, draft_disconnect_player, fetchPublicData } from "./draaft2/draft.js";
+import { fetchData, startDrafting, handleDraftpick, downloadZip, downloadWorldgen, draft_disconnect_player, fetchPublicData, stop_drafting } from "./draaft2/draft.js";
 import { addRoomConfig, configureRoom } from "./draaft2/room.js";
 var API_WS = null;
 /**
@@ -79,6 +79,9 @@ function handleRoomupdate(d) {
             break;
         case "loading_complete":
             // displayIngame();
+            break;
+        case "draft_complete":
+            stop_drafting();
             break;
         default:
             console.error(`Unhandled room event: ${d.update}`);

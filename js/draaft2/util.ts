@@ -17,6 +17,23 @@ export function set_draft_info(rc: any) {
         }
         PLAYER_SET.add(p);
     }
+
+    // why is this code here?
+    // screw you. that's why.
+    // this is a joke :) haha
+
+    if (rc.players.length > 1 || document.getElementById("end-draft-button") != undefined) {
+        return; 
+    }
+
+    const h = document.getElementById("draft-page-header-container");
+    
+    let button = document.createElement("button");
+    button.classList.add("standard-ui");
+    button.id = "end-draft-button";
+    button.innerText = "finish draafting";
+
+    h.appendChild(button);
 }
 
 const MAP = { };

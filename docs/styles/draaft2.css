@@ -749,6 +749,16 @@ div#draft-page-header-container {
     box-sizing: border-box;
 
     padding: 20px;
+
+    display: flex;
+    flex-direction: row;
+    align-items: space-between;
+    flex-wrap: nowrap;
+}
+#end-draft-button {
+    height: 2.4em;
+    text-wrap: nowrap;
+    margin-left: 35px;
 }
 div#draft-page-header {
     width: 100%;
