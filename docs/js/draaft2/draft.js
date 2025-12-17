@@ -474,6 +474,7 @@ function displayDraftables(p) {
         console.log("Finished building draft pools.");
     }
     p.then(async (json) => {
+        console.log("Got current draft status. Populating all information.");
         if (LOCAL_TESTING) {
             console.log("Current draft status:");
             console.log(json);
@@ -545,7 +546,9 @@ function displayDraftables(p) {
             displayOnlyPage("draft-page");
             setTimeout(() => { document.getElementById("loading-credits").close(); }, 1000);
         }, 1000);
-    }).catch(_ => {
+    }).catch((e) => {
+        console.error("Caught error in data pull");
+        console.error(e);
         fullPageNotification("There was an error loading the in-progress draft.", "reload page", () => window.location.reload());
     });
 }
