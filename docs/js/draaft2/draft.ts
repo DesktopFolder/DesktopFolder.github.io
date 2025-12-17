@@ -547,11 +547,16 @@ function displayDraftables(p: Promise<any>) {
         }
 
         set_draft_info(json);
-
-        document.getElementById("end-draft-button").onclick = () => {
-            play_audio("normal-click");
-            apiRequest("draft/finish");
-        };
+        
+        // set up the end draft button if it exists
+        // probably stupid how this is designed. whatever.
+        let endDraaft = document.getElementById("end-draft-button");
+        if (endDraaft != undefined) {
+            endDraaft.onclick = () => {
+                play_audio("normal-click");
+                apiRequest("draft/finish");
+            };
+        }
 
         let ctr = makeLogLine();
         let starter = document.createElement("span");
