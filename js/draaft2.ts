@@ -348,6 +348,14 @@ function menuJoinRoom(rid?: string) {
             if (json.drafting === true || json.playing === true) {
                 console.log("Join room command returned that we are drafting. Fetching draft...");
 
+                if (UUID == undefined) {
+                    console.error("No UUID when checking for admin status");
+                }
+                else if (UUID == json.room.admin) {
+                    console.log("Setting that we are the room admin.");
+                    set_admin(true);
+                }
+
                 set_room_config(json.room.config);
 
                 set_draft_info(json.room.draft);

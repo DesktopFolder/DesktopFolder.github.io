@@ -6,7 +6,7 @@ const MAP = {
     spectators_get_world: "Allow Spectator World Downloads",
     enforce_timer: "Enforce Pick Timer",
     pick_time: "Seconds Per Pick",
-    gambits: "Enable Gambits"
+    gambits: "Enable Gambits",
 };
 function getLAAbel(label: string) {
     // hehe
@@ -32,6 +32,8 @@ const ENABLECONFIGS = {
     max_gambits: "number",
 
     restrict_players: "csv",
+
+    admin_starts_game: "button",
 
     // disable: doesn't do anything yet
     // countdown_timer: "number",

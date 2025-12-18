@@ -22,7 +22,12 @@ export function set_draft_info(rc: any) {
     // screw you. that's why.
     // this is a joke :) haha
 
-    if (rc.players.length > 1 || document.getElementById("end-draft-button") != undefined) {
+    // admin starts the game
+    const admin_starts = (ROOM_CONFIG != undefined && ROOM_CONFIG.admin_starts_game);
+
+    if ((rc.players.length > 1 && (!admin_starts || !IS_ADMIN))
+             || document.getElementById("end-draft-button") != undefined) {
+        console.log(`Not adding finish drafting: ${rc.players.length} > 1 && (!${admin_starts} || !${IS_ADMIN})`);
         return; 
     }
 
