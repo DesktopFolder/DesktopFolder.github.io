@@ -517,6 +517,25 @@ function main() {
         (<HTMLAnchorElement>e).onclick = () => { (<HTMLDialogElement>document.getElementById("documentation-dialog")).showModal(); };
     }
 
+    let loadingCredits = (<HTMLDialogElement>document.getElementById("loading-credits"));
+    let creditsCredits = (<HTMLDialogElement>loadingCredits.cloneNode(true));
+    document.body.appendChild(creditsCredits);
+    creditsCredits.id = "credits-credits";
+    creditsCredits.closedBy = "any";
+    let creditsTitle = (<HTMLSpanElement>creditsCredits.querySelector(".credits-title"));
+    creditsTitle.innerText = "Credits";
+
+    let openCredits = () {
+        let credits = (<HTMLDialogElement>document.getElementById("credits-credits"));
+        credits.show();
+    };
+
+    for (const e of document.getElementsByClassName("credits-opener")) {
+        (<HTMLAnchorElement>e).onclick = () => { 
+            openCredits();
+        };
+    }
+
     const url = new URL(window.location.href);
     const urlParams = url.searchParams;
     const authPort = urlParams.get("auth_port");

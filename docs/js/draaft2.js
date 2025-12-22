@@ -444,6 +444,22 @@ function main() {
     for (const e of document.getElementsByClassName("learn-to-play")) {
         e.onclick = () => { document.getElementById("documentation-dialog").showModal(); };
     }
+    let loadingCredits = document.getElementById("loading-credits");
+    let creditsCredits = loadingCredits.cloneNode(true);
+    document.body.appendChild(creditsCredits);
+    creditsCredits.id = "credits-credits";
+    creditsCredits.closedBy = "any";
+    let creditsTitle = creditsCredits.querySelector(".credits-title");
+    creditsTitle.innerText = "Credits";
+    let openCredits = () => {
+        let credits = document.getElementById("credits-credits");
+        credits.show();
+    };
+    for (const e of document.getElementsByClassName("credits-opener")) {
+        e.onclick = () => {
+            openCredits();
+        };
+    }
     const url = new URL(window.location.href);
     const urlParams = url.searchParams;
     const authPort = urlParams.get("auth_port");

@@ -42,9 +42,11 @@ hyperlegible=true
 
 <!-- FLOATING FOOTER FOR ALL PAGES (?) -->
 <div class="floating-footer">
-    <a href="https://github.com/memerson12/drAAft/releases" target="_blank">mod download</a>
+    <a href="https://github.com/memerson12/drAAft/releases" target="_blank">download</a>
 
     <a href="/draaft/documentation.html" target="_blank">get started</a>
+
+    <a class="credits-opener" href="#">credits</a>
 
     <a href="https://discord.gg/37Q3KnbeQQ" target="_blank">discord</a>
 
@@ -113,10 +115,10 @@ Backlog:
 </dialog>
 
 <!-- https://gist.github.com/wtho/bcc6e1edd883429b85d081e866607533 -->
-<dialog id="loading-credits" closedby="none">
-    <div id="credits-page">
+<dialog id="loading-credits" class="credits-page main-credits-dialog" closedby="none">
+    <div class="credits-page">
     <img src="/draaft-logo.png" class="logo">
-    <span class="loading-text" id="credits-title">loAAding...</span>
+    <span class="loading-text credits-title">loAAding...</span>
     <span class="subtitle-text">drAAft is a competitive AA project by PacManMVC and DesktopFolder</span>
     <!--<span class="thanks">with thanks to</span>-->
     <div class="credits-container">
@@ -125,7 +127,7 @@ Backlog:
         <div><span>Matsenuc</span><span>Enchanting the login bucket</span></div>
         <div><span>Gregor0410</span><span>Providing source code for limiting inventory slots</span></div>
         <div><span>DesktopFolder</span><span>Web design and development, mod development</span></div>
-        <div><span>PacManMVC</span><span>Mod development, design</span></div>
+        <div><span>PacManMVC</span><span>Mod development, design, seedfinding algorithms</span></div>
     </div>
     <span>with additional thanks to totorewa, crazysmc, and all others who gave advice during development</span>
     <span>and to all beta testers, especially Snakezy</span>

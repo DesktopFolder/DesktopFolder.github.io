@@ -146,11 +146,11 @@ p.generic-welcome-text {
 /**********************************************************
  * Credits / loading screen
  **********************************************************/
-#loading-credits::backdrop {
+.main-credits-dialog::backdrop {
     background-color: rgba(0,0,0,0.5);
 }
 
-#loading-credits #credits-page {
+.main-credits-dialog .credits-page {
     background-color: rgba(0,0,0,0.8);
     color: white;
     height: 100%;
@@ -167,7 +167,7 @@ p.generic-welcome-text {
     overflow: auto;
 }
 
-#loading-credits {
+.main-credits-dialog {
     height: 100%;
     width: 100%;
     border: none;
@@ -176,7 +176,7 @@ p.generic-welcome-text {
     margin: 0;
 }
 
-#loading-credits.fade {
+.main-credits-dialog.fade {
     animation: fade-out 1s ease-out forwards;
 }
 
@@ -232,29 +232,29 @@ p.generic-welcome-text {
     50% { box-shadow: 8px 8px 8px #fff, 8px 8px 8px #fff; }*/
 }
 
-#loading-credits .logo {
+.main-credits-dialog .logo {
     width: 10rem;
     animation: pulseglow 2s infinite;
 }
 
-#loading-credits .loading-text {
+.main-credits-dialog .loading-text {
     margin: 1rem;
     font-size: 3rem;
     line-height: 3rem;
 }
 
-#loading-credits .subtitle-text {
+.main-credits-dialog .subtitle-text {
     line-height: 2rem;
     font-size: 2rem;
     margin-bottom: 2rem;
     margin-top: 2rem;
 }
 
-#loading-credits .thanks {
+.main-credits-dialog .thanks {
     font-size: 1.5rem;
 }
 
-#loading-credits .credits-container {
+.main-credits-dialog .credits-container {
     margin-top: 2rem;
     display: flex;
     flex-direction: column;
