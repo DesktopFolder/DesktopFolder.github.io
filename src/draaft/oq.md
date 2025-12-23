@@ -12,8 +12,10 @@
 
 ### While-Drafting Rules
 
-- You may pick **at most** two (3) picks per pool. (e.g. 3 picks from the armour pool, 3 picks from the biomes pool...)
-    - Taking more than 3 picks will immediately disqualify the attempt.
+- You may pick **at most**:
+    - **Three (3)** picks per **6-pick pool** (i.e., 3 picks each from tools, misc, and early game)
+    - **Two (2)** picks per **5-pick pool** (i.e., 2 picks each from advancements, biomes, and armour)
+    - Taking more picks than allowed from a pool will immediately disqualify the attempt.
 - Once you have decided on your picks and gambits, select "Finish drAAft" to start the attempt. The run will be timed from this point to when the server receives your 80th advancement.
     - Apologies for the hardware gap. Future open qualifiers will hopefully resolve hardware gap issues.
 
