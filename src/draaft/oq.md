@@ -9,6 +9,7 @@
 - The draft **must be** singleplayer (mostly for technical reasons haha)
 - You **must** select the "Open Qualifier Submission" box in the settings (so that it says "Yes")
     - Ideally, show drafting on stream, so that any potential issues can be properly resolved.
+- You **must not** use the pick timer (it is internally disabled, so it won't do anything)
 
 ### While-Drafting Rules
 
