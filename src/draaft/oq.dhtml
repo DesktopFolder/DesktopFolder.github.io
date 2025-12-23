@@ -1,0 +1,9 @@
+---
+page.title=Open Qualifiers Rules
+website.title=draaft.disrespec.tech
+page.description=Open Qualifiers Rules for drAAft Season 2
+page.image=/draaft-logo.png
+---
+<body class="wider">
+{{generators[md][src/draaft/oq.md]}}
+</body>

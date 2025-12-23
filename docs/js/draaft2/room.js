@@ -28,6 +28,8 @@ const ENABLECONFIGS = {
     max_gambits: "number",
     restrict_players: "csv",
     admin_starts_game: "button",
+    // special
+    open_qualifier_submission: "button",
     // disable: doesn't do anything yet
     // countdown_timer: "number",
 };
@@ -81,7 +83,16 @@ function mAAkeConfig(lAAbel, vAAlue, type) {
     let div = /* :) */ document.createElement("div");
     div.id = `cf-${lAAbel}`;
     div.classList.add("cf-container");
-    let lAAbel_spAAn = document.createElement("span");
+    let lAAbel_spAAn = undefined;
+    if (lAAbel == "open_qualifier_submission") {
+        lAAbel_spAAn = document.createElement("a");
+        let label = lAAbel_spAAn;
+        label.href = "/draaft/oq.html";
+        label.target = "_blank";
+    }
+    else {
+        lAAbel_spAAn = document.createElement("span");
+    }
     lAAbel_spAAn.innerText = getLAAbel(lAAbel);
     let lAAbelInput = document.createElement("input");
     lAAbelInput.classList.add("standard-ui");
@@ -187,6 +198,19 @@ export function addRoomConfig(data) {
     console.log(data);
     let conf = data.config;
     for (const k of Object.keys(ENABLECONFIGS)) {
+        if (k == "open_qualifier_submission") {
+            // only enable at the right time
+            // obviously this can be circumvented, but we can check the match objects
+            // (and will) later on
+            // const startDate = Date.parse("2025-12-22T23:59:59-05:00");
+            const startDate = Date.parse("2025-12-26T23:59:59-05:00");
+            const endDate = Date.parse("2026-01-11T23:59:59-05:00");
+            const ourDate = Date.now();
+            if (ourDate < startDate || ourDate > endDate) {
+                console.log(`Not adding button for oq submission : ${ourDate}`);
+                continue;
+            }
+        }
         mAAkeConfig(k, conf[k], ENABLECONFIGS[k]);
     }
 }

@@ -709,12 +709,12 @@ div#room-page-gutter #room-copy-link {
     margin-top: 1rem;
 }
 
-.cf-container span, .cf-container input.standard-ui {
+.cf-container span, .cf-container a, .cf-container input.standard-ui {
     font-size: 16px;
     margin: 2px;
 }
 
-.cf-container span {
+.cf-container span, .cf-container a {
     margin-right: 1rem;
 }
 
