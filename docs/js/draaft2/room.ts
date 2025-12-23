@@ -217,7 +217,7 @@ export function addRoomConfig(data: any) {
             // obviously this can be circumvented, but we can check the match objects
             // (and will) later on
 
-            // const startDate = Date.parse("2025-12-22T23:59:59-05:00");
+            // const startDate = Date.parse("2025-12-21T23:59:59-05:00");
             const startDate = Date.parse("2025-12-26T23:59:59-05:00");
             const endDate = Date.parse("2026-01-11T23:59:59-05:00");
             const ourDate = Date.now();
