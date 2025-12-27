@@ -1,6 +1,7 @@
 import { Member } from "./draaft2/member.js";
 import { WS_URI, API_URI, LOCAL_TESTING, apiRequest, resolveUrl, externalAPIRequest } from "./draaft2/request.js";
 import { setupSettings } from "./draaft2/settings.js";
+import { setupLeaderboard } from "./draaft2/leaderboard.js";
 import { IS_ADMIN, UUID, set_room_config, set_draft_info, UpdatingText, fullPageNotification, reloadNotification, set_admin, set_token, set_uuid, stored_token, annoy_user_lol, displayOnlyPage, hideAllPages, cache_audio, play_audio, PLAYER_SET, onlogin } from "./draaft2/util.js";
 import { fetchData, startDrafting, handleDraftpick, downloadZip, downloadWorldgen, draft_disconnect_player, fetchPublicData, stop_drafting } from "./draaft2/draft.js";
 import { addRoomConfig, configureRoom } from "./draaft2/room.js";
@@ -434,6 +435,20 @@ function main() {
                 hde.showModal();
             }
         }
+        else if (event.key == "l") {
+            if (document.activeElement instanceof HTMLInputElement) {
+                const ae = document.activeElement;
+                if (ae.classList.contains("standard-ui") && !(ae instanceof HTMLButtonElement || (ae instanceof HTMLInputElement && ae.type == "button")))
+                    return;
+            }
+            const hde = document.getElementById("leaderboard-oq1-dialog");
+            if (hde.open) {
+                hde.close();
+            }
+            else {
+                hde.showModal();
+            }
+        }
         else if (event.key == "Escape") {
             const docDialog = document.getElementById("documentation-dialog");
             if (docDialog.open) {
@@ -444,6 +459,8 @@ function main() {
     for (const e of document.getElementsByClassName("learn-to-play")) {
         e.onclick = () => { document.getElementById("documentation-dialog").showModal(); };
     }
+    // set up the leaderboard for oq1
+    setupLeaderboard();
     let loadingCredits = document.getElementById("loading-credits");
     let creditsCredits = loadingCredits.cloneNode(true);
     document.body.appendChild(creditsCredits);
@@ -481,6 +498,14 @@ function main() {
         // TODO. should we return here? no, right?
         // but then why do we test auth token twice?
         loginFlow(Number.parseInt(authPort));
+    }
+    const lb = urlParams.get("leaderboard");
+    if (lb != null) {
+        const hde = document.getElementById("leaderboard-oq1-dialog");
+        if (!hde.open) {
+            console.log("Auto-showing the leaderboard.");
+            hde.showModal();
+        }
     }
     const storageToken = localStorage.getItem("draaft.token");
     // Only do this if we aren't doing the login flow already.

@@ -697,7 +697,9 @@ div#room-page-gutter #room-copy-link {
     flex-direction: column;
     overflow: auto;
     height: 100%;
-    width: fit-content;
+    width: min(100%, 40rem);
+    padding-left: 8px;
+    padding-right: 8px;
 }
 
 .cf-container {
@@ -712,6 +714,14 @@ div#room-page-gutter #room-copy-link {
 .cf-container span, .cf-container a, .cf-container input.standard-ui {
     font-size: 16px;
     margin: 2px;
+}
+
+.cf-container a:visited {
+    color: #ff6e6e;
+}
+
+.cf-container a {
+    color: #f7aa66;
 }
 
 .cf-container span, .cf-container a {
@@ -1227,8 +1237,8 @@ img.button-inline {
 }
 
 #user-settings-dialog {
-    width: 50%;
-    height: 50%;
+    width: 60%;
+    height: 60%;
 }
 
 #user-settings-wrapper {
@@ -1295,4 +1305,30 @@ span.docs-pick-div > span.full-flex-down > p {
     text-align: right;
 }
 
+#leaderboard-oq1-dialog {
+    width: min(100%, 42rem);
+    background-color: rgba(0,0,0,0.8);
+}
 
+.leaderboard-container {
+    display: grid;
+    grid-template-columns: auto auto;
+    margin: auto;
+}
+
+.leaderboard-container .duration {
+    text-align: right;
+    margin-left: 3rem;
+}
+
+.leaderboard-items h1 {
+    font-size: 34px;
+    line-height: 1.5em;
+    margin: 6px;
+}
+
+.leaderboard-items h2 {
+    font-size: 24px;
+    line-height: 1.3em;
+    margin: 0;
+}

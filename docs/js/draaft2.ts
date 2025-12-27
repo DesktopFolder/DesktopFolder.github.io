@@ -1,6 +1,7 @@
 import {Member} from "./draaft2/member.js";
 import {WS_URI, API_URI, LOCAL_TESTING, apiRequest, resolveUrl, externalAPIRequest} from "./draaft2/request.js";
 import {setupSettings} from "./draaft2/settings.js";
+import {setupLeaderboard} from "./draaft2/leaderboard.js";
 import {
     IS_ADMIN,
     UUID,
@@ -505,6 +506,17 @@ function main() {
             } else {
                 hde.showModal();
             }
+        } else if (event.key == "l") {
+            if (document.activeElement instanceof HTMLInputElement) {
+                const ae = document.activeElement;
+                if (ae.classList.contains("standard-ui") && !(ae instanceof HTMLButtonElement || (ae instanceof HTMLInputElement && ae.type == "button"))) return;
+            }
+            const hde = <HTMLDialogElement>document.getElementById("leaderboard-oq1-dialog");
+            if (hde.open) {
+                hde.close();
+            } else {
+                hde.showModal();
+            }
         } else if (event.key == "Escape") {
             const docDialog = <HTMLDialogElement>document.getElementById("documentation-dialog");
             if (docDialog.open) {
@@ -516,6 +528,9 @@ function main() {
     for (const e of document.getElementsByClassName("learn-to-play")) {
         (<HTMLAnchorElement>e).onclick = () => { (<HTMLDialogElement>document.getElementById("documentation-dialog")).showModal(); };
     }
+
+    // set up the leaderboard for oq1
+    setupLeaderboard();
 
     let loadingCredits = (<HTMLDialogElement>document.getElementById("loading-credits"));
     let creditsCredits = (<HTMLDialogElement>loadingCredits.cloneNode(true));
@@ -557,6 +572,15 @@ function main() {
         // TODO. should we return here? no, right?
         // but then why do we test auth token twice?
         loginFlow(Number.parseInt(authPort));
+    }
+
+    const lb = urlParams.get("leaderboard");
+    if (lb != null) {
+        const hde = <HTMLDialogElement>document.getElementById("leaderboard-oq1-dialog");
+        if (!hde.open) {
+            console.log("Auto-showing the leaderboard.");
+            hde.showModal();
+        }
     }
 
     const storageToken: string = localStorage.getItem("draaft.token");

@@ -7,6 +7,12 @@ export let CONFIG = {
         type: "text",
         maxlength: 12,
     },
+    twitch_username: {
+        networked: true,
+        default: undefined,
+        type: "text",
+        maxlength: 25,
+    },
     disable_audio: {
         networked: false,
         default: false,

@@ -27,6 +27,7 @@
 - Runs must take place before **Midnight (EST) January 11, 2026**
 - Runs **must be** streamed. You may send the stream link and/or VOD in the #streams channel of the drAAft Discord.
 - Runs will be timed by **server RTA**. That is, from when you click "Finish drAAft" to when the server receives receipt of your 80th advancement.
+- **DO NOT LOAD OTHER WORLDS WHILE PLAYING YOUR OPEN QUALIFIER MATCHES** thanks <3
 
 ### Notes
 

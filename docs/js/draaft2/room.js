@@ -19,6 +19,8 @@ function getLAAbel(label) {
     return mvc;
 }
 const ENABLECONFIGS = {
+    // special
+    open_qualifier_submission: "button",
     overworld_seed: "number",
     nether_seed: "number",
     end_seed: "number",
@@ -28,8 +30,6 @@ const ENABLECONFIGS = {
     max_gambits: "number",
     restrict_players: "csv",
     admin_starts_game: "button",
-    // special
-    open_qualifier_submission: "button",
     // disable: doesn't do anything yet
     // countdown_timer: "number",
 };
