@@ -8,6 +8,14 @@ export let CONFIG = {
         type: "text",
         maxlength: 12,
     },
+    // put this here for now to avoid conflict with menx
+    // (maybe)
+    // later: should be at end of list
+    display_all_leaderboard_runs: {
+        networked: false,
+        default: false,
+        type: "button",
+    },
     twitch_username: {
         networked: true,
         default: undefined,

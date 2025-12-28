@@ -1,4 +1,5 @@
 import {apiRequest} from "./request.js";
+import {CONFIG} from "./settings.js";
 
 var LEADERBOARD = new Array();
 
@@ -33,7 +34,22 @@ function addLeaderboard(o: any) {
 
 function displayLeaderboard() {
     let container = document.getElementById("leaderboard-oq1");
+
+    // sort first, then remove duplicates
     LEADERBOARD.sort((a, b) => a[1] - b[1]);
+
+    let hasMap = new Set();
+    if (CONFIG.display_all_leaderboard_runs.get() !== true) {
+        // basically. display just one per player.
+        LEADERBOARD = LEADERBOARD.filter(o => {
+            if (hasMap.has(o[0])) {
+                return false;
+            }
+            hasMap.add(o[0]);
+            return true;
+        });
+    }
+
     for (const o of LEADERBOARD) {
         let name = document.createElement("span");
         name.innerText = o[0];
