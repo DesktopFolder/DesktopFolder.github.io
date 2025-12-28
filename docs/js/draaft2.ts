@@ -21,7 +21,8 @@ import {
     cache_audio,
     play_audio,
     PLAYER_SET,
-    onlogin
+    onlogin,
+    setCachedValue
 } from "./draaft2/util.js";
 import {
     fetchData,
@@ -460,6 +461,19 @@ function main() {
     // we can't do this until we're logged in lol
     onlogin.push(() => {
         return fetchData();
+    });
+    onlogin.push(() => {
+        return apiRequest(`checkoq`, undefined, "GET")
+            .then(resp => resp.json())
+            .then(async json => {
+                if (json.finished_oq === true) {
+                    // we're done, the server says
+                    setCachedValue("oq-finished", true);
+                }
+                setCachedValue("oq-attempts", json.oq_attempts);
+                setCachedValue("max-oq-attempts", json.max_oq_attempts);
+            })
+            .catch(() => console.log("checkoq doesn't work yet."));
     });
     // also adds onlogin things
     setupSettings();

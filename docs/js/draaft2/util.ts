@@ -1,5 +1,16 @@
 import { CONFIG } from "./settings.js";
 
+let CACHE = new Map();
+export function getCachedValue(key: string) {
+    if (CACHE.has(key)) {
+        return CACHE.get(key);
+    }
+    return undefined;
+}
+export function setCachedValue(key: string, value: any) {
+    CACHE.set(key, value);
+}
+
 export const STEVE = "/assets/steve.png";
 
 export let ROOM_CONFIG = undefined;

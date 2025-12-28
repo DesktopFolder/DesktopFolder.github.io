@@ -50,7 +50,12 @@ function displayLeaderboard() {
         });
     }
 
+    var i = 0;
     for (const o of LEADERBOARD) {
+        let n = document.createElement("span");
+        n.innerText = (++i).toString();
+        n.classList.add("position");
+
         let name = document.createElement("span");
         name.innerText = o[0];
         
@@ -58,6 +63,7 @@ function displayLeaderboard() {
         duration.innerText = o[2];
         duration.classList.add("duration");
 
+        container.appendChild(n);
         container.appendChild(name);
         container.appendChild(duration);
     }

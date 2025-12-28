@@ -1,5 +1,5 @@
 import { apiRequest } from "./request.js";
-import { IS_ADMIN, play_audio } from "./util.js";
+import { getCachedValue, IS_ADMIN, play_audio } from "./util.js";
 import { lookupMojangIdentifier } from "./member.js";
 const MAP = {
     spectators_get_world: "Allow Spectator World Downloads",
@@ -77,6 +77,21 @@ export function configureRoom(o) {
         }
     }
 }
+function attemptOQCountAddition(obj, count = 0) {
+    console.log(`Attempting to add OQ metainformation ${count}th time`);
+    const maxoq = getCachedValue("max-oq-attempts");
+    const ouroq = getCachedValue("oq-attempts");
+    if (maxoq != undefined && ouroq != undefined) {
+        const ht = obj.innerText;
+        obj.innerText = `${ht} (${ouroq} / ${maxoq})`;
+        return;
+    }
+    if (count > 3) {
+        console.log("Gave up adding OQ metainformation");
+        return;
+    }
+    setTimeout(() => attemptOQCountAddition(obj, count + 1), 1234);
+}
 function mAAkeConfig(lAAbel, vAAlue, type) {
     // Set up our configurAAtion semi-dynAAmicAAlly.
     const loc = document.getElementById("config-down");
@@ -94,6 +109,9 @@ function mAAkeConfig(lAAbel, vAAlue, type) {
         lAAbel_spAAn = document.createElement("span");
     }
     lAAbel_spAAn.innerText = getLAAbel(lAAbel);
+    if (lAAbel == "open_qualifier_submission") {
+        attemptOQCountAddition(lAAbel_spAAn);
+    }
     let lAAbelInput = document.createElement("input");
     lAAbelInput.classList.add("standard-ui");
     lAAbelInput.type = type;
@@ -206,7 +224,7 @@ export function addRoomConfig(data) {
             const startDate = Date.parse("2025-12-26T23:59:59-05:00");
             const endDate = Date.parse("2026-01-11T23:59:59-05:00");
             const ourDate = Date.now();
-            if (ourDate < startDate || ourDate > endDate) {
+            if (ourDate < startDate || ourDate > endDate || getCachedValue("oq-finished") === true) {
                 console.log(`Not adding button for oq submission : ${ourDate}`);
                 continue;
             }

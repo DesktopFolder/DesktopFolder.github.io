@@ -2,7 +2,7 @@ import { Member } from "./draaft2/member.js";
 import { WS_URI, API_URI, LOCAL_TESTING, apiRequest, resolveUrl, externalAPIRequest } from "./draaft2/request.js";
 import { setupSettings } from "./draaft2/settings.js";
 import { setupLeaderboard } from "./draaft2/leaderboard.js";
-import { IS_ADMIN, UUID, set_room_config, set_draft_info, UpdatingText, fullPageNotification, reloadNotification, set_admin, set_token, set_uuid, stored_token, annoy_user_lol, displayOnlyPage, hideAllPages, cache_audio, play_audio, PLAYER_SET, onlogin } from "./draaft2/util.js";
+import { IS_ADMIN, UUID, set_room_config, set_draft_info, UpdatingText, fullPageNotification, reloadNotification, set_admin, set_token, set_uuid, stored_token, annoy_user_lol, displayOnlyPage, hideAllPages, cache_audio, play_audio, PLAYER_SET, onlogin, setCachedValue } from "./draaft2/util.js";
 import { fetchData, startDrafting, handleDraftpick, downloadZip, downloadWorldgen, draft_disconnect_player, fetchPublicData, stop_drafting } from "./draaft2/draft.js";
 import { addRoomConfig, configureRoom } from "./draaft2/room.js";
 var API_WS = null;
@@ -387,6 +387,19 @@ function main() {
     // we can't do this until we're logged in lol
     onlogin.push(() => {
         return fetchData();
+    });
+    onlogin.push(() => {
+        return apiRequest(`checkoq`, undefined, "GET")
+            .then(resp => resp.json())
+            .then(async (json) => {
+            if (json.finished_oq === true) {
+                // we're done, the server says
+                setCachedValue("oq-finished", true);
+            }
+            setCachedValue("oq-attempts", json.oq_attempts);
+            setCachedValue("max-oq-attempts", json.max_oq_attempts);
+        })
+            .catch(() => console.log("checkoq doesn't work yet."));
     });
     // also adds onlogin things
     setupSettings();

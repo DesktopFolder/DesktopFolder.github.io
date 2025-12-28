@@ -1,5 +1,5 @@
 import {apiRequest} from "./request.js";
-import {IS_ADMIN, play_audio} from "./util.js";
+import {getCachedValue, IS_ADMIN, play_audio} from "./util.js";
 import { lookupMojangIdentifier, uuidToUsername } from "./member.js";
 
 const MAP = {
@@ -88,6 +88,22 @@ export function configureRoom(o: any) {
     }
 }
 
+function attemptOQCountAddition(obj: HTMLElement, count: number = 0) {
+    console.log(`Attempting to add OQ metainformation ${count}th time`);
+    const maxoq = getCachedValue("max-oq-attempts");
+    const ouroq = getCachedValue("oq-attempts");
+    if (maxoq != undefined && ouroq != undefined) {
+        const ht = obj.innerText;
+        obj.innerText = `${ht} (${ouroq} / ${maxoq})`;
+        return;
+    }
+    if (count > 3) {
+        console.log("Gave up adding OQ metainformation");
+        return;
+    }
+    setTimeout(() => attemptOQCountAddition(obj, count + 1), 1234);
+}
+
 function mAAkeConfig(lAAbel: string, vAAlue: number | string | boolean | null | Array<String>, type: string) {
     // Set up our configurAAtion semi-dynAAmicAAlly.
     const loc = document.getElementById("config-down");
@@ -106,6 +122,10 @@ function mAAkeConfig(lAAbel: string, vAAlue: number | string | boolean | null | 
         lAAbel_spAAn = document.createElement("span");
     }
     lAAbel_spAAn.innerText = getLAAbel(lAAbel);
+
+    if (lAAbel == "open_qualifier_submission") {
+        attemptOQCountAddition(lAAbel_spAAn);
+    }
 
     let lAAbelInput = document.createElement("input");
     lAAbelInput.classList.add("standard-ui");
@@ -222,7 +242,7 @@ export function addRoomConfig(data: any) {
             const endDate = Date.parse("2026-01-11T23:59:59-05:00");
             const ourDate = Date.now();
 
-            if (ourDate < startDate || ourDate > endDate) {
+            if (ourDate < startDate || ourDate > endDate || getCachedValue("oq-finished") === true) {
                 console.log(`Not adding button for oq submission : ${ourDate}`);
                 continue;
             }

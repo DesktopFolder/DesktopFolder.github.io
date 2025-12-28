@@ -37,12 +37,17 @@ function displayLeaderboard() {
             return true;
         });
     }
+    var i = 0;
     for (const o of LEADERBOARD) {
+        let n = document.createElement("span");
+        n.innerText = (++i).toString();
+        n.classList.add("position");
         let name = document.createElement("span");
         name.innerText = o[0];
         let duration = document.createElement("span");
         duration.innerText = o[2];
         duration.classList.add("duration");
+        container.appendChild(n);
         container.appendChild(name);
         container.appendChild(duration);
     }

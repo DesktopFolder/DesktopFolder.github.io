@@ -1,4 +1,14 @@
 import { CONFIG } from "./settings.js";
+let CACHE = new Map();
+export function getCachedValue(key) {
+    if (CACHE.has(key)) {
+        return CACHE.get(key);
+    }
+    return undefined;
+}
+export function setCachedValue(key, value) {
+    CACHE.set(key, value);
+}
 export const STEVE = "/assets/steve.png";
 export let ROOM_CONFIG = undefined;
 export function set_room_config(rc) {

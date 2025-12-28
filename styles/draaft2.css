@@ -697,7 +697,7 @@ div#room-page-gutter #room-copy-link {
     flex-direction: column;
     overflow: auto;
     height: 100%;
-    width: min(100%, 40rem);
+    width: min(100%, 46rem);
     padding-left: 8px;
     padding-right: 8px;
 }
@@ -1312,13 +1312,17 @@ span.docs-pick-div > span.full-flex-down > p {
 
 .leaderboard-container {
     display: grid;
-    grid-template-columns: auto auto;
+    grid-template-columns: auto auto auto;
     margin: auto;
 }
 
 .leaderboard-container .duration {
     text-align: right;
     margin-left: 3rem;
+}
+.leaderboard-container .position {
+    text-align: right;
+    margin-right: 1.5rem;
 }
 
 .leaderboard-items h1 {
