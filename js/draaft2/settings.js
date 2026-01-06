@@ -15,6 +15,11 @@ export let CONFIG = {
         default: false,
         type: "button",
     },
+    hide_prequalified_from_leaderboard: {
+        networked: false,
+        default: false,
+        type: "button",
+    },
     twitch_username: {
         networked: true,
         default: undefined,

@@ -45,6 +45,9 @@ function displayLeaderboard(prequalified = new Set()) {
             return true;
         });
     }
+    if (CONFIG.hide_prequalified_from_leaderboard.get() === true) {
+        LEADERBOARD = LEADERBOARD.filter(o => !prequalified.has(o[0].toLowerCase()));
+    }
     var i = 0;
     for (const o of LEADERBOARD) {
         let n = document.createElement("span");
