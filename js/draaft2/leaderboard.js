@@ -22,8 +22,16 @@ function addLeaderboard(o) {
     const duration = (e - s);
     LEADERBOARD.push([o.username, duration, asPrettyDuration(duration)]);
 }
-function displayLeaderboard() {
+function asPlayerName(o, pq) {
+    const ol = o.toLowerCase();
+    if (pq.has(ol)) {
+        return o + " *";
+    }
+    return o;
+}
+function displayLeaderboard(prequalified = new Set()) {
     let container = document.getElementById("leaderboard-oq1");
+    prequalified = new Set(prequalified.keys().map((s) => s.toLowerCase()));
     // sort first, then remove duplicates
     LEADERBOARD.sort((a, b) => a[1] - b[1]);
     let hasMap = new Set();
@@ -43,22 +51,38 @@ function displayLeaderboard() {
         n.innerText = (++i).toString();
         n.classList.add("position");
         let name = document.createElement("span");
-        name.innerText = o[0];
+        name.innerText = asPlayerName(o[0], prequalified);
         let duration = document.createElement("span");
         duration.innerText = o[2];
         duration.classList.add("duration");
+        // Append the number (e.g. 1,2,3...)
         container.appendChild(n);
+        // Append the name of the player
         container.appendChild(name);
         container.appendChild(duration);
     }
 }
-export async function setupLeaderboard() {
+async function setupLeaderboardOQ1() {
     apiRequest("lb/external/oq1", undefined, "GET")
         .then(resp => resp.json())
         .then(async (json) => {
         for (const j of json) {
             addLeaderboard(j);
         }
-        displayLeaderboard();
+        const PREQUALIFIED = new Set([
+            "DoyPingu",
+            "Feinberg",
+            "CroPro",
+            "Snakezy",
+            "Oxidiot",
+            "Xia_Wen", /* Not participating */
+            "Coosh02",
+            "dbowzer", /* Xia_Wen is not playing this tournament */
+            "Infume",
+        ]);
+        displayLeaderboard(PREQUALIFIED);
     });
+}
+export async function setupLeaderboard() {
+    setupLeaderboardOQ1();
 }

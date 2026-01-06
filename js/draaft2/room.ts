@@ -239,7 +239,8 @@ export function addRoomConfig(data: any) {
 
             // const startDate = Date.parse("2025-12-21T23:59:59-05:00");
             const startDate = Date.parse("2025-12-26T23:59:59-05:00");
-            const endDate = Date.parse("2026-01-11T23:59:59-05:00");
+            // note: adjusted to account for server issues + delayed notification to players
+            const endDate = Date.parse("2026-01-13T23:59:59-05:00");
             const ourDate = Date.now();
 
             if (ourDate < startDate || ourDate > endDate || getCachedValue("oq-finished") === true) {

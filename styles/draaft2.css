@@ -1336,3 +1336,11 @@ span.docs-pick-div > span.full-flex-down > p {
     line-height: 1.3em;
     margin: 0;
 }
+
+.leaderboard-items > p {
+    padding-left: 2rem;
+    padding-right: 2rem;
+    margin: 0;
+    font-size: 16px;
+    text-align: center;
+}
