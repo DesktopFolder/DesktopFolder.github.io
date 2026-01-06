@@ -533,6 +533,7 @@ function displayDraftables(p: Promise<any>) {
         }
     }
     else {
+        console.log("Gambits are disabled for this room.");
         gambit_div.style.display = 'none';
     }
 
@@ -568,10 +569,17 @@ function displayDraftables(p: Promise<any>) {
         // fix gambits
         if (json.gambits != undefined) {
             if (json.gambits[UUID] != undefined) {
-                console.log("Enabling from server");
+                console.log("Enabling gambits from server");
                 for (const g of json.gambits[UUID]) {
-                    document.getElementById(`gambit-${g}`).classList.remove("disabled");
-                    document.getElementById(`gambit-${g}`).classList.add("enabled");
+                    console.log(`Enabling gambit from server: '${g}'`);
+                    const gambitId = `gambit-${g}`;
+                    let gambitElement = document.getElementById(gambitId);
+                    if (gambitElement == undefined) {
+                        console.warn(`Gambit did not exist when enabling gambits: ${g}`);
+                        continue;
+                    }
+                    gambitElement.classList.remove("disabled");
+                    gambitElement.classList.add("enabled");
                     SELECTED_GAMBITS += 1;
                 }
                 update_gambits(SELECTED_GAMBITS);
