@@ -16,7 +16,7 @@
 - You may pick **at most**:
     - **Three (3)** picks per **6-pick pool** (i.e., 3 picks each from tools, misc, and early game)
     - **Two (2)** picks per **5-pick pool** (i.e., 2 picks each from advancements, biomes, and armour)
-    - Taking more picks than allowed from a pool will immediately disqualify the attempt.
+    - Taking more picks than allowed from a pool will immediately disqualify the attempt. (note: this is now prevented by the server)
 - Once you have decided on your picks and gambits, select "Finish drAAft" to start the attempt. The run will be timed from this point to when the server receives your 80th advancement.
     - Apologies for the hardware gap. Future open qualifiers will hopefully resolve hardware gap issues.
 
@@ -24,11 +24,11 @@
 
 - You may submit **at most** five (5) open qualifiers attempts. If more than 5 are submitted, only the first 5 will be considered.
 - Runs must take place after **Midnight (EST) December 26, 2025**
-- Runs must take place before **Midnight (EST) January 11, 2026**
-- Runs **must be** streamed. You may send the stream link and/or VOD in the #streams channel of the drAAft Discord.
-- Runs will be timed by **server RTA**. That is, from when you click "Finish drAAft" to when the server receives receipt of your 80th advancement.
+- Runs must take place before **Midnight (EST) January 13, 2026** (any delays / push backs will be announced in the Discord)
+- Runs **must be** streamed. Please send the stream link and/or VOD in the #streams channel of the [drAAft Discord](https://discord.gg/37Q3KnbeQQ).
+- Runs will be timed by **server RTA**. That is, from when you click "Finish drAAft" to when the server receives receipt of your 80th advancement. **For this to work properly, please ensure you re-login after any crashes (by pressing the bucket) before rejoining the world.**
 - **DO NOT LOAD OTHER WORLDS WHILE PLAYING YOUR OPEN QUALIFIER MATCHES** thanks <3
 
 ### Notes
 
-- A leaderboard will be made available at some point (not immediately due to time limitations)
+- To view the leaderboard, press `l` while within the [drAAft application](https://draaft.disrespec.tech).
