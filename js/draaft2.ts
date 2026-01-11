@@ -554,7 +554,7 @@ function main() {
     let creditsTitle = (<HTMLSpanElement>creditsCredits.querySelector(".credits-title"));
     creditsTitle.innerText = "Credits";
 
-    let openCredits = () {
+    let openCredits = () => {
         let credits = (<HTMLDialogElement>document.getElementById("credits-credits"));
         credits.show();
     };
