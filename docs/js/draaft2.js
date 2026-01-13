@@ -130,6 +130,9 @@ export function connect(token) {
         console.warn(`Tried to connect() twice... (websocket: ${API_WS})`);
     }
 }
+export function finishSomeonesRun(room_id) {
+    apiRequest(`/admin/register_completion/${room_id}`, undefined, "POST");
+}
 export function sendMessage(message) {
     if (API_WS != null) {
         API_WS.send(message);
@@ -144,6 +147,7 @@ if (LOCAL_TESTING) {
     window.download_zip = downloadZip;
     window.download_wgo = downloadWorldgen;
 }
+window.admin_finish_run = finishSomeonesRun;
 window.debugDownloadWorldGenSettings = downloadWorldgen;
 function showMenu(auth) {
     // Show just our page.
