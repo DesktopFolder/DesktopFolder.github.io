@@ -97,6 +97,7 @@ async function setupLeaderboardOQ1() {
                                 "DoyPingu",
                                 "Feinberg",
                                 "CroPro",
+                                "Thunderstorming",
                                 "Snakezy",
                                 "Oxidiot",
                                 "Xia_Wen", /* Not participating */
