@@ -6,11 +6,11 @@ var LEADERBOARD = new Array();
 
 
 function asPrettyDuration(seconds: number) {
-    console.log(seconds);
+    // console.log(seconds);
     const d = new Date(Date.UTC(0,0,0,0,0,0,Math.floor(seconds) * 1000));
 
     const hrs = Math.floor(seconds / (60 * 60));
-    console.log(hrs);
+    // console.log(hrs);
     const mins = d.getUTCMinutes();
     const secs = d.getUTCSeconds();
 
