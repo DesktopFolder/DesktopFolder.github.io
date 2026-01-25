@@ -13,7 +13,7 @@ let USERNAME_TO_UUID: Map<string, string> = new Map();
 let LOOKING_UP_CACHE = new Map();
 
 export function isValidPlayerNameOrUUID(pn: string) {
-    return /^[a-zA-Z_0-9]{2,32}$/.test(pn);
+    return /^[a-zA-Z_0-9*]{2,33}$/.test(pn);
 }
 
 export async function lookupMojangIdentifier(uuidOrUsername: string) {
