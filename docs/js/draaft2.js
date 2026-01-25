@@ -141,6 +141,9 @@ export function sendMessage(message) {
         console.warn("Tried to sendMessage() without websocket...");
     }
 }
+export function generateServiceAccount() {
+    apiRequest('/service_account', undefined, "GET");
+}
 if (LOCAL_TESTING) {
     window.test_connect = connect;
     window.test_message = sendMessage;
@@ -149,6 +152,7 @@ if (LOCAL_TESTING) {
 }
 window.admin_finish_run = finishSomeonesRun;
 window.debugDownloadWorldGenSettings = downloadWorldgen;
+window.generateServiceAccount = generateServiceAccount;
 function showMenu(auth) {
     // Show just our page.
     displayOnlyPage("menu-page");
