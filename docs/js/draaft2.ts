@@ -182,7 +182,7 @@ export function sendMessage(message: string) {
 }
 
 export function generateServiceAccount() {
-    apiRequest('/service_account', undefined, "GET")
+    return apiRequest('/service_account', undefined, "GET");
 }
 if (LOCAL_TESTING) {
     (window as any).test_connect = connect;

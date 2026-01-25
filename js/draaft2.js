@@ -142,7 +142,7 @@ export function sendMessage(message) {
     }
 }
 export function generateServiceAccount() {
-    apiRequest('/service_account', undefined, "GET");
+    return apiRequest('/service_account', undefined, "GET");
 }
 if (LOCAL_TESTING) {
     window.test_connect = connect;
