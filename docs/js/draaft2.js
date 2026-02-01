@@ -144,6 +144,9 @@ export function sendMessage(message) {
 export function generateServiceAccount() {
     return apiRequest('/service_account', undefined, "GET");
 }
+export function updateBracket() {
+    return apiRequest('/bracket/admin/update_bracket', undefined, "POST");
+}
 if (LOCAL_TESTING) {
     window.test_connect = connect;
     window.test_message = sendMessage;
@@ -153,6 +156,7 @@ if (LOCAL_TESTING) {
 window.admin_finish_run = finishSomeonesRun;
 window.debugDownloadWorldGenSettings = downloadWorldgen;
 window.generateServiceAccount = generateServiceAccount;
+window.updateBracket = updateBracket;
 function showMenu(auth) {
     // Show just our page.
     displayOnlyPage("menu-page");

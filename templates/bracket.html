@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <title>{page-title}</title>
+
+    <script type="module">
+        // As suggested by:
+        // https://www.matuzo.at/blog/html-boilerplate/
+        document.documentElement.classList.remove('no-js');
+        document.documentElement.classList.add('js');
+    </script>
+
+    {meta}
+
+    <link rel="stylesheet" href="{path-css-common}">
+    <!--<link rel="stylesheet" href="path/to/print.css" media="print">-->
+    {css-extras}
+    
+    <link rel="stylesheet" href="/assets/draaft/web/brackets-viewer.min.css" />
+    <script type="text/javascript" src="/assets/draaft/web/brackets-viewer.min.js"></script>
+
+    <link rel="stylesheet" href="/assets/draaft/web/brackets.css" />
+
+    <meta name="description" content="{page-description}" />
+    <meta property="og:title" content="{page-title}" />
+    <meta property="og:site_name" content="{website-title}" />
+    <meta property="og:description" content="{page-description}" />
+    <meta property="og:image" content="{page-image}" />
+
+    {favicon}
+
+    {hyperlegible}
+</head>
+<a href="/" id="home-button" style="position:absolute;left:7px;top:12px;margin:0;font-size:60%;line-height:0;">home</a>
+{content}
+</html>
