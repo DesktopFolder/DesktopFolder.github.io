@@ -46,7 +46,7 @@ body, html
 }
 
 .room-member-container {
-    height: 70px;
+    height: 76px;
     display: flex;
     align-items: center;
     font-size: 1.4em;
@@ -58,7 +58,7 @@ div#player-gutter .room-member-container {
 }
 
 .member-face {
-    height: 64px;
+    height: 72px;
     width: auto;
     display: inline-block;
     box-shadow: 0px 0px 4px #AAA;
@@ -68,6 +68,6 @@ div#player-gutter .room-member-container {
 .member-name {
     display: inline-block;
     line-height: 1em;
-    font-size: 32px;
+    font-size: 64px;
     color: white;
 }
