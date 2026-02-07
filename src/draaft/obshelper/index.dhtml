@@ -1,0 +1,17 @@
+---
+page.title=drAAft Picks
+website.title=draaft.disrespec.tech
+page.description=drAAft pick history for live tournament rooms
+src=templates/generic.html
+css.extras=/styles/draaftobs.css
+page.image=/draaft-logo.png
+hyperlegible=true
+---
+<body class="maxerino" style="background-color: rgba(0,0,0,0);">
+
+<div id="obs-player-names-unfocused" style="display: flex">
+</div>
+
+<script>var exports = {"__esModule": true};</script>
+<script src="/js/obshelper.js" type="module"></script><!--All of our actual logic resides here.-->
+</body>

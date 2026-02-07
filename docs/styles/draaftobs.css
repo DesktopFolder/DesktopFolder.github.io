@@ -1,0 +1,72 @@
+@font-face {
+    font-family: 'Minecraftia';
+    font-display: block;
+    font-weight: 400;
+    font-style: normal;
+    src: local('Minecraftia'), url('/assets/Minecraftia.woff') format('woff');
+}
+
+body {
+    font-family: 'Minecraftia';
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+body, html
+{
+    margin:0px;
+    padding:0px;
+    width:100%;
+
+    min-height: 100%;
+    min-width: 100%;
+
+    max-height: 100vh;
+
+}
+
+* {
+    box-sizing: border-box;
+}
+
+
+#obs-player-names-unfocused {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+
+    margin: 0;
+    padding: 0;
+
+    padding-top: 5px;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+.room-member-container {
+    height: 40px;
+    display: flex;
+    align-items: center;
+    font-size: 1.4em;
+}
+
+div#player-gutter .room-member-container {
+    height: 32px;
+    width: fit-content;
+}
+
+.member-face {
+    height: 32px;
+    width: auto;
+    display: inline-block;
+    box-shadow: 0px 0px 4px #AAA;
+    margin-right: 11px;
+}
+
+.member-name {
+    display: inline-block;
+    line-height: 1em;
+    font-size: 32px;
+}
