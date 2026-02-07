@@ -580,7 +580,7 @@ async function setupObsHelper() {
     const params = new URLSearchParams(queryString);
     let p1 = 0;
     let p2 = 1;
-    if (params.get("flip") == "true") {
+    if (params.has("flip")) {
         p1 = 1;
         p2 = 0;
     }
