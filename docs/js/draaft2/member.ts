@@ -185,6 +185,19 @@ export class Member {
         return this;
     }
 
+    public addPronounsDiv(e: HTMLElement, playerOnly: boolean, str: string = undefined) {
+        let div = document.createElement("div");
+        div.classList.add("room-member-container");
+
+        this.addImage(div, playerOnly);
+        this.addParagraph(div, playerOnly, str);
+
+        e.appendChild(div);
+        this.addElement(div, playerOnly);
+
+        return this;
+    }
+
     public setIsPlayer(value: boolean) {
         this.isPlayer = value;
         if (this.swapButton != undefined) {

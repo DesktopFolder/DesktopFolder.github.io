@@ -163,6 +163,15 @@ export class Member {
         this.addElement(div, playerOnly);
         return this;
     }
+    addPronounsDiv(e, playerOnly, str = undefined) {
+        let div = document.createElement("div");
+        div.classList.add("room-member-container");
+        this.addImage(div, playerOnly);
+        this.addParagraph(div, playerOnly, str);
+        e.appendChild(div);
+        this.addElement(div, playerOnly);
+        return this;
+    }
     setIsPlayer(value) {
         this.isPlayer = value;
         if (this.swapButton != undefined) {
