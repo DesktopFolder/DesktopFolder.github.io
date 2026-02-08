@@ -7,6 +7,7 @@ import { STEVE, IS_ADMIN, UUID, play_audio } from "./util.js";
 let LOOKUP_CACHE = new Map();
 // USERNAME -> UUID
 let USERNAME_TO_UUID = new Map();
+let PRONOUNS_CACHE = new Map();
 let LOOKING_UP_CACHE = new Map();
 export function isValidPlayerNameOrUUID(pn) {
     return /^[a-zA-Z_0-9*]{2,33}$/.test(pn);
@@ -95,6 +96,7 @@ export async function uuidToUsername(uuid) {
                 .then(body => body.json())
                 .then(async (json) => {
                 LOOKUP_CACHE.set(uuid, json.username);
+                PRONOUNS_CACHE.set(uuid, json.pronouns);
             }).catch((_) => {
                 console.log(`Setting ${uuid} as not being a real uuid.`);
                 LOOKUP_CACHE.set(uuid, uuid);
@@ -108,6 +110,7 @@ export class Member {
     uuid;
     username = null;
     isPlayer = true;
+    wantPronouns = false;
     managed = [];
     playerOnly = [];
     swapButton = undefined;
@@ -119,17 +122,25 @@ export class Member {
             m.style.display = "none";
         }
     }
-    populateUsername(e) {
+    populateUsername(e, pronounsDiv = undefined) {
         if (this.username == null) {
             // Don't await it. :)
             uuidToUsername(this.uuid).then(name => {
                 e.innerText = name;
                 this.username = name;
+                let pn = PRONOUNS_CACHE.get(this.uuid);
+                if (pn != undefined && pronounsDiv != undefined) {
+                    pronounsDiv.innerText = pn;
+                }
             });
         }
         else {
             e.innerText = this.username;
         }
+        return this;
+    }
+    withPronouns() {
+        this.wantPronouns = true;
         return this;
     }
     addImage(e, playerOnly) {
@@ -141,20 +152,23 @@ export class Member {
         this.addElement(i, playerOnly);
         return this;
     }
-    addParagraph(e, playerOnly, str = undefined) {
+    addParagraph(e, playerOnly, str = undefined, pronounsDiv = undefined) {
         let p = document.createElement("p");
         p.classList.add("room-member", "member-name");
         if (str != undefined) {
             p.innerText = str;
         }
         else {
-            this.populateUsername(p);
+            this.populateUsername(p, pronounsDiv);
         }
         e.appendChild(p);
         this.addElement(p, playerOnly);
         return this;
     }
     addDiv(e, playerOnly, str = undefined) {
+        if (this.wantPronouns) {
+            return this.addPronounsDiv(e, playerOnly, str);
+        }
         let div = document.createElement("div");
         div.classList.add("room-member-container");
         this.addImage(div, playerOnly);
@@ -164,12 +178,18 @@ export class Member {
         return this;
     }
     addPronounsDiv(e, playerOnly, str = undefined) {
+        let outerDiv = document.createElement("div");
+        outerDiv.classList.add("member-outer-div");
         let div = document.createElement("div");
         div.classList.add("room-member-container");
         this.addImage(div, playerOnly);
-        this.addParagraph(div, playerOnly, str);
-        e.appendChild(div);
+        let pn = document.createElement("span");
+        this.addParagraph(div, playerOnly, str, pn);
+        outerDiv.appendChild(div);
+        e.appendChild(outerDiv);
+        outerDiv.appendChild(pn);
         this.addElement(div, playerOnly);
+        this.addElement(outerDiv, playerOnly);
         return this;
     }
     setIsPlayer(value) {

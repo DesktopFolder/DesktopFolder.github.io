@@ -600,8 +600,8 @@ async function setupObsHelper() {
 
     let loc = document.getElementById("obs-player-names-unfocused");
 
-    (new Member(data.draft.players[p1])).addDiv(loc, true);
-    (new Member(data.draft.players[p2])).addDiv(loc, true);
+    (new Member(data.draft.players[p1])).withPronouns().addDiv(loc, true);
+    (new Member(data.draft.players[p2])).withPronouns().addDiv(loc, true);
 }
 
 function main() {

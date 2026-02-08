@@ -9,6 +9,7 @@ import { STEVE, IS_ADMIN, UUID, play_audio } from "./util.js";
 let LOOKUP_CACHE: Map<string, string> = new Map();
 // USERNAME -> UUID
 let USERNAME_TO_UUID: Map<string, string> = new Map();
+let PRONOUNS_CACHE: Map<string, string> = new Map();
 
 let LOOKING_UP_CACHE = new Map();
 
@@ -100,6 +101,7 @@ export async function uuidToUsername(uuid: string) {
                                  .then(body => body.json())
                                  .then(async json => {
                                     LOOKUP_CACHE.set(uuid, json.username);
+                                    PRONOUNS_CACHE.set(uuid, json.pronouns);
                                 }).catch((_) => {
                                     console.log(`Setting ${uuid} as not being a real uuid.`);
                                     LOOKUP_CACHE.set(uuid, uuid);
@@ -115,6 +117,7 @@ export class Member {
     username: string = null;
 
     isPlayer: boolean = true;
+    wantPronouns: boolean = false;
 
     managed: Array<HTMLElement> = [];
     playerOnly: Array<HTMLElement> = [];
@@ -131,18 +134,27 @@ export class Member {
         }
     }
 
-    public populateUsername(e: HTMLElement) {
+    public populateUsername(e: HTMLElement, pronounsDiv: HTMLSpanElement = undefined) {
         if (this.username == null) {
             // Don't await it. :)
             uuidToUsername(this.uuid).then(name => {
                 e.innerText = name;
                 this.username = name;
+                let pn = PRONOUNS_CACHE.get(this.uuid);
+                if (pn != undefined && pronounsDiv != undefined) {
+                    pronounsDiv.innerText = pn;
+                }
             });
         }
         else {
             e.innerText = this.username;
         }
 
+        return this;
+    }
+
+    public withPronouns() {
+        this.wantPronouns = true;
         return this;
     }
 
@@ -158,13 +170,13 @@ export class Member {
         return this;
     }
 
-    public addParagraph(e: HTMLElement, playerOnly: boolean, str: string = undefined) {
+    public addParagraph(e: HTMLElement, playerOnly: boolean, str: string = undefined, pronounsDiv: HTMLSpanElement = undefined) {
         let p = document.createElement("p");
 
         p.classList.add("room-member", "member-name");
         if (str != undefined) {
             p.innerText = str;
-        } else { this.populateUsername(p); }
+        } else { this.populateUsername(p, pronounsDiv); }
 
         e.appendChild(p);
         this.addElement(p, playerOnly);
@@ -173,6 +185,9 @@ export class Member {
     }
 
     public addDiv(e: HTMLElement, playerOnly: boolean, str: string = undefined) {
+        if (this.wantPronouns) {
+            return this.addPronounsDiv(e, playerOnly, str);
+        }
         let div = document.createElement("div");
         div.classList.add("room-member-container");
 
@@ -186,14 +201,21 @@ export class Member {
     }
 
     public addPronounsDiv(e: HTMLElement, playerOnly: boolean, str: string = undefined) {
+        let outerDiv = document.createElement("div");
+        outerDiv.classList.add("member-outer-div");
+
         let div = document.createElement("div");
         div.classList.add("room-member-container");
 
         this.addImage(div, playerOnly);
-        this.addParagraph(div, playerOnly, str);
+        let pn = document.createElement("span");
+        this.addParagraph(div, playerOnly, str, pn);
 
-        e.appendChild(div);
+        outerDiv.appendChild(div);
+        e.appendChild(outerDiv);
+        outerDiv.appendChild(pn);
         this.addElement(div, playerOnly);
+        this.addElement(outerDiv, playerOnly);
 
         return this;
     }

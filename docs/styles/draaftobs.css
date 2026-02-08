@@ -41,7 +41,7 @@ body, html
     margin: 0;
     padding: 0;
 
-    padding-top: 1rem;
+    padding-top: 2rem;
     padding-left: 1rem;
     padding-right: 1rem;
 }
@@ -70,5 +70,18 @@ div#player-gutter .room-member-container {
     display: inline-block;
     line-height: 1em;
     font-size: 64px;
+    color: white;
+}
+
+.member-outer-div {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.member-outer-div span {
+    font-size: 32px;
+    height: 32px;
+    text-align: center;
     color: white;
 }
