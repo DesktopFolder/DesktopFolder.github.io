@@ -622,13 +622,6 @@ export function fetchData(): Promise<void> {
         });
 }
 
-async function setupDraftExternal() {
-    let res = await externalAPIRequest("draft/external/livestatus", undefined, "GET");
-    let data = await res.json();
-    console.log(data);
-    displayDraftables(data.draft);
-}
-
 function main() {
     document.getElementById("home-button").style.display = "none";
     (<HTMLDialogElement>document.getElementById("loading-credits")).show();

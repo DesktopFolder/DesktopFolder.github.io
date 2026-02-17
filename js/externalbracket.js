@@ -1,5 +1,5 @@
 import { Member } from "./draaft2/member.js";
-import { apiRequest, externalAPIRequest, LOCAL_TESTING, requiredJsonGETRequest } from "./draaft2/request.js";
+import { apiRequest, LOCAL_TESTING, requiredJsonGETRequest } from "./draaft2/request.js";
 import { removeAllPages, ROOM_CONFIG, STEVE, UUID, set_draft_info } from "./draaft2/util.js";
 let PICKS_PER_POOL = 0;
 let MAX_PICKS = 0;
@@ -526,12 +526,6 @@ export function fetchData() {
             console.error(e);
         }
     });
-}
-async function setupDraftExternal() {
-    let res = await externalAPIRequest("draft/external/livestatus", undefined, "GET");
-    let data = await res.json();
-    console.log(data);
-    displayDraftables(data.draft);
 }
 function main() {
     document.getElementById("home-button").style.display = "none";
