@@ -10,7 +10,7 @@ Commands List:
 
 #### `?setplayer` (**broadcaster only**)
 
-Set the default Minecraft username for your channel. e.g. after `?setplayer NOHACKSJUSTTIGER`, running a stats command like `?latest` by itself will assume you want the latest AA Paceman data for the user `NOHACKSJUSTTIGER`.
+Set the default Minecraft username for your channel. e.g. after `?setplayer Snakezy`, running a stats command like `?latest` by itself will assume you want the latest AA Paceman data for the user `Snakezy`.
 
 #### `?restrict` (**broadcaster only**)
 
