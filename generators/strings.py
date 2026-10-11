@@ -11,7 +11,8 @@ def MakeLogos(logo_strings: str):
                                  'assets/yt_icon_rgb.png'),
              "twitter": logo_gen('https://www.twitter.com/DesktopFolder', 'assets/Logo blue.svg'),
              "twitch": logo_gen('https://www.twitch.tv/DesktopFolder',
-                                'assets/TwitchGlitchPurple.svg')}
+                                'assets/TwitchGlitchPurple.svg'),
+             "discord": logo_gen('https://discord.gg/Me6PyF8kSE', 'assets/discordlogo.png')}
     return '\n'.join([logos.get(s, f'<!--No logo for: {s}-->') for s in logo_strings.split(',')])
 
 

@@ -17,7 +17,7 @@ body {
 <h1>Links</h1>
 
 <p id="big-logos">
-{{generators[strings][logos:youtube,twitch,twitter,github]}}
+{{generators[strings][logos:youtube,twitch,twitter,github,discord]}}
 </p>
 
 <p>&amp; <a href="/">this website</a>
