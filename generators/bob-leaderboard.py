@@ -1,6 +1,7 @@
 from .generator import Generator as MainGenerator
 
-runs_str = """<tr class="run"><td>{num}</td><td><a href="{url}">{time}</a></td><td>{name}</td><td>{verified}</td></tr>"""
+# runs_str = """<tr class="run"><td>{num}</td><td><a href="{url}">{time}</a></td><td>{name}</td><td>{verified}</td></tr>"""
+runs_str = """<tr class="run"><td>{num}</td><td><a href="{url}">{time}</a></td><td>{name}</td></tr>"""
 
 
 def to_secs(lst):
@@ -27,4 +28,5 @@ class Generator(MainGenerator):
 
     def existing_runs(self):
         # Get all the existing runs. Chop chop!
-        return '\n'.join([runs_str.format(num=itr + 1, url=u, time=t, name=urlify(n), verified=is_verified(i)) for (itr, (t, u, n, i)) in enumerate(sorted([ln.strip().split(' ') for ln in open('data/bob-runs.txt', 'r').readlines() if len(ln) > 4], key=to_secs))])
+        # return '\n'.join([runs_str.format(num=itr + 1, url=u, time=t, name=urlify(n), verified=is_verified(i)) for (itr, (t, u, n, i)) in enumerate(sorted([ln.strip().split(' ') for ln in open('data/bob-runs.txt', 'r').readlines() if len(ln) > 4], key=to_secs))])
+        return '\n'.join([runs_str.format(num=itr + 1, url=u, time=t, name=urlify(n)) for (itr, (t, u, n, i)) in enumerate(sorted([ln.strip().split(' ') for ln in open('data/bob-runs.txt', 'r').readlines() if len(ln) > 4 and int(ln[0]) > 1], key=to_secs))])

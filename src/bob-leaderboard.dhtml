@@ -42,7 +42,7 @@ class=mcsr
     <th></th>
     <th>Time</th>
     <th>User</th>
-    <th>Notes</th>
+    <!--<th>Notes</th>-->
 </tr>
 {{generators[bob-leaderboard][existing-runs]}}
 </table>
